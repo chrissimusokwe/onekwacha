@@ -43,6 +43,7 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          //Top header
           Expanded(
             flex: 2,
             child: Container(
@@ -80,6 +81,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+          //First section buttons
           Expanded(
             flex: 2,
             child: Row(
@@ -87,13 +89,13 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 Expanded(
                   child: Container(
-                    margin: EdgeInsets.all(10.0),
+                    margin: EdgeInsets.all(20.0),
                     child: RaisedButton(
                       onPressed: () {},
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                      elevation: 10.0,
+                      elevation: 5.0,
                       color: Colors.white,
                       child: Center(
                         child: Column(
@@ -103,15 +105,15 @@ class _HomePageState extends State<HomePage> {
                             Icon(
                               CustomIcons.plus,
                               color: kDefaultPrimaryColor,
-                              size: 45.0,
+                              size: 35.0,
                             ),
                             SizedBox(
                               height: 5.0,
                             ),
                             Text(
-                              'Cash In',
+                              'Top up',
                               style: TextStyle(
-                                fontSize: 14.0,
+                                fontSize: 12.0,
                               ),
                             ),
                           ],
@@ -128,7 +130,42 @@ class _HomePageState extends State<HomePage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                      elevation: 10.0,
+                      elevation: 5.0,
+                      color: Colors.white,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            //Image.asset('icons8-check-100.png'),
+                            Icon(
+                              CustomIcons.qr_code,
+                              color: kDefaultPrimaryColor,
+                              size: 45.0,
+                            ),
+                            SizedBox(
+                              height: 5.0,
+                            ),
+                            Text(
+                              'Scan & Pay',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.all(20.0),
+                    child: RaisedButton(
+                      onPressed: () {},
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      elevation: 5.0,
                       color: Colors.white,
                       child: Center(
                         child: Column(
@@ -138,50 +175,15 @@ class _HomePageState extends State<HomePage> {
                             Icon(
                               CustomIcons.initiate_money_transfer,
                               color: kDefaultPrimaryColor,
-                              size: 45.0,
+                              size: 35.0,
                             ),
                             SizedBox(
                               height: 5.0,
                             ),
                             Text(
-                              'Send',
+                              'Transfer',
                               style: TextStyle(
-                                fontSize: 14.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(10.0),
-                    child: RaisedButton(
-                      onPressed: () {},
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      elevation: 10.0,
-                      color: Colors.white,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            //Image.asset('icons8-check-100.png'),
-                            Icon(
-                              CustomIcons.money,
-                              color: kDefaultPrimaryColor,
-                              size: 45.0,
-                            ),
-                            SizedBox(
-                              height: 5.0,
-                            ),
-                            Text(
-                              'Cash Out',
-                              style: TextStyle(
-                                fontSize: 14.0,
+                                fontSize: 12.0,
                               ),
                             ),
                           ],
@@ -193,6 +195,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
+          //Second section buttons
           Expanded(
             flex: 3,
             child: Row(
@@ -203,7 +206,7 @@ class _HomePageState extends State<HomePage> {
                     child: RaisedButton(
                       onPressed: () {},
                       color: Colors.white,
-                      elevation: 10.0,
+                      elevation: 5.0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
@@ -220,7 +223,7 @@ class _HomePageState extends State<HomePage> {
                               height: 10.0,
                             ),
                             Text(
-                              'Request Payment',
+                              'Invoicing',
                               style: TextStyle(
                                 fontSize: 14.0,
                               ),
@@ -236,7 +239,7 @@ class _HomePageState extends State<HomePage> {
                     margin: EdgeInsets.all(10.0),
                     child: RaisedButton(
                       onPressed: () {},
-                      elevation: 10.0,
+                      elevation: 5.0,
                       color: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -268,6 +271,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
+          //Banner of adverts
           Expanded(
             flex: 4,
             child: CarouselWithIndicatorDemo(),

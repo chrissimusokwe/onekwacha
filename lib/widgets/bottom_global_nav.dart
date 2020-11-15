@@ -8,10 +8,10 @@ class BottomNavigation extends StatefulWidget {
   @override
   _BottomNavigationState createState() => _BottomNavigationState();
 }
-class _BottomNavigationState extends State<BottomNavigation> {
 
+class _BottomNavigationState extends State<BottomNavigation> {
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   static const List<Widget> _widgetOptions = <Widget>[
     Text(
@@ -19,11 +19,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
       style: optionStyle,
     ),
     Text(
-      'Index 1: Scan & Pay',
+      'Index 2: History',
       style: optionStyle,
     ),
     Text(
-      'Index 2: History',
+      'Index 1: Scan & Pay',
       style: optionStyle,
     ),
   ];
@@ -44,19 +44,19 @@ class _BottomNavigationState extends State<BottomNavigation> {
           icon: Icon(
             CustomIcons.home_page,
           ),
-          title: Text('Home'),
+          label: 'Home',
         ),
         BottomNavigationBarItem(
           icon: Icon(
-            CustomIcons.qr_code,
+            CustomIcons.time_machine,
           ),
-          title: Text('Scan & Pay'),
+          label: 'History',
         ),
         BottomNavigationBarItem(
           icon: Icon(
-            CustomIcons.transaction_list,
+            CustomIcons.male_user,
           ),
-          title: Text('Transactions'),
+          label: 'Profile',
         ),
       ],
       currentIndex: _selectedIndex,
@@ -65,5 +65,3 @@ class _BottomNavigationState extends State<BottomNavigation> {
     );
   }
 }
-
-
