@@ -40,7 +40,7 @@ final List<Widget> imageSliders = imgList
                         padding: EdgeInsets.symmetric(
                             vertical: 10.0, horizontal: 20.0),
                         child: Text(
-                          'Promo Ad ${imgList.indexOf(item)}',
+                          'Promo Ad ${imgList.indexOf(item) + 1}',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20.0,

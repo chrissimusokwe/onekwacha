@@ -1,0 +1,52 @@
+import 'package:onekwacha/screens/history_screen.dart';
+import 'package:onekwacha/screens/home_screen.dart';
+import 'package:onekwacha/screens/profile_screen.dart';
+import 'package:onekwacha/utils/custom_icons_icons.dart';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:onekwacha/utils/custom_colors.dart';
+
+class BottomNavigation extends StatelessWidget {
+  final int incomingData;
+  BottomNavigation({
+    Key key,
+    @required this.incomingData,
+  }) : super(key: key);
+
+  final List<String> _selectedOption = ["/", "/History", "/Profile"];
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      currentIndex: incomingData,
+      selectedItemColor: kDarkPrimaryColor,
+      onTap: (value) {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            _selectedOption[value], (route) => false,
+            arguments: incomingData);
+      },
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(
+            //Icons.home,
+            CustomIcons.home_page,
+          ),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            CustomIcons.time_machine,
+          ),
+          label: 'History',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            CustomIcons.male_user,
+          ),
+          label: 'Profile',
+        ),
+      ],
+    );
+  }
+}
