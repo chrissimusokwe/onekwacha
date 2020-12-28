@@ -1,6 +1,3 @@
-import 'package:onekwacha/screens/history_screen.dart';
-import 'package:onekwacha/screens/home_screen.dart';
-import 'package:onekwacha/screens/profile_screen.dart';
 import 'package:onekwacha/utils/custom_icons_icons.dart';
 
 import 'package:flutter/cupertino.dart';

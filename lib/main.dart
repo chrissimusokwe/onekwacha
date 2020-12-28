@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:onekwacha/utils/custom_colors.dart';
-import 'package:onekwacha/screens/home_screen.dart';
 import 'package:onekwacha/utils/route_generator.dart';
 
 void main() => runApp(MyApp());

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:onekwacha/screens/history_screen.dart';
+import 'package:onekwacha/screens/history/history_screen.dart';
 import 'package:onekwacha/screens/home_screen.dart';
-import 'package:onekwacha/screens/profile_screen.dart';
-import 'package:onekwacha/main.dart';
+import 'package:onekwacha/screens/profile/profile_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {

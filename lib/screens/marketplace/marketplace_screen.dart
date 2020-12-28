@@ -1,11 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:onekwacha/utils/custom_colors.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
 
-class ProfileScreen extends StatelessWidget {
+class MarketplaceScreen extends StatelessWidget {
   final int incomingData;
-  ProfileScreen({
+  MarketplaceScreen({
     Key key,
     @required this.incomingData,
   }) : super(key: key);
@@ -15,20 +13,18 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
-        title: Center(
-          child: Column(
-            children: <Widget>[
-              Text(
-                'Profile',
-                style: TextStyle(
-                  fontSize: 23.0,
-                ),
+        title: Column(
+          children: <Widget>[
+            Text(
+              'Marketplace',
+              style: TextStyle(
+                fontSize: 23.0,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-      body: Center(child: Text("Profile")),
+      body: Center(child: Text("Marketplace")),
       bottomNavigationBar: BottomNavigation(
         incomingData: incomingData,
       ),

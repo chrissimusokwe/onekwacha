@@ -1,11 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:onekwacha/utils/custom_colors.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
 
-class HistoryScreen extends StatelessWidget {
+class InvoicingScreen extends StatelessWidget {
   final int incomingData;
-  HistoryScreen({
+  InvoicingScreen({
     Key key,
     @required this.incomingData,
   }) : super(key: key);
@@ -15,20 +13,18 @@ class HistoryScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
-        title: Center(
-          child: Column(
-            children: <Widget>[
-              Text(
-                'History',
-                style: TextStyle(
-                  fontSize: 23.0,
-                ),
+        title: Column(
+          children: <Widget>[
+            Text(
+              'Invoicing',
+              style: TextStyle(
+                fontSize: 23.0,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-      body: Center(child: Text("History")),
+      body: Center(child: Text("Invoicing")),
       bottomNavigationBar: BottomNavigation(
         incomingData: incomingData,
       ),
