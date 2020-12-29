@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:onekwacha/utils/custom_colors.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
+import 'package:page_transition/page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -129,11 +130,12 @@ class HomeFirstSection extends StatelessWidget {
                 onPressed: () {
                   //print('Top up page');
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            TopUpScreen(incomingData: _selectedIndex)),
-                  );
+                      context,
+                      PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: TopUpScreen(
+                            incomingData: _selectedIndex,
+                          )));
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
