@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
+import 'package:onekwacha/utils/custom_colors_fonts.dart';
 
 class MarketplaceScreen extends StatelessWidget {
   final int incomingData;
@@ -11,7 +12,7 @@ class MarketplaceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade300,
+      backgroundColor: kBackgroundShade,
       appBar: AppBar(
         title: Column(
           children: <Widget>[

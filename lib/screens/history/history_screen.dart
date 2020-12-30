@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
+import 'package:onekwacha/utils/custom_colors_fonts.dart';
 
 class HistoryScreen extends StatelessWidget {
   final int incomingData;
@@ -12,7 +13,7 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade300,
+      backgroundColor: kBackgroundShade,
       appBar: AppBar(
         title: Center(
           child: Column(

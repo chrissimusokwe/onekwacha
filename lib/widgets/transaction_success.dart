@@ -17,11 +17,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/utils/custom_icons.dart';
 import 'package:onekwacha/utils/get_key_values.dart';
-import 'package:onekwacha/widgets/transaction_success.dart';
-import 'package:intl/intl.dart';
 import 'package:onekwacha/screens/home_screen.dart';
+import 'package:intl/intl.dart';
 
-class ConfirmationScreen extends StatefulWidget {
+class TransactionSuccessScreen extends StatefulWidget {
   final int incomingData;
   final String from;
   final String to;
@@ -29,7 +28,12 @@ class ConfirmationScreen extends StatefulWidget {
   final double amount;
   final double currentBalance;
   final String transactionType;
-  ConfirmationScreen({
+  final String cardName;
+  final String cardNumber;
+  final int cardCvv;
+  final int cardMonth;
+  final int cardYear;
+  TransactionSuccessScreen({
     Key key,
     this.incomingData,
     @required this.from,
@@ -38,30 +42,35 @@ class ConfirmationScreen extends StatefulWidget {
     this.amount,
     this.currentBalance,
     @required this.transactionType,
+    this.cardName,
+    this.cardNumber,
+    this.cardCvv,
+    this.cardMonth,
+    this.cardYear,
   }) : super(key: key);
 
   @override
-  _ConfirmationScreenState createState() => _ConfirmationScreenState();
+  _TransactionSuccessScreenState createState() =>
+      _TransactionSuccessScreenState();
 }
 
-class _ConfirmationScreenState extends State<ConfirmationScreen> {
+class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
 
+  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Form(
         child: Scaffold(
-      backgroundColor: kBackgroundShade,
+      backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
-        title: Column(
-          children: <Widget>[
-            Text(
-              'Confirm transaction',
-              style: TextStyle(
-                fontSize: kAppBarFontSize,
-              ),
+        title: Center(
+          child: Text(
+            'Transaction status',
+            style: TextStyle(
+              fontSize: kAppBarFontSize,
             ),
-          ],
+          ),
         ),
       ),
       body: Container(
@@ -70,9 +79,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
           children: getConfirmationFormWidget(),
         ),
       ),
-      // bottomNavigationBar: BottomNavigation(
-      //   incomingData: _selectedIndex,
-      // ),
     ));
   }
 
@@ -82,7 +88,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     formWidget.add(
       Container(
         decoration: BoxDecoration(
-          color: kDefaultPrimaryColor,
+          color: Colors.grey.shade300,
           borderRadius: BorderRadius.circular(10),
         ),
         padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
@@ -95,7 +101,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 Expanded(
                   flex: 1,
                   child: new Text(
-                    'Confirm transaction details',
+                    'SUCCESS!',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       //decoration: TextDecoration.underline,
@@ -228,49 +234,11 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     );
 
     void onPressedConfirm() {
-      String _cardFundSource = GetKeyValues.getFundSourceValue(1);
-
-      //Check if fund source is Card
-      if (widget.from.toLowerCase() == _cardFundSource.toLowerCase()) {
-        Navigator.push(
-          context,
-          PageTransition(
-            type: PageTransitionType.rightToLeft,
-            child: CardScreen(
-              from: widget.from,
-              to: widget.to,
-              purpose: widget.purpose,
-              amount: widget.amount,
-              currentBalance: widget.currentBalance,
-              transactionType: widget.transactionType,
-            ),
-          ),
-        );
-      } else {
-        //bool _route = false;
-        Navigator.pushAndRemoveUntil(
-            context,
-            PageTransition(
-              type: PageTransitionType.rightToLeft,
-              child: TransactionSuccessScreen(
-                from: widget.from,
-                to: widget.to,
-                purpose: widget.purpose,
-                amount: widget.amount,
-                currentBalance: widget.currentBalance,
-                transactionType: widget.transactionType,
-              ),
-            ),
-            (route) => false);
-      }
-    }
-
-    void onPressedCancel() {
       Navigator.pushAndRemoveUntil(
           context,
           PageTransition(
             child: HomeScreen(
-              walletBalance: widget.currentBalance,
+              walletBalance: widget.amount + widget.currentBalance,
             ),
             type: PageTransitionType.fade,
           ),
@@ -286,7 +254,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               color: kDefaultPrimaryColor,
               textColor: kTextPrimaryColor,
               child: new Text(
-                MyGlobalVariables.processTranscation.toUpperCase(),
+                MyGlobalVariables.successTranscation.toUpperCase(),
                 style: TextStyle(
                   fontSize: kSubmitButtonFontSize,
                   fontWeight: FontWeight.bold,
@@ -294,20 +262,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 ),
               ),
               onPressed: onPressedConfirm),
-
-          //Transaction Cancellation button
-          new RaisedButton(
-              color: kDefaultPrimaryColor,
-              textColor: kTextPrimaryColor,
-              child: new Text(
-                MyGlobalVariables.cancelTranscation.toUpperCase(),
-                style: TextStyle(
-                  fontSize: kSubmitButtonFontSize,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'BaiJamJuree',
-                ),
-              ),
-              onPressed: onPressedCancel),
         ],
       ),
     );

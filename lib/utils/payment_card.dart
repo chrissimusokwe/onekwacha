@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:onekwacha/utils/my_strings.dart';
+import 'package:onekwacha/utils/global_strings.dart';
+import 'package:onekwacha/utils/custom_colors_fonts.dart';
 
 class PaymentCard {
   CardType type;
@@ -33,10 +34,10 @@ enum CardType {
 class CardUtils {
   static String validateCVV(String value) {
     if (value.isEmpty) {
-      return Strings.fieldReq;
+      return MyGlobalVariables.fieldReq;
     }
 
-    if (value.length < 3 || value.length > 4) {
+    if (value.length != 3) {
       return "CVV is invalid";
     }
     return null;
@@ -44,7 +45,7 @@ class CardUtils {
 
   static String validateDate(String value) {
     if (value.isEmpty) {
-      return Strings.fieldReq;
+      return MyGlobalVariables.fieldReq;
     }
 
     int year;
@@ -157,15 +158,15 @@ class CardUtils {
       case CardType.Others:
         icon = new Icon(
           Icons.credit_card,
-          size: 40.0,
-          color: Colors.grey[600],
+          size: 25.0,
+          color: kDarkPrimaryColor,
         );
         break;
       case CardType.Invalid:
         icon = new Icon(
           Icons.warning,
           size: 40.0,
-          color: Colors.grey[600],
+          color: kDarkPrimaryColor,
         );
         break;
     }
@@ -173,7 +174,7 @@ class CardUtils {
     if (img.isNotEmpty) {
       widget = new Image.asset(
         'assets/images/$img',
-        width: 40.0,
+        width: 25.0,
       );
     } else {
       widget = icon;
@@ -185,13 +186,13 @@ class CardUtils {
   /// https://en.wikipedia.org/wiki/Luhn_algorithm
   static String validateCardNum(String input) {
     if (input.isEmpty) {
-      return Strings.fieldReq;
+      return MyGlobalVariables.fieldReq;
     }
 
     input = getCleanedNumber(input);
 
     if (input.length < 8) {
-      return Strings.numberIsInvalid;
+      return MyGlobalVariables.numberIsInvalid;
     }
 
     int sum = 0;
@@ -211,7 +212,7 @@ class CardUtils {
       return null;
     }
 
-    return Strings.numberIsInvalid;
+    return MyGlobalVariables.numberIsInvalid;
   }
 
   static CardType getCardTypeFrmNumber(String input) {

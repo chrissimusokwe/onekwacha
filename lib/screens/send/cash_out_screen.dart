@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
+import 'package:onekwacha/utils/custom_colors_fonts.dart';
 
 class CashOutScreen extends StatelessWidget {
   final int incomingData;
@@ -11,14 +12,14 @@ class CashOutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade300,
+      backgroundColor: kBackgroundShade,
       appBar: AppBar(
         title: Column(
           children: <Widget>[
             Text(
               'Cash Out',
               style: TextStyle(
-                fontSize: 23.0,
+                fontSize: kAppBarFontSize,
               ),
             ),
           ],

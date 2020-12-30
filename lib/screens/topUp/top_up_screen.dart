@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:onekwacha/utils/custom_colors.dart';
-import 'package:onekwacha/utils/custom_icons_icons.dart';
+import 'package:onekwacha/utils/custom_colors_fonts.dart';
+import 'package:onekwacha/utils/custom_icons.dart';
 import 'package:onekwacha/utils/payment_card.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
 import 'package:moneytextformfield/moneytextformfield.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:onekwacha/screens/profile/cards_screen.dart';
+import 'package:onekwacha/widgets/cards_details.dart';
 import 'package:onekwacha/widgets/confirmation_details.dart';
 import 'package:page_transition/page_transition.dart';
-//import 'dart:math' as math;
+import 'package:onekwacha/utils/global_strings.dart';
+import 'package:onekwacha/utils/get_key_values.dart';
+import 'package:intl/intl.dart';
 
 class TopUpScreen extends StatefulWidget {
   final int incomingData;
+  final double currentBalance;
   TopUpScreen({
     Key key,
+    this.currentBalance,
     @required this.incomingData,
   }) : super(key: key);
 
@@ -43,12 +47,13 @@ class PaymentCard {
 }
 
 class _TopUpScreenState extends State<TopUpScreen> {
-  int _selectedIndex = 0;
+  //int _selectedIndex = 0;
   final _formKey = GlobalKey<FormState>();
   int _selectedFundSource = 0;
-  int _selectedPurpose = 0;
-  int _enteredAmount = 0;
-  //String _name = '';
+  int _selectedPurpose = 3;
+  int _transactionType = 0;
+  String fullPhoneNumber = '';
+  final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
 
   List<DropdownMenuItem<int>> fundSourceList = [];
   List<DropdownMenuItem<int>> purposeList = [];
@@ -70,7 +75,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
           color: kDarkPrimaryColor,
         ),
         title: Text(
-          'Business',
+          GetKeyValues.getPurposeValue(0),
         ),
       ),
       value: 0,
@@ -82,7 +87,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
           color: kDarkPrimaryColor,
         ),
         title: Text(
-          'Entertainment',
+          GetKeyValues.getPurposeValue(1),
         ),
       ),
       value: 1,
@@ -94,7 +99,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
           color: kDarkPrimaryColor,
         ),
         title: Text(
-          'Education',
+          GetKeyValues.getPurposeValue(2),
         ),
       ),
       value: 2,
@@ -106,7 +111,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
           color: kDarkPrimaryColor,
         ),
         title: Text(
-          'Family & Friend Support',
+          GetKeyValues.getPurposeValue(3),
         ),
       ),
       value: 3,
@@ -118,7 +123,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
           color: kDarkPrimaryColor,
         ),
         title: Text(
-          'Groceries',
+          GetKeyValues.getPurposeValue(4),
         ),
       ),
       value: 4,
@@ -130,7 +135,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
           color: kDarkPrimaryColor,
         ),
         title: Text(
-          'Travel',
+          GetKeyValues.getPurposeValue(5),
         ),
       ),
       value: 5,
@@ -154,7 +159,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
     fundSourceList.add(DropdownMenuItem(
       child: ListTile(
         leading: Icon(
-          CustomIcons.visa,
+          Icons.credit_card,
           color: kDarkPrimaryColor,
         ),
         title: Text(
@@ -172,13 +177,13 @@ class _TopUpScreenState extends State<TopUpScreen> {
     return Form(
         key: _formKey,
         child: Scaffold(
-          backgroundColor: Colors.grey.shade300,
+          backgroundColor: kBackgroundShade,
           appBar: AppBar(
             title: Column(
               children: <Widget>[
                 Text(
                   'Top up',
-                  style: TextStyle(fontSize: 23.0),
+                  style: TextStyle(fontSize: kAppBarFontSize),
                 ),
               ],
             ),
@@ -189,9 +194,9 @@ class _TopUpScreenState extends State<TopUpScreen> {
               children: getFormWidget(),
             ),
           ),
-          bottomNavigationBar: BottomNavigation(
-            incomingData: _selectedIndex,
-          ),
+          // bottomNavigationBar: BottomNavigation(
+          //   incomingData: _selectedIndex,
+          // ),
         ));
   }
 
@@ -202,11 +207,13 @@ class _TopUpScreenState extends State<TopUpScreen> {
       'From:',
       style: TextStyle(
         fontSize: 14,
-        fontFamily: 'BaiJamJuree',
+        //fontFamily: 'BaiJamJuree',
       ),
     ));
+
+    //Fund source field widget
     formWidget.add(new DropdownButton(
-      hint: Text('Select Source'),
+      //hint: Text('Select Source'),
       items: fundSourceList,
       value: _selectedFundSource,
       onChanged: (value) {
@@ -223,6 +230,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
       },
       isExpanded: true,
     ));
+
+    //Phone number field widget
     formWidget.add(
       Visibility(
         visible: _phoneNumberVisibility,
@@ -234,6 +243,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
             new InternationalPhoneNumberInput(
               onInputChanged: (PhoneNumber number) {
                 //print(number.phoneNumber);
+                fullPhoneNumber = number.phoneNumber;
               },
               onInputValidated: (bool value) {
                 //print(value);
@@ -254,14 +264,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
         ),
       ),
     );
-    formWidget.add(
-      Visibility(
-        visible: _phoneNumberVisibility,
-        child: SizedBox(
-          height: 30,
-        ),
-      ),
-    );
+
+    //Transaction Purpose field widget
     formWidget.add(
       SizedBox(
         height: 30,
@@ -272,7 +276,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
         'Purpose:',
         style: TextStyle(
           fontSize: 14,
-          fontFamily: 'BaiJamJuree',
+          //fontFamily: 'BaiJamJuree',
         ),
       ),
     );
@@ -292,12 +296,18 @@ class _TopUpScreenState extends State<TopUpScreen> {
         height: 40,
       ),
     );
+
+    //Amount field widget
     formWidget.add(new MoneyTextFormField(
       settings: MoneyTextFormFieldSettings(
         controller: topUpAmountField,
         validator: (value) {
-          if (double.parse(value) < 50.00) {
-            return 'Minimum required amount is K50.00';
+          if (double.parse(value) < MyGlobalVariables.minimumTopUpAmount) {
+            return 'Minimum allowed is K${currencyConvertor.format(MyGlobalVariables.minimumTopUpAmount)}';
+          } else {
+            if (double.parse(value) > MyGlobalVariables.maximumTopUpAmount) {
+              return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
+            }
           }
         },
         moneyFormatSettings: MoneyFormatSettings(
@@ -309,9 +319,10 @@ class _TopUpScreenState extends State<TopUpScreen> {
           hintText: 'Enter amount',
           labelText: 'Amount:',
           labelStyle: TextStyle(
-              color: kTextPrimaryColor,
-              fontSize: 18,
-              fontFamily: 'BaiJamJuree'),
+            color: kTextPrimaryColor,
+            fontSize: 19,
+            fontFamily: 'Roboto',
+          ),
           inputStyle: TextStyle(
               color: kTextPrimaryColor,
               fontSize: 18,
@@ -330,25 +341,49 @@ class _TopUpScreenState extends State<TopUpScreen> {
 
         switch (_selectedFundSource) {
           case 0:
-            //print("Mobile Money");
+            print(GetKeyValues.getFundSourceValue(_selectedFundSource));
+            print(number.phoneNumber);
+            //print('Tried the amount');
+            //amount = new NumberFormat("###.0#", "en_US");
             Navigator.push(
               context,
               PageTransition(
                 type: PageTransitionType.rightToLeft,
                 child: ConfirmationScreen(
-                  incomingData: 2,
+                  from: fullPhoneNumber,
+                  to: MyGlobalVariables.topUpWalletDestination,
+                  purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
+                  amount: double.parse(topUpAmountField.text),
+                  currentBalance: widget.currentBalance,
+                  transactionType:
+                      GetKeyValues.getTransactionTypeValue(_transactionType),
                 ),
               ),
             );
             break;
           case 1:
-            //print("Card");
+            print(GetKeyValues.getFundSourceValue(_selectedFundSource));
+            print(double.parse(topUpAmountField.text));
+            //print('Tried the amount');
+            print(MyGlobalVariables.zmcurrencySymbol +
+                currencyConvertor.format(double.parse(topUpAmountField.text)));
+            // print("Eg. 2: ${oCcy.format(.7)}");
+            // print("Eg. 3: ${oCcy.format(12345678975 / 100)}");
+            // print("Eg. 4: ${oCcy.format(int.parse('12345678975') / 100)}");
+            // print("Eg. 5: ${oCcy.format(double.parse('123456789.75'))}");
+
             Navigator.push(
               context,
               PageTransition(
                 type: PageTransitionType.rightToLeft,
-                child: CardScreen(
-                  incomingData: 2,
+                child: ConfirmationScreen(
+                  from: GetKeyValues.getFundSourceValue(_selectedFundSource),
+                  to: MyGlobalVariables.topUpWalletDestination,
+                  purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
+                  amount: double.parse(topUpAmountField.text),
+                  currentBalance: widget.currentBalance,
+                  transactionType:
+                      GetKeyValues.getTransactionTypeValue(_transactionType),
                 ),
               ),
             );
@@ -356,28 +391,29 @@ class _TopUpScreenState extends State<TopUpScreen> {
         }
         switch (_selectedPurpose) {
           case 0:
-            print("Business");
+            //print("Business");
             break;
           case 1:
-            print("Entertainment");
+            //print("Entertainment");
             break;
           case 2:
-            print("Education");
+            //print("Education");
             break;
           case 3:
-            print("Family & Friend Support");
+            //print("Family & Friend Support");
             break;
           case 4:
-            print("Groceries");
+            //print("Groceries");
             break;
           case 5:
-            print("Travel");
+            //print("Travel");
             break;
         }
-        print(_formKey.currentContext.toString());
+        //print(_formKey.currentContext.toString());
       }
     }
 
+    //Button to go to next page
     formWidget.add(
       SizedBox(
         height: 40,
@@ -387,17 +423,17 @@ class _TopUpScreenState extends State<TopUpScreen> {
       new RaisedButton(
           color: kDefaultPrimaryColor,
           textColor: kTextPrimaryColor,
+          padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
           child: new Text(
-            'Next >',
+            MyGlobalVariables.topUpDetailsSubmit.toUpperCase(),
             style: TextStyle(
-              fontSize: 18,
+              fontSize: kSubmitButtonFontSize,
               fontWeight: FontWeight.bold,
               fontFamily: 'BaiJamJuree',
             ),
           ),
           onPressed: onPressedSubmit),
     );
-
     return formWidget;
   }
 }

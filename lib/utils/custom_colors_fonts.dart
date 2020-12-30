@@ -8,3 +8,6 @@ const kTextPrimaryColor = Color(0xFF212121);
 const kAccentColor = Color(0xFF00BCD4);
 const kTextSecondaryColor = Color(0xFF757575);
 const kDividerColor = Color(0xFFBDBDBD);
+const double kAppBarFontSize = 18.0;
+const double kSubmitButtonFontSize = 14.0;
+Color kBackgroundShade = Colors.grey.shade100;

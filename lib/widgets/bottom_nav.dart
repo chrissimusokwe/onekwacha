@@ -1,8 +1,8 @@
-import 'package:onekwacha/utils/custom_icons_icons.dart';
+import 'package:onekwacha/utils/custom_icons.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:onekwacha/utils/custom_colors.dart';
+import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
 class BottomNavigation extends StatelessWidget {

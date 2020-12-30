@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
+import 'package:onekwacha/utils/custom_colors_fonts.dart';
 
 class SendScreen extends StatelessWidget {
   final int incomingData;
@@ -18,7 +19,7 @@ class SendScreen extends StatelessWidget {
             Text(
               'Send',
               style: TextStyle(
-                fontSize: 23.0,
+                fontSize: kAppBarFontSize,
               ),
             ),
           ],
