@@ -343,6 +343,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
           case 0:
             print(GetKeyValues.getFundSourceValue(_selectedFundSource));
             print(number.phoneNumber);
+            print('Top up amount:' +
+                double.parse(topUpAmountField.text).toString());
             //print('Tried the amount');
             //amount = new NumberFormat("###.0#", "en_US");
             Navigator.push(
@@ -352,9 +354,11 @@ class _TopUpScreenState extends State<TopUpScreen> {
                 child: ConfirmationScreen(
                   from: fullPhoneNumber,
                   to: MyGlobalVariables.topUpWalletDestination,
+                  destinationPlatform: MyGlobalVariables.topUpWalletDestination,
                   purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
                   amount: double.parse(topUpAmountField.text),
-                  currentBalance: widget.currentBalance,
+                  currentBalance: widget.currentBalance +
+                      double.parse(topUpAmountField.text),
                   transactionType:
                       GetKeyValues.getTransactionTypeValue(_transactionType),
                 ),
@@ -379,9 +383,11 @@ class _TopUpScreenState extends State<TopUpScreen> {
                 child: ConfirmationScreen(
                   from: GetKeyValues.getFundSourceValue(_selectedFundSource),
                   to: MyGlobalVariables.topUpWalletDestination,
+                  destinationPlatform: MyGlobalVariables.topUpWalletDestination,
                   purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
                   amount: double.parse(topUpAmountField.text),
-                  currentBalance: widget.currentBalance,
+                  currentBalance: widget.currentBalance +
+                      double.parse(topUpAmountField.text),
                   transactionType:
                       GetKeyValues.getTransactionTypeValue(_transactionType),
                 ),
@@ -425,7 +431,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
           textColor: kTextPrimaryColor,
           padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
           child: new Text(
-            MyGlobalVariables.topUpDetailsSubmit.toUpperCase(),
+            MyGlobalVariables.nextButton.toUpperCase(),
             style: TextStyle(
               fontSize: kSubmitButtonFontSize,
               fontWeight: FontWeight.bold,

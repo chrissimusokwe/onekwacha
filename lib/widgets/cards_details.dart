@@ -15,6 +15,7 @@ class CardScreen extends StatefulWidget {
   final int incomingData;
   final String from;
   final String to;
+  final String destinationPlatform;
   final String purpose;
   final double amount;
   final double currentBalance;
@@ -24,6 +25,7 @@ class CardScreen extends StatefulWidget {
     this.incomingData,
     @required this.from,
     @required this.to,
+    @required this.destinationPlatform,
     @required this.purpose,
     this.amount,
     this.currentBalance,
@@ -235,6 +237,7 @@ class _CardScreenState extends State<CardScreen> {
             child: TransactionSuccessScreen(
                 from: widget.from,
                 to: widget.to,
+                destinationPlatform: widget.destinationPlatform,
                 purpose: widget.purpose,
                 amount: widget.amount,
                 currentBalance: widget.currentBalance,

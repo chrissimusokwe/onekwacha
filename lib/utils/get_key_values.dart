@@ -17,6 +17,11 @@ class GetKeyValues {
     1: 'Card',
   };
 
+  static Map<int, String> _fundDestination = {
+    0: 'OneKwacha Wallet',
+    1: 'Mobile Money',
+    2: 'Bank Account',
+  };
   static Map<int, String> _transactionType = {
     0: 'Top up',
     1: 'Transfer',
@@ -30,6 +35,11 @@ class GetKeyValues {
 
   static String getFundSourceValue(int index) {
     String value = _fundSource[index];
+    return value;
+  }
+
+  static String getFundDestinationValue(int index) {
+    String value = _fundDestination[index];
     return value;
   }
 

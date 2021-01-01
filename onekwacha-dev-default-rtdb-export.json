@@ -1,0 +1,62 @@
+{
+  "OneKwacha" : {
+    "TransactionsByID" : {
+      "Date" : {
+        "TransactionID" : {
+          "AvailableBalance" : "AvailableBalance",
+          "Day" : "Day",
+          "DestinationType" : "DestinationType",
+          "From" : "From",
+          "Month" : "Month",
+          "OldBalance" : "OldBalance",
+          "Purpose" : "Purpose",
+          "SourceType" : "SourceType",
+          "Time" : "Time",
+          "To" : "To",
+          "TransactionAmount" : "TransactionAmount",
+          "UserID" : "UserID"
+        }
+      }
+    },
+    "TransactionsByUserID" : {
+      "UserID" : {
+        "Date" : {
+          "TransactionID" : {
+            "AvailableBalance" : "AvailableBalance",
+            "Day" : "Day",
+            "DestinationType" : "DestinationType",
+            "From" : "From",
+            "Month" : "Month",
+            "OldBalance" : "OldBalance",
+            "Purpose" : "Purpose",
+            "SourceType" : "SourceType",
+            "Time" : "Time",
+            "To" : "To",
+            "TransactionAmount" : "TransactionAmount",
+            "UserID" : "UserID"
+          }
+        }
+      }
+    },
+    "Users" : {
+      "UserID" : {
+        "AccountStatus" : "AccountStatus",
+        "Address" : "Address",
+        "AvailableBalance" : "AvailableBalance",
+        "CardNumber" : "CardNumber",
+        "CreatedDate" : "CreatedDate",
+        "Email" : "Email",
+        "FirstName" : "FirstName",
+        "KYCDate" : "KYCDate",
+        "KYCStatus" : "KYCStatus",
+        "LastName" : "LastName",
+        "LastUpdateDate" : "LastUpdateDate",
+        "LoyaltyPoints" : "LoyaltyPoints",
+        "NRCNumber" : "NRCNumber",
+        "OldBalance" : "OldBalance",
+        "PhoneNumber" : "PhoneNumber",
+        "PreviousUpdateDate" : "PreviousUpdateDate"
+      }
+    }
+  }
+}

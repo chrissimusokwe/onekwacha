@@ -25,6 +25,7 @@ class ConfirmationScreen extends StatefulWidget {
   final int incomingData;
   final String from;
   final String to;
+  final String destinationPlatform;
   final String purpose;
   final double amount;
   final double currentBalance;
@@ -34,6 +35,7 @@ class ConfirmationScreen extends StatefulWidget {
     this.incomingData,
     @required this.from,
     @required this.to,
+    @required this.destinationPlatform,
     @required this.purpose,
     this.amount,
     this.currentBalance,
@@ -95,7 +97,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 Expanded(
                   flex: 1,
                   child: new Text(
-                    'Confirm transaction details',
+                    'Transaction Details',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       //decoration: TextDecoration.underline,
@@ -126,7 +128,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   flex: 2,
                   child: new Text(
                     widget.from,
-                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -139,7 +140,28 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 Expanded(
                   flex: 1,
                   child: new Text(
-                    'To:',
+                    'Destination:',
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  flex: 2,
+                  child: new Text(widget.destinationPlatform),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: new Text(
+                    'Destination #:',
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -184,7 +206,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 Expanded(
                   flex: 1,
                   child: new Text(
-                    'Amount:',
+                    'Transaction Amt:',
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -197,6 +219,36 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                     MyGlobalVariables.zmcurrencySymbol +
                         currencyConvertor.format(widget.amount),
                     style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: new Text(
+                    'Wallet Balance:',
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Row(
+                    children: [
+                      new Text(
+                        MyGlobalVariables.zmcurrencySymbol +
+                            currencyConvertor.format(widget.currentBalance) +
+                            '*',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -222,6 +274,19 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 ),
               ],
             ),
+            SizedBox(
+              height: 20,
+            ),
+            Row(children: [
+              Expanded(
+                child: Center(
+                  child: Text(
+                    ' *Post-transaction success.',
+                    style: TextStyle(fontSize: 10),
+                  ),
+                ),
+              )
+            ]),
           ],
         ),
       ),
@@ -239,6 +304,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
             child: CardScreen(
               from: widget.from,
               to: widget.to,
+              destinationPlatform: widget.destinationPlatform,
               purpose: widget.purpose,
               amount: widget.amount,
               currentBalance: widget.currentBalance,
@@ -255,6 +321,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               child: TransactionSuccessScreen(
                 from: widget.from,
                 to: widget.to,
+                destinationPlatform: widget.destinationPlatform,
                 purpose: widget.purpose,
                 amount: widget.amount,
                 currentBalance: widget.currentBalance,

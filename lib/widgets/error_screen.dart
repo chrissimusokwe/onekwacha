@@ -17,80 +17,73 @@ import 'package:flutter/cupertino.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/utils/custom_icons.dart';
 import 'package:onekwacha/utils/get_key_values.dart';
-import 'package:onekwacha/screens/home_screen.dart';
+import 'package:onekwacha/widgets/transaction_success.dart';
 import 'package:intl/intl.dart';
+import 'package:onekwacha/screens/home_screen.dart';
 
-class TransactionSuccessScreen extends StatefulWidget {
+class ErrorScreen extends StatefulWidget {
   final int incomingData;
   final String from;
   final String to;
   final String destinationPlatform;
   final String purpose;
+  final String errorMessage;
   final double amount;
   final double currentBalance;
   final String transactionType;
-  final String cardName;
-  final String cardNumber;
-  final int cardCvv;
-  final int cardMonth;
-  final int cardYear;
-  TransactionSuccessScreen({
+  ErrorScreen({
     Key key,
     this.incomingData,
     @required this.from,
     @required this.to,
     @required this.destinationPlatform,
-    @required this.purpose,
+    this.purpose,
+    this.errorMessage,
     this.amount,
     this.currentBalance,
     @required this.transactionType,
-    this.cardName,
-    this.cardNumber,
-    this.cardCvv,
-    this.cardMonth,
-    this.cardYear,
   }) : super(key: key);
 
   @override
-  _TransactionSuccessScreenState createState() =>
-      _TransactionSuccessScreenState();
+  _ErrorScreenState createState() => _ErrorScreenState();
 }
 
-class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
+class _ErrorScreenState extends State<ErrorScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
 
-  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Form(
         child: Scaffold(
-      backgroundColor: Colors.grey.shade300,
+      backgroundColor: kBackgroundShade,
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            'Transaction status',
-            style: TextStyle(
-              fontSize: kAppBarFontSize,
+        title: Column(
+          children: <Widget>[
+            Text(
+              'Transaction status',
+              style: TextStyle(
+                fontSize: kAppBarFontSize,
+              ),
             ),
-          ),
+          ],
         ),
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 10.0),
+        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
         child: ListView(
-          children: getConfirmationFormWidget(),
+          children: getErrorFormWidget(),
         ),
       ),
     ));
   }
 
-  List<Widget> getConfirmationFormWidget() {
+  List<Widget> getErrorFormWidget() {
     List<Widget> formWidget = new List();
 
     formWidget.add(
       Container(
         decoration: BoxDecoration(
-          color: Colors.grey.shade100,
+          color: kBackgroundShade,
           borderRadius: BorderRadius.circular(10),
         ),
         padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
@@ -103,14 +96,29 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                 Expanded(
                   flex: 1,
                   child: new Text(
-                    'SUCCESS!',
+                    'Transaction Failed',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       //decoration: TextDecoration.underline,
-                      fontSize: 20.0,
+                      fontSize: 18.0,
                       fontFamily: 'BaiJamJuree',
                       fontWeight: FontWeight.bold,
+                      color: Colors.redAccent.shade700,
                     ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  //flex: 1,
+                  child: new Text(
+                    widget.errorMessage,
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ],
@@ -134,7 +142,6 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   flex: 2,
                   child: new Text(
                     widget.from,
-                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -178,30 +185,6 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                 Expanded(
                   flex: 2,
                   child: new Text(widget.to),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: new Text(
-                    'Purpose:',
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  flex: 2,
-                  child: new Text(
-                    widget.purpose,
-                    //style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
                 ),
               ],
             ),
@@ -276,6 +259,27 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                 ),
               ],
             ),
+            // SizedBox(
+            //   height: 5,
+            // ),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       flex: 1,
+            //       child: new Text(
+            //         'Error Details:',
+            //         textAlign: TextAlign.right,
+            //       ),
+            //     ),
+            //     SizedBox(
+            //       width: 10,
+            //     ),
+            //     Expanded(
+            //       flex: 2,
+            //       child: new Text(widget.errorMessage),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),
@@ -286,7 +290,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
           context,
           PageTransition(
             child: HomeScreen(
-              walletBalance: widget.currentBalance,
+              walletBalance: widget.amount + widget.currentBalance,
             ),
             type: PageTransitionType.fade,
           ),
