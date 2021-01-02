@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:onekwacha/screens/history/history_screen.dart';
 import 'package:onekwacha/screens/home_screen.dart';
-import 'package:onekwacha/widgets/cards_details.dart';
+import 'package:onekwacha/screens/common/cards_details_screen.dart';
 import 'package:onekwacha/screens/profile/profile_screen.dart';
 import 'package:page_transition/page_transition.dart';
 

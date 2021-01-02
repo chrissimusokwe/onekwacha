@@ -9,7 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/utils/custom_icons.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:onekwacha/widgets/transaction_success.dart';
+import 'package:onekwacha/screens/common/success_screen.dart';
 
 class CardScreen extends StatefulWidget {
   final int incomingData;
@@ -140,7 +140,7 @@ class _CardScreenState extends State<CardScreen> {
                   new TextFormField(
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
-                      new LengthLimitingTextInputFormatter(4),
+                      new LengthLimitingTextInputFormatter(3),
                     ],
                     decoration: new InputDecoration(
                       border: const UnderlineInputBorder(),

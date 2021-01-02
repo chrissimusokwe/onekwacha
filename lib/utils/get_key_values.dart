@@ -12,6 +12,15 @@ class GetKeyValues {
     5: 'Travel',
   };
 
+  static Map<int, String> _bank = {
+    0: 'Absa',
+    1: 'Access',
+    2: 'Ecobank',
+    3: 'FNB',
+    4: 'Stanchart',
+    5: 'Zanaco',
+  };
+
   static Map<int, String> _fundSource = {
     0: 'Mobile Money',
     1: 'Card',
@@ -30,6 +39,11 @@ class GetKeyValues {
 
   static String getPurposeValue(int index) {
     String value = _purpose[index];
+    return value;
+  }
+
+  static String getBankListValue(int index) {
+    String value = _bank[index];
     return value;
   }
 

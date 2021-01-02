@@ -3,14 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/utils/custom_icons.dart';
 import 'package:onekwacha/utils/payment_card.dart';
-import 'package:onekwacha/widgets/error_screen.dart';
+import 'package:onekwacha/screens/common/error_screen.dart';
 import 'package:moneytextformfield/moneytextformfield.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:onekwacha/widgets/cards_details.dart';
-import 'package:onekwacha/widgets/confirmation_details.dart';
+import 'package:onekwacha/screens/common/cards_details_screen.dart';
+import 'package:onekwacha/screens/common/confirmation_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:onekwacha/utils/global_strings.dart';
 import 'package:onekwacha/utils/get_key_values.dart';
+import 'package:onekwacha/screens/common/bank_details_screen.dart';
 import 'package:intl/intl.dart';
 
 class SendScreen extends StatefulWidget {
@@ -480,7 +481,7 @@ class _SendScreenState extends State<SendScreen> {
                 context,
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
-                  child: ConfirmationScreen(
+                  child: BankDetailsScreen(
                     from: MyGlobalVariables.topUpWalletDestination,
                     to: GetKeyValues.getFundDestinationValue(
                         _selectedFundDestination),

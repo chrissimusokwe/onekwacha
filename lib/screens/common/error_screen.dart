@@ -6,7 +6,7 @@ import 'package:onekwacha/utils/payment_card.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
 import 'package:moneytextformfield/moneytextformfield.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:onekwacha/widgets/cards_details.dart';
+import 'package:onekwacha/screens/common/cards_details_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,36 +17,38 @@ import 'package:flutter/cupertino.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/utils/custom_icons.dart';
 import 'package:onekwacha/utils/get_key_values.dart';
-import 'package:onekwacha/widgets/transaction_success.dart';
+import 'package:onekwacha/screens/common/success_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:onekwacha/screens/home_screen.dart';
 
-class ConfirmationScreen extends StatefulWidget {
+class ErrorScreen extends StatefulWidget {
   final int incomingData;
   final String from;
   final String to;
   final String destinationPlatform;
   final String purpose;
+  final String errorMessage;
   final double amount;
   final double currentBalance;
   final String transactionType;
-  ConfirmationScreen({
+  ErrorScreen({
     Key key,
     this.incomingData,
     @required this.from,
     @required this.to,
     @required this.destinationPlatform,
-    @required this.purpose,
+    this.purpose,
+    this.errorMessage,
     this.amount,
     this.currentBalance,
     @required this.transactionType,
   }) : super(key: key);
 
   @override
-  _ConfirmationScreenState createState() => _ConfirmationScreenState();
+  _ErrorScreenState createState() => _ErrorScreenState();
 }
 
-class _ConfirmationScreenState extends State<ConfirmationScreen> {
+class _ErrorScreenState extends State<ErrorScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
 
   @override
@@ -58,7 +60,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         title: Column(
           children: <Widget>[
             Text(
-              'Confirm transaction',
+              'Transaction status',
               style: TextStyle(
                 fontSize: kAppBarFontSize,
               ),
@@ -67,24 +69,21 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         ),
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 10.0),
+        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
         child: ListView(
-          children: getConfirmationFormWidget(),
+          children: getErrorFormWidget(),
         ),
       ),
-      // bottomNavigationBar: BottomNavigation(
-      //   incomingData: _selectedIndex,
-      // ),
     ));
   }
 
-  List<Widget> getConfirmationFormWidget() {
+  List<Widget> getErrorFormWidget() {
     List<Widget> formWidget = new List();
 
     formWidget.add(
       Container(
         decoration: BoxDecoration(
-          color: kDefaultPrimaryColor,
+          color: kBackgroundShade,
           borderRadius: BorderRadius.circular(10),
         ),
         padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
@@ -97,14 +96,29 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 Expanded(
                   flex: 1,
                   child: new Text(
-                    'Transaction Details',
+                    'Transaction Failed',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       //decoration: TextDecoration.underline,
                       fontSize: 18.0,
                       fontFamily: 'BaiJamJuree',
                       fontWeight: FontWeight.bold,
+                      color: Colors.redAccent.shade700,
                     ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  //flex: 1,
+                  child: new Text(
+                    widget.errorMessage,
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ],
@@ -182,30 +196,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 Expanded(
                   flex: 1,
                   child: new Text(
-                    'Purpose:',
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  flex: 2,
-                  child: new Text(
-                    widget.purpose,
-                    //style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: new Text(
                     'Transaction Amt:',
                     textAlign: TextAlign.right,
                   ),
@@ -240,15 +230,10 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 ),
                 Expanded(
                   flex: 2,
-                  child: Row(
-                    children: [
-                      new Text(
-                        MyGlobalVariables.zmcurrencySymbol +
-                            currencyConvertor.format(widget.currentBalance) +
-                            '*',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                  child: new Text(
+                    MyGlobalVariables.zmcurrencySymbol +
+                        currencyConvertor.format(widget.currentBalance),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -274,70 +259,38 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 ),
               ],
             ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(children: [
-              Expanded(
-                child: Center(
-                  child: Text(
-                    ' *Post-transaction success.',
-                    style: TextStyle(fontSize: 10),
-                  ),
-                ),
-              )
-            ]),
+            // SizedBox(
+            //   height: 5,
+            // ),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       flex: 1,
+            //       child: new Text(
+            //         'Error Details:',
+            //         textAlign: TextAlign.right,
+            //       ),
+            //     ),
+            //     SizedBox(
+            //       width: 10,
+            //     ),
+            //     Expanded(
+            //       flex: 2,
+            //       child: new Text(widget.errorMessage),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),
     );
 
     void onPressedConfirm() {
-      String _cardFundSource = GetKeyValues.getFundSourceValue(1);
-
-      //Check if fund source is Card
-      if (widget.from.toLowerCase() == _cardFundSource.toLowerCase()) {
-        Navigator.push(
-          context,
-          PageTransition(
-            type: PageTransitionType.rightToLeft,
-            child: CardScreen(
-              from: widget.from,
-              to: widget.to,
-              destinationPlatform: widget.destinationPlatform,
-              purpose: widget.purpose,
-              amount: widget.amount,
-              currentBalance: widget.currentBalance,
-              transactionType: widget.transactionType,
-            ),
-          ),
-        );
-      } else {
-        //bool _route = false;
-        Navigator.pushAndRemoveUntil(
-            context,
-            PageTransition(
-              type: PageTransitionType.rightToLeft,
-              child: TransactionSuccessScreen(
-                from: widget.from,
-                to: widget.to,
-                destinationPlatform: widget.destinationPlatform,
-                purpose: widget.purpose,
-                amount: widget.amount,
-                currentBalance: widget.currentBalance,
-                transactionType: widget.transactionType,
-              ),
-            ),
-            (route) => false);
-      }
-    }
-
-    void onPressedCancel() {
       Navigator.pushAndRemoveUntil(
           context,
           PageTransition(
             child: HomeScreen(
-              walletBalance: widget.currentBalance,
+              walletBalance: widget.amount + widget.currentBalance,
             ),
             type: PageTransitionType.fade,
           ),
@@ -353,7 +306,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               color: kDefaultPrimaryColor,
               textColor: kTextPrimaryColor,
               child: new Text(
-                MyGlobalVariables.processTranscation.toUpperCase(),
+                MyGlobalVariables.successTranscation.toUpperCase(),
                 style: TextStyle(
                   fontSize: kSubmitButtonFontSize,
                   fontWeight: FontWeight.bold,
@@ -361,20 +314,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 ),
               ),
               onPressed: onPressedConfirm),
-
-          //Transaction Cancellation button
-          new RaisedButton(
-              color: kDefaultPrimaryColor,
-              textColor: kTextPrimaryColor,
-              child: new Text(
-                MyGlobalVariables.cancelTranscation.toUpperCase(),
-                style: TextStyle(
-                  fontSize: kSubmitButtonFontSize,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'BaiJamJuree',
-                ),
-              ),
-              onPressed: onPressedCancel),
         ],
       ),
     );
