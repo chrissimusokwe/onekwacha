@@ -1,9 +1,9 @@
 import 'package:onekwacha/screens/Invoicing/invoices_screen.dart';
 import 'package:onekwacha/screens/marketplace/marketplace_screen.dart';
-import 'package:onekwacha/screens/send/scan_pay_screen.dart';
+//import 'package:onekwacha/screens/scanpay/scan_pay_screen.dart';
+import 'package:onekwacha/screens/scanpay/qrview_screen.dart';
 import 'package:onekwacha/screens/send/send_screen.dart';
 import 'package:onekwacha/screens/topUp/top_up_screen.dart';
-import 'package:onekwacha/screens/send/send_screen.dart';
 import 'package:onekwacha/utils/custom_icons.dart';
 import 'package:onekwacha/widgets/image_slider.dart';
 import 'package:flutter/cupertino.dart';
@@ -107,6 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
+                //Top up button
                 Expanded(
                   child: Container(
                     margin: EdgeInsets.all(20.0),
@@ -152,17 +153,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
+
+                //Scan & Pay button
                 Expanded(
                   child: Container(
                     margin: EdgeInsets.all(10.0),
                     child: RaisedButton(
                       onPressed: () {
                         Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  ScanPayScreen(incomingData: _selectedIndex)),
-                        );
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: QRViewScreen()));
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -194,6 +196,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
+
+                //Send button
                 Expanded(
                   child: Container(
                     margin: EdgeInsets.all(20.0),

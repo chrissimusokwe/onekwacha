@@ -1,5 +1,5 @@
 name: onekwacha
-description: A new Flutter application.
+description: A Mobile Payments App.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -14,7 +14,7 @@ description: A new Flutter application.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -28,6 +28,17 @@ dependencies:
   moneytextformfield: ^0.3.5+1
   intl_phone_number_input: ^0.5.2+2
   page_transition: ^1.1.7+5
+  qr_flutter: ^3.2.0
+  qr_code_scanner: ^0.2.1
+  # barcode_scan:
+  # path_provider:
+  # flutter_vector_icons:
+  firebase_core: ^0.5.0
+  firebase_analytics: ^5.0.2
+  # firebase_auth: ^0.14.0+5
+  cloud_firestore: ^0.14.4
+  # intl: ^0.16.1
+  # intl: ^0.15.7
 
 dev_dependencies:
   flutter_test:

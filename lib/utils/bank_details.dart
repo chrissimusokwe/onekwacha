@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:onekwacha/utils/global_strings.dart';
-import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/utils/get_key_values.dart';
 
 class BankDetails {

@@ -1,22 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
-import 'package:onekwacha/utils/custom_icons.dart';
-import 'package:onekwacha/utils/payment_card.dart';
-import 'package:onekwacha/widgets/bottom_nav.dart';
-import 'package:moneytextformfield/moneytextformfield.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:onekwacha/screens/common/cards_details_screen.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:onekwacha/utils/input_formatters.dart';
-import 'package:onekwacha/utils/payment_card.dart';
 import 'package:onekwacha/utils/global_strings.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:onekwacha/utils/custom_colors_fonts.dart';
-import 'package:onekwacha/utils/custom_icons.dart';
-import 'package:onekwacha/utils/get_key_values.dart';
 import 'package:onekwacha/screens/home_screen.dart';
 import 'package:intl/intl.dart';
 
@@ -59,7 +45,7 @@ class TransactionSuccessScreen extends StatefulWidget {
 class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
 
-  int _selectedIndex = 0;
+  //int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Form(

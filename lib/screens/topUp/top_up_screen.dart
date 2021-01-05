@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/utils/custom_icons.dart';
-import 'package:onekwacha/utils/payment_card.dart';
-import 'package:onekwacha/widgets/bottom_nav.dart';
 import 'package:moneytextformfield/moneytextformfield.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:onekwacha/screens/common/cards_details_screen.dart';
 import 'package:onekwacha/screens/common/confirmation_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:onekwacha/utils/global_strings.dart';
@@ -64,7 +60,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
   PhoneNumber number = PhoneNumber(isoCode: 'ZM');
   List<String> country = ['ZM', 'AU'];
   bool _phoneNumberVisibility = true;
-  bool _cardSourceSelected = false;
+  //bool _cardSourceSelected = false;
 
   void loadPuporseList() {
     purposeList = [];
@@ -221,10 +217,10 @@ class _TopUpScreenState extends State<TopUpScreen> {
           _selectedFundSource = value;
           if (_selectedFundSource == 0) {
             _phoneNumberVisibility = true;
-            _cardSourceSelected = false;
+            //_cardSourceSelected = false;
           } else {
             _phoneNumberVisibility = false;
-            _cardSourceSelected = true;
+            //_cardSourceSelected = true;
           }
         });
       },
@@ -308,6 +304,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
             if (double.parse(value) > MyGlobalVariables.maximumTopUpAmount) {
               return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
             }
+            return value;
           }
         },
         moneyFormatSettings: MoneyFormatSettings(

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/utils/custom_icons.dart';
-import 'package:onekwacha/utils/payment_card.dart';
 import 'package:onekwacha/screens/common/error_screen.dart';
 import 'package:moneytextformfield/moneytextformfield.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:onekwacha/screens/common/cards_details_screen.dart';
 import 'package:onekwacha/screens/common/confirmation_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:onekwacha/utils/global_strings.dart';
@@ -321,6 +318,7 @@ class _SendScreenState extends State<SendScreen> {
             if (double.parse(value) > MyGlobalVariables.maximumTopUpAmount) {
               return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
             }
+            return value;
           }
         },
         moneyFormatSettings: MoneyFormatSettings(

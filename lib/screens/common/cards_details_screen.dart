@@ -43,7 +43,7 @@ class _CardScreenState extends State<CardScreen> {
   final _formKey = new GlobalKey<FormState>();
   TextEditingController numberController = new TextEditingController();
   PaymentCard _paymentCard = PaymentCard();
-  bool _autoValidate = false;
+  //bool _autoValidate = false;
   PaymentCard _card = new PaymentCard();
 
   @override
@@ -223,7 +223,7 @@ class _CardScreenState extends State<CardScreen> {
     final FormState form = _formKey.currentState;
     if (!form.validate()) {
       setState(() {
-        _autoValidate = true; // Start validating on every change.
+        //_autoValidate = true; // Start validating on every change.
       });
       //_showInSnackBar('Please fix the errors in red before submitting.');
     } else {
@@ -282,10 +282,10 @@ class _CardScreenState extends State<CardScreen> {
     }
   }
 
-  void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(value),
-      duration: new Duration(seconds: 3),
-    ));
-  }
+  // void _showInSnackBar(String value) {
+  //   _scaffoldKey.currentState.showSnackBar(new SnackBar(
+  //     content: new Text(value),
+  //     duration: new Duration(seconds: 3),
+  //   ));
+  // }
 }

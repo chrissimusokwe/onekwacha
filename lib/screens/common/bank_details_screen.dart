@@ -2,14 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:onekwacha/utils/input_formatters.dart';
-import 'package:onekwacha/utils/payment_card.dart';
 import 'package:onekwacha/utils/global_strings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/utils/custom_icons.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:onekwacha/screens/common/success_screen.dart';
 import 'package:onekwacha/utils/get_key_values.dart';
 import 'package:onekwacha/utils/bank_details.dart';
 import 'package:onekwacha/screens/common/confirmation_screen.dart';
@@ -50,8 +47,8 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
   TextEditingController _branchCode = new TextEditingController();
 
   BankDetails _bankDetail = BankDetails();
-  bool _autoValidate = false;
-  PaymentCard _card = new PaymentCard();
+  //bool _autoValidate = false;
+  //PaymentCard _card = new PaymentCard();
   List<DropdownMenuItem<int>> bankList = [];
 
   @override
@@ -313,7 +310,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
     final FormState form = _formKey.currentState;
     if (!form.validate()) {
       setState(() {
-        _autoValidate = true; // Start validating on every change.
+        //_autoValidate = true; // Start validating on every change.
       });
       //_showInSnackBar('Please fix the errors in red before submitting.');
     } else {

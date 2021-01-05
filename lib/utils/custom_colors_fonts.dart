@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 const kDarkPrimaryColor = Color(0xFFFFA000);
 const kDefaultPrimaryColor = Color(0xFFFFC107);
