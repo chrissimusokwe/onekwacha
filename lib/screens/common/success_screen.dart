@@ -74,195 +74,202 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
     List<Widget> formWidget = new List();
 
     formWidget.add(
-      Container(
-        decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(10),
+      Card(
+        elevation: 5,
+        color: kDefaultPrimaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
         ),
-        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
-        margin: EdgeInsets.symmetric(vertical: 40.0, horizontal: 10.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: new Text(
-                    'SUCCESS!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      //decoration: TextDecoration.underline,
-                      fontSize: 20.0,
-                      fontFamily: 'BaiJamJuree',
-                      fontWeight: FontWeight.bold,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            //borderRadius: BorderRadius.circular(10),
+          ),
+          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+          margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'SUCCESS!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        //decoration: TextDecoration.underline,
+                        fontSize: 20.0,
+                        fontFamily: 'BaiJamJuree',
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: new Text(
-                    'From:',
-                    textAlign: TextAlign.right,
+                ],
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'From:',
+                      textAlign: TextAlign.right,
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  flex: 2,
-                  child: new Text(
-                    widget.from,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  SizedBox(
+                    width: 10,
                   ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: new Text(
-                    'Destination:',
-                    textAlign: TextAlign.right,
+                  Expanded(
+                    flex: 2,
+                    child: new Text(
+                      widget.from,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  flex: 2,
-                  child: new Text(widget.destinationPlatform),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: new Text(
-                    'Destination #:',
-                    textAlign: TextAlign.right,
+                ],
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'Destination:',
+                      textAlign: TextAlign.right,
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  flex: 2,
-                  child: new Text(widget.to),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: new Text(
-                    'Purpose:',
-                    textAlign: TextAlign.right,
+                  SizedBox(
+                    width: 10,
                   ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  flex: 2,
-                  child: new Text(
-                    widget.purpose,
-                    //style: TextStyle(fontWeight: FontWeight.bold),
+                  Expanded(
+                    flex: 2,
+                    child: new Text(widget.destinationPlatform),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: new Text(
-                    'Transaction Amt:',
-                    textAlign: TextAlign.right,
+                ],
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'Destination #:',
+                      textAlign: TextAlign.right,
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  flex: 2,
-                  child: new Text(
-                    MyGlobalVariables.zmcurrencySymbol +
-                        currencyConvertor.format(widget.amount),
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  SizedBox(
+                    width: 10,
                   ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: new Text(
-                    'Wallet Balance:',
-                    textAlign: TextAlign.right,
+                  Expanded(
+                    flex: 2,
+                    child: new Text(widget.to),
                   ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  flex: 2,
-                  child: new Text(
-                    MyGlobalVariables.zmcurrencySymbol +
-                        currencyConvertor.format(widget.currentBalance),
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                ],
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'Purpose:',
+                      textAlign: TextAlign.right,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: new Text(
-                    'Transaction:',
-                    textAlign: TextAlign.right,
+                  SizedBox(
+                    width: 10,
                   ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  flex: 2,
-                  child: new Text(widget.transactionType),
-                ),
-              ],
-            ),
-          ],
+                  Expanded(
+                    flex: 2,
+                    child: new Text(
+                      widget.purpose,
+                      //style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'Transaction Amt:',
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: new Text(
+                      MyGlobalVariables.zmcurrencySymbol +
+                          currencyConvertor.format(widget.amount),
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'Wallet Balance:',
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: new Text(
+                      MyGlobalVariables.zmcurrencySymbol +
+                          currencyConvertor.format(widget.currentBalance),
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'Transaction:',
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: new Text(widget.transactionType),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -280,22 +287,29 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
     }
 
     formWidget.add(
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      Column(
         children: [
-          //Transaction Confirmation button
-          new RaisedButton(
-              color: kDefaultPrimaryColor,
-              textColor: kTextPrimaryColor,
-              child: new Text(
-                MyGlobalVariables.successTranscation.toUpperCase(),
-                style: TextStyle(
-                  fontSize: kSubmitButtonFontSize,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'BaiJamJuree',
-                ),
-              ),
-              onPressed: onPressedConfirm),
+          SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              //Transaction Confirmation button
+              new RaisedButton(
+                  color: kDefaultPrimaryColor,
+                  textColor: kTextPrimaryColor,
+                  child: new Text(
+                    MyGlobalVariables.successTranscation.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: kSubmitButtonFontSize,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'BaiJamJuree',
+                    ),
+                  ),
+                  onPressed: onPressedConfirm),
+            ],
+          ),
         ],
       ),
     );

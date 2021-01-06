@@ -1,22 +1,32 @@
 import 'dart:io';
 
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:moneytextformfield/moneytextformfield.dart';
+//import 'package:moneytextformfield/moneytextformfield.dart';
 import 'package:intl/intl.dart';
 import 'package:onekwacha/utils/global_strings.dart';
+import 'package:flutter/services.dart';
+//import 'package:onekwacha/utils/global_strings.dart';
+import 'package:onekwacha/screens/common/confirmation_screen.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:onekwacha/utils/get_key_values.dart';
 
-const flashOn = 'FLASH ON';
-const flashOff = 'FLASH OFF';
-const frontCamera = 'FRONT CAMERA';
-const backCamera = 'BACK CAMERA';
+const flashOn = 'Flash ON';
+const flashOff = 'Flash OFF';
+const frontCamera = 'Front Camera';
+const backCamera = 'Back Camera';
 
 class QRViewScreen extends StatefulWidget {
-  const QRViewScreen({
+  final int incomingData;
+  final double currentBalance;
+  QRViewScreen({
     Key key,
+    this.currentBalance,
+    this.incomingData,
   }) : super(key: key);
 
   @override
@@ -25,7 +35,7 @@ class QRViewScreen extends StatefulWidget {
 
 class _QRViewScreenState extends State<QRViewScreen> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController topUpAmountField = TextEditingController();
+  //TextEditingController topUpAmountField = TextEditingController();
   Barcode result;
   var flashState = flashOn;
   var cameraState = frontCamera;
@@ -34,6 +44,21 @@ class _QRViewScreenState extends State<QRViewScreen> {
   TextEditingController qrTextController = TextEditingController();
   String dummyData;
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
+  bool _isQRVisible = false;
+  bool _isGenerateEnabled = false;
+  String _decimalValueNoCommas;
+  double _validDouble = 0.0;
+  int _transactionType = 1;
+  int _selectedFundDestination = 0;
+  String fullPhoneNumber;
+  double transferAmount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+  }
+
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
   @override
@@ -50,45 +75,48 @@ class _QRViewScreenState extends State<QRViewScreen> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      child: Form(
-        key: _formKey,
-        child: Scaffold(
-            backgroundColor: kBackgroundShade,
-            appBar: AppBar(
-              bottom: TabBar(
-                tabs: [
-                  Tab(
-                    text: 'Scan QR',
-                  ),
-                  Tab(
-                    text: 'My QR Code',
-                  ),
-                ],
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: kBackgroundShade,
+        appBar: AppBar(
+          bottom: TabBar(
+            tabs: [
+              Tab(
+                text: 'Scan QR',
               ),
-              title: Column(
-                children: <Widget>[
-                  Text(
-                    'Scan & Pay',
-                    style: TextStyle(fontSize: kAppBarFontSize),
-                  ),
-                ],
+              Tab(
+                text: 'My QR',
               ),
-            ),
-            body: TabBarView(
-              children: getFormWidget(),
-            )),
+            ],
+          ),
+          title: Column(
+            children: <Widget>[
+              Text(
+                'Scan & Pay',
+                style: TextStyle(fontSize: kAppBarFontSize),
+              ),
+            ],
+          ),
+        ),
+        body: Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.always,
+          child: TabBarView(
+            children: getQRFormWidget(), //getGeneratorFormWidget(),
+          ),
+        ),
       ),
     );
   }
 
-  List<Widget> getFormWidget() {
+  List<Widget> getQRFormWidget() {
     List<Widget> formWidget = new List();
 
     //Scan QR Tab
     formWidget.add(
       Column(
         children: <Widget>[
-          Expanded(flex: 4, child: _buildQrView(context)),
+          Expanded(flex: 2, child: _buildQrView(context)),
           Expanded(
             flex: 1,
             child: FittedBox(
@@ -97,10 +125,77 @@ class _QRViewScreenState extends State<QRViewScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   if (result != null)
-                    Text(
-                        'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code}')
+
+                    //Pay button after scanning QR Code
+                    Card(
+                      child: ListTile(
+                        title: Text(
+                          'Scanned Data: ${result.code}',
+                          style: TextStyle(
+                            fontSize: 8,
+                            fontFamily: 'BaiJamJuree',
+                          ),
+                        ),
+                        trailing: new RaisedButton(
+                          color: kDefaultPrimaryColor,
+                          textColor: kTextPrimaryColor,
+                          // padding:
+                          //     const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
+                          child: new Text(
+                            'Pay',
+                            style: TextStyle(
+                              fontSize: kSubmitButtonFontSize,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'BaiJamJuree',
+                            ),
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState.validate()) {
+                              _formKey.currentState.save();
+                              setState(() {
+                                List values = result.code.split("|");
+                                print(values[0]);
+                                print(values[1]);
+                                fullPhoneNumber = values[1];
+                                transferAmount = double.parse(values[0]);
+                                if (result.code != null) {
+                                  Navigator.push(
+                                    context,
+                                    PageTransition(
+                                      type: PageTransitionType.rightToLeft,
+                                      child: ConfirmationScreen(
+                                        from: MyGlobalVariables
+                                            .topUpWalletDestination,
+                                        to: fullPhoneNumber,
+                                        destinationPlatform: GetKeyValues
+                                            .getFundDestinationValue(
+                                                _selectedFundDestination),
+                                        //purpose: ,
+                                        amount: transferAmount,
+                                        currentBalance: widget.currentBalance,
+                                        transactionType: GetKeyValues
+                                            .getTransactionTypeValue(
+                                                _transactionType),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    )
                   else
-                    Text('Scan code'),
+                    Text(
+                      'Position QR inside square',
+                      style: TextStyle(
+                        fontSize: 8,
+                        fontFamily: 'BaiJamJuree',
+                      ),
+                    ),
+
+                  //Flash and Front/Back Camera
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -108,6 +203,8 @@ class _QRViewScreenState extends State<QRViewScreen> {
                       Container(
                         margin: EdgeInsets.all(8),
                         child: RaisedButton(
+                          color: kDefaultPrimaryColor,
+                          textColor: kTextPrimaryColor,
                           onPressed: () {
                             if (controller != null) {
                               controller.toggleFlash();
@@ -122,13 +219,21 @@ class _QRViewScreenState extends State<QRViewScreen> {
                               }
                             }
                           },
-                          child:
-                              Text(flashState, style: TextStyle(fontSize: 20)),
+                          child: Text(
+                            flashState,
+                            style: TextStyle(
+                              fontSize: kSubmitButtonFontSize,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'BaiJamJuree',
+                            ),
+                          ),
                         ),
                       ),
                       Container(
                         margin: EdgeInsets.all(8),
                         child: RaisedButton(
+                          color: kDefaultPrimaryColor,
+                          textColor: kTextPrimaryColor,
                           onPressed: () {
                             if (controller != null) {
                               controller.flipCamera();
@@ -143,36 +248,42 @@ class _QRViewScreenState extends State<QRViewScreen> {
                               }
                             }
                           },
-                          child:
-                              Text(cameraState, style: TextStyle(fontSize: 20)),
+                          child: Text(
+                            cameraState,
+                            style: TextStyle(
+                              fontSize: kSubmitButtonFontSize,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'BaiJamJuree',
+                            ),
+                          ),
                         ),
                       )
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.all(8),
-                        child: RaisedButton(
-                          onPressed: () {
-                            controller?.pauseCamera();
-                          },
-                          child: Text('pause', style: TextStyle(fontSize: 20)),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(8),
-                        child: RaisedButton(
-                          onPressed: () {
-                            controller?.resumeCamera();
-                          },
-                          child: Text('resume', style: TextStyle(fontSize: 20)),
-                        ),
-                      )
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   crossAxisAlignment: CrossAxisAlignment.center,
+                  //   children: <Widget>[
+                  //     Container(
+                  //       margin: EdgeInsets.all(8),
+                  //       child: RaisedButton(
+                  //         onPressed: () {
+                  //           controller?.pauseCamera();
+                  //         },
+                  //         child: Text('Pause', style: TextStyle(fontSize: 20)),
+                  //       ),
+                  //     ),
+                  //     Container(
+                  //       margin: EdgeInsets.all(8),
+                  //       child: RaisedButton(
+                  //         onPressed: () {
+                  //           controller?.resumeCamera();
+                  //         },
+                  //         child: Text('Resume', style: TextStyle(fontSize: 20)),
+                  //       ),
+                  //     )
+                  //   ],
+                  // ),
                 ],
               ),
             ),
@@ -181,97 +292,160 @@ class _QRViewScreenState extends State<QRViewScreen> {
       ),
     );
 
-    //Generate QR Code Tab
-    formWidget.add(ListView(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
+    //Generate QR Tab
+    formWidget.add(
+      Column(
+        children: [
+          Card(
             elevation: 5,
             child: ListTile(
-              //leading: Icon(Icons.money),
-              trailing: FlatButton(
-                child: Text(
-                  "Generate",
-                  style: TextStyle(
-                    color: kTextPrimaryColor,
-                  ),
+              leading: Text(
+                'K',
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'BaiJamJuree',
                 ),
-                color: kDefaultPrimaryColor,
-                onPressed: () {
-                  setState(() {
-                    dummyData = qrTextController.text == ""
-                        ? null
-                        : qrTextController.text;
-                    print(qrTextController.text);
-                  });
-                },
               ),
-              title: new MoneyTextFormField(
-                settings: MoneyTextFormFieldSettings(
-                  controller: qrTextController,
-                  validator: (value) {
-                    if (double.parse(value) <
-                        MyGlobalVariables.minimumTopUpAmount) {
-                      return 'Minimum allowed is K${currencyConvertor.format(MyGlobalVariables.minimumTopUpAmount)}';
-                    } else {
-                      if (double.parse(value) >
-                          MyGlobalVariables.maximumTopUpAmount) {
-                        return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
+              title: new TextFormField(
+                controller: qrTextController,
+                validator: (value) {
+                  _decimalValueNoCommas =
+                      qrTextController.text.replaceAll(new RegExp(r","), '');
+
+                  if (_decimalValueNoCommas.isNotEmpty ||
+                      _decimalValueNoCommas != null) {
+                    try {
+                      _validDouble = double.parse(_decimalValueNoCommas);
+
+                      if (_validDouble < MyGlobalVariables.minimumTopUpAmount) {
+                        _isGenerateEnabled = false;
+                        _isQRVisible = false;
+                        return 'Minimum allowed is K${currencyConvertor.format(MyGlobalVariables.minimumTopUpAmount)}';
+                      } else {
+                        if (_validDouble >
+                            MyGlobalVariables.maximumTopUpAmount) {
+                          _isGenerateEnabled = false;
+                          _isQRVisible = false;
+                          return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
+                        }
+                        _isGenerateEnabled = true;
+                        print('Valid amount entered');
+                        dummyData =
+                            _decimalValueNoCommas.toString() + '|+260987456321';
+                        return null;
                       }
-                      return value;
+                    } catch (identifier) {
+                      _isGenerateEnabled = false;
+                      dummyData = null;
+                      _isQRVisible = false;
+
+                      // print('Value:' +
+                      //     value +
+                      //     ' or _decimalValueNoCommas:' +
+                      //     _decimalValueNoCommas +
+                      //     ' or _validDouble:' +
+                      //     _validDouble.toString());
+                      // print('Catch error. ' + identifier.toString());
+                      return 'Enter amount';
                     }
-                  },
-                  moneyFormatSettings: MoneyFormatSettings(
-                    currencySymbol: 'K',
-                    fractionDigits: 2,
-                    displayFormat: MoneyDisplayFormat.symbolOnLeft,
-                  ),
-                  appearanceSettings: AppearanceSettings(
-                    hintText: 'Enter amount',
-                    labelText: 'Amount:',
-                    labelStyle: TextStyle(
-                      color: kTextPrimaryColor,
-                      fontSize: 19,
-                      fontFamily: 'Roboto',
-                    ),
-                    inputStyle: TextStyle(
-                        color: kTextPrimaryColor,
-                        fontSize: 18,
-                        fontFamily: 'BaiJamJuree'),
-                    formattedStyle: TextStyle(
-                        color: kTextPrimaryColor,
-                        fontSize: 18,
-                        fontFamily: 'BaiJamJuree'),
+                  } else {
+                    _isGenerateEnabled = false;
+                    dummyData = null;
+                    _isQRVisible = false;
+                    return 'String is null or empty';
+                  }
+                },
+                inputFormatters: [
+                  CurrencyTextInputFormatter(
+                    //locale: 'zm',
+                    decimalDigits: 2,
+                    //symbol: 'K',
+                  )
+                ],
+                onSaved: (String value) {
+                  // print('Value:' +
+                  //     value +
+                  //     ' or _decimalValueNoCommas:' +
+                  //     _decimalValueNoCommas.toString() +
+                  //     ' or _validDouble:' +
+                  //     _validDouble.toString());
+                  // setState(() {
+                  //   dummyData = _validDouble.toString();
+
+                  //   if (dummyData == null) {
+                  //     _isQRVisible = false;
+                  //   }
+                  // });
+                },
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                style: TextStyle(
+                  fontSize: 20,
+                  //fontWeight: FontWeight.bold,
+                  fontFamily: 'BaiJamJuree',
+                ),
+              ),
+              trailing: new RaisedButton(
+                color: kDefaultPrimaryColor,
+                textColor: kTextPrimaryColor,
+                // padding:
+                //     const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
+                child: new Text(
+                  'Generate',
+                  style: TextStyle(
+                    fontSize: kSubmitButtonFontSize,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'BaiJamJuree',
                   ),
                 ),
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
+                    setState(() {
+                      //dummyData = _decimalValueNoCommas;
+
+                      if (dummyData != null && _isGenerateEnabled) {
+                        _isQRVisible = true;
+                      } else {
+                        dummyData = null;
+                        _isQRVisible = false;
+                        formWidget.removeAt(1);
+                        print('Removed widget');
+                      }
+                    });
+                  }
+                },
               ),
             ),
           ),
-        ),
-        (dummyData == null)
-            ? Container()
-            : Container(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 10.0, horizontal: 50.0),
-                child: Column(
-                  children: [
-                    Text('Present below QR Code'),
-                    SizedBox(
-                      height: 10,
+          //QR Code display
+          (dummyData == null)
+              ? Container()
+              : new Visibility(
+                  visible: _isQRVisible,
+                  child: Column(children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 50.0),
+                      child: Column(
+                        children: [
+                          Text('Present below QR'),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          QrImage(
+                            data: dummyData,
+                            gapless: true,
+                          ),
+                        ],
+                      ),
                     ),
-                    QrImage(
-                      // embeddedImage: NetworkImage(
-                      //   "https://avatars1.githubusercontent.com/u/41328571?s=280&v=4",
-                      // ),
-                      data: dummyData,
-                      gapless: true,
-                    ),
-                  ],
-                ),
-              ),
-      ],
-    ));
+                  ])),
+        ],
+      ),
+    );
+
     return formWidget;
   }
 
@@ -284,12 +458,12 @@ class _QRViewScreenState extends State<QRViewScreen> {
   }
 
   Widget _buildQrView(BuildContext context) {
-    // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
-    var scanArea = (MediaQuery.of(context).size.width < 300 ||
-            MediaQuery.of(context).size.height < 300)
-        ? 150.0
+    // check how wide or tall the device is and change the scanArea and overlay accordingly.
+    var scanArea = (MediaQuery.of(context).size.width < 400 ||
+            MediaQuery.of(context).size.height < 400)
+        ? 200.0
         : 300.0;
-    // To ensure the Scanner view is properly sizes after rotation
+    // To ensure the Scanner view properly sizes after rotation
     // we need to listen for Flutter SizeChanged notification and update controller
     return NotificationListener<SizeChangedLayoutNotification>(
         onNotification: (notification) {
@@ -321,9 +495,9 @@ class _QRViewScreenState extends State<QRViewScreen> {
     });
   }
 
-  // @override
-  // void dispose() {
-  //   controller.dispose();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 }

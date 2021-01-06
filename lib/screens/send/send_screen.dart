@@ -10,6 +10,7 @@ import 'package:onekwacha/utils/global_strings.dart';
 import 'package:onekwacha/utils/get_key_values.dart';
 import 'package:onekwacha/screens/common/bank_details_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 
 class SendScreen extends StatefulWidget {
   final int incomingData;
@@ -63,6 +64,9 @@ class _SendScreenState extends State<SendScreen> {
   List<String> country = ['ZM', 'AU'];
   bool _phoneNumberVisibility = true;
   //bool _bankDestinationSelected = false;
+  String _decimalValueNoCommas;
+  double _validDouble = 0.0;
+  double transferAmount = 0;
 
   void loadPuporseList() {
     purposeList = [];
@@ -186,6 +190,7 @@ class _SendScreenState extends State<SendScreen> {
     loadPuporseList();
     return Form(
         key: _formKey,
+        autovalidateMode: AutovalidateMode.always,
         child: Scaffold(
           backgroundColor: kBackgroundShade,
           appBar: AppBar(
@@ -308,48 +313,125 @@ class _SendScreenState extends State<SendScreen> {
     );
 
     //Amount field widget
-    formWidget.add(new MoneyTextFormField(
-      settings: MoneyTextFormFieldSettings(
-        controller: topUpAmountField,
-        validator: (value) {
-          if (double.parse(value) < MyGlobalVariables.minimumTopUpAmount) {
-            return 'Minimum allowed is K${currencyConvertor.format(MyGlobalVariables.minimumTopUpAmount)}';
-          } else {
-            if (double.parse(value) > MyGlobalVariables.maximumTopUpAmount) {
-              return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
-            }
-            return value;
-          }
-        },
-        moneyFormatSettings: MoneyFormatSettings(
-          currencySymbol: 'K',
-          fractionDigits: 2,
-          displayFormat: MoneyDisplayFormat.symbolOnLeft,
-        ),
-        appearanceSettings: AppearanceSettings(
-          hintText: 'Enter amount',
-          labelText: 'Amount:',
-          labelStyle: TextStyle(
-            color: kTextPrimaryColor,
-            fontSize: 19,
-            fontFamily: 'Roboto',
-          ),
-          inputStyle: TextStyle(
-              color: kTextPrimaryColor,
-              fontSize: 18,
-              fontFamily: 'BaiJamJuree'),
-          formattedStyle: TextStyle(
-              color: kTextPrimaryColor,
-              fontSize: 18,
-              fontFamily: 'BaiJamJuree'),
+    formWidget.add(
+      new Text(
+        'Amount:',
+        style: TextStyle(
+          fontSize: 14,
+          //fontFamily: 'BaiJamJuree',
         ),
       ),
-    ));
+    );
+    formWidget.add(
+      ListTile(
+        leading: Text(
+          'K',
+          style: TextStyle(
+            fontSize: 20,
+            fontFamily: 'BaiJamJuree',
+          ),
+        ),
+        title: new TextFormField(
+          controller: topUpAmountField,
+          validator: (value) {
+            _decimalValueNoCommas =
+                topUpAmountField.text.replaceAll(new RegExp(r","), '');
+
+            if (_decimalValueNoCommas.isNotEmpty ||
+                _decimalValueNoCommas != null) {
+              try {
+                _validDouble = double.parse(_decimalValueNoCommas);
+
+                if (_validDouble < MyGlobalVariables.minimumTopUpAmount) {
+                  return 'Minimum allowed is K${currencyConvertor.format(MyGlobalVariables.minimumTopUpAmount)}';
+                } else {
+                  if (_validDouble > MyGlobalVariables.maximumTopUpAmount) {
+                    return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
+                  }
+                  return null;
+                }
+              } catch (identifier) {
+                return 'Enter amount';
+              }
+            } else {
+              return 'String is null or empty';
+            }
+          },
+          inputFormatters: [
+            CurrencyTextInputFormatter(
+              //locale: 'zm',
+              decimalDigits: 2,
+              //symbol: 'K',
+            )
+          ],
+          onSaved: (String value) {
+            // print('Value:' +
+            //     value +
+            //     ' or _decimalValueNoCommas:' +
+            //     _decimalValueNoCommas.toString() +
+            //     ' or _validDouble:' +
+            //     _validDouble.toString());
+            // setState(() {
+            //   dummyData = _validDouble.toString();
+
+            //   if (dummyData == null) {
+            //     _isQRVisible = false;
+            //   }
+            // });
+          },
+          textAlign: TextAlign.center,
+          keyboardType: TextInputType.number,
+          style: TextStyle(
+            fontSize: 20,
+            //fontWeight: FontWeight.bold,
+            fontFamily: 'BaiJamJuree',
+          ),
+        ),
+      ),
+    );
+
+    // formWidget.add(new MoneyTextFormField(
+    //   settings: MoneyTextFormFieldSettings(
+    //     controller: topUpAmountField,
+    //     validator: (value) {
+    //       if (double.parse(value) < MyGlobalVariables.minimumTopUpAmount) {
+    //         return 'Minimum allowed is K${currencyConvertor.format(MyGlobalVariables.minimumTopUpAmount)}';
+    //       } else {
+    //         if (double.parse(value) > MyGlobalVariables.maximumTopUpAmount) {
+    //           return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
+    //         }
+    //         return value;
+    //       }
+    //     },
+    //     moneyFormatSettings: MoneyFormatSettings(
+    //       currencySymbol: 'K',
+    //       fractionDigits: 2,
+    //       displayFormat: MoneyDisplayFormat.symbolOnLeft,
+    //     ),
+    //     appearanceSettings: AppearanceSettings(
+    //       hintText: 'Enter amount',
+    //       labelText: 'Amount:',
+    //       labelStyle: TextStyle(
+    //         color: kTextPrimaryColor,
+    //         fontSize: 19,
+    //         fontFamily: 'Roboto',
+    //       ),
+    //       inputStyle: TextStyle(
+    //           color: kTextPrimaryColor,
+    //           fontSize: 18,
+    //           fontFamily: 'BaiJamJuree'),
+    //       formattedStyle: TextStyle(
+    //           color: kTextPrimaryColor,
+    //           fontSize: 18,
+    //           fontFamily: 'BaiJamJuree'),
+    //     ),
+    //   ),
+    // ));
 
     void onPressedSubmit() {
       if (_formKey.currentState.validate()) {
         _formKey.currentState.save();
-        double _amount = double.parse(topUpAmountField.text);
+        double _amount = double.parse(_decimalValueNoCommas);
         double _balance = widget.currentBalance - _amount;
 
         switch (_selectedFundDestination) {
@@ -372,7 +454,7 @@ class _SendScreenState extends State<SendScreen> {
                         _selectedFundDestination),
                     purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
                     errorMessage: MyGlobalVariables.errorInssufficientBalance,
-                    amount: double.parse(topUpAmountField.text),
+                    amount: double.parse(_decimalValueNoCommas),
                     currentBalance: widget.currentBalance,
                     transactionType:
                         GetKeyValues.getTransactionTypeValue(_transactionType),
@@ -390,7 +472,7 @@ class _SendScreenState extends State<SendScreen> {
                     destinationPlatform: GetKeyValues.getFundDestinationValue(
                         _selectedFundDestination),
                     purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
-                    amount: double.parse(topUpAmountField.text),
+                    amount: double.parse(_decimalValueNoCommas),
                     currentBalance: _balance,
                     transactionType:
                         GetKeyValues.getTransactionTypeValue(_transactionType),
@@ -417,7 +499,7 @@ class _SendScreenState extends State<SendScreen> {
                         _selectedFundDestination),
                     purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
                     errorMessage: MyGlobalVariables.errorInssufficientBalance,
-                    amount: double.parse(topUpAmountField.text),
+                    amount: double.parse(_decimalValueNoCommas),
                     currentBalance: widget.currentBalance,
                     transactionType:
                         GetKeyValues.getTransactionTypeValue(_transactionType),
@@ -435,7 +517,7 @@ class _SendScreenState extends State<SendScreen> {
                     destinationPlatform: GetKeyValues.getFundDestinationValue(
                         _selectedFundDestination),
                     purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
-                    amount: double.parse(topUpAmountField.text),
+                    amount: double.parse(_decimalValueNoCommas),
                     currentBalance: _balance,
                     transactionType:
                         GetKeyValues.getTransactionTypeValue(_transactionType),
@@ -466,7 +548,7 @@ class _SendScreenState extends State<SendScreen> {
                         _selectedFundDestination),
                     purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
                     errorMessage: MyGlobalVariables.errorInssufficientBalance,
-                    amount: double.parse(topUpAmountField.text),
+                    amount: double.parse(_decimalValueNoCommas),
                     currentBalance: widget.currentBalance,
                     transactionType:
                         GetKeyValues.getTransactionTypeValue(_transactionType),
@@ -486,7 +568,7 @@ class _SendScreenState extends State<SendScreen> {
                     destinationPlatform: GetKeyValues.getFundDestinationValue(
                         _selectedFundDestination),
                     purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
-                    amount: double.parse(topUpAmountField.text),
+                    amount: double.parse(_decimalValueNoCommas),
                     currentBalance: _balance,
                     transactionType:
                         GetKeyValues.getTransactionTypeValue(_transactionType),

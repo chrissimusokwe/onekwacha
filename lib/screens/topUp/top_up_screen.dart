@@ -8,6 +8,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:onekwacha/utils/global_strings.dart';
 import 'package:onekwacha/utils/get_key_values.dart';
 import 'package:intl/intl.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 
 class TopUpScreen extends StatefulWidget {
   final int incomingData;
@@ -61,6 +62,10 @@ class _TopUpScreenState extends State<TopUpScreen> {
   List<String> country = ['ZM', 'AU'];
   bool _phoneNumberVisibility = true;
   //bool _cardSourceSelected = false;
+  //final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
+  String _decimalValueNoCommas;
+  double _validDouble = 0.0;
+  double transferAmount = 0;
 
   void loadPuporseList() {
     purposeList = [];
@@ -172,6 +177,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
     loadPuporseList();
     return Form(
         key: _formKey,
+        autovalidateMode: AutovalidateMode.always,
         child: Scaffold(
           backgroundColor: kBackgroundShade,
           appBar: AppBar(
@@ -293,44 +299,123 @@ class _TopUpScreenState extends State<TopUpScreen> {
       ),
     );
 
-    //Amount field widget
-    formWidget.add(new MoneyTextFormField(
-      settings: MoneyTextFormFieldSettings(
-        controller: topUpAmountField,
-        validator: (value) {
-          if (double.parse(value) < MyGlobalVariables.minimumTopUpAmount) {
-            return 'Minimum allowed is K${currencyConvertor.format(MyGlobalVariables.minimumTopUpAmount)}';
-          } else {
-            if (double.parse(value) > MyGlobalVariables.maximumTopUpAmount) {
-              return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
-            }
-            return value;
-          }
-        },
-        moneyFormatSettings: MoneyFormatSettings(
-          currencySymbol: 'K',
-          fractionDigits: 2,
-          displayFormat: MoneyDisplayFormat.symbolOnLeft,
-        ),
-        appearanceSettings: AppearanceSettings(
-          hintText: 'Enter amount',
-          labelText: 'Amount:',
-          labelStyle: TextStyle(
-            color: kTextPrimaryColor,
-            fontSize: 19,
-            fontFamily: 'Roboto',
-          ),
-          inputStyle: TextStyle(
-              color: kTextPrimaryColor,
-              fontSize: 18,
-              fontFamily: 'BaiJamJuree'),
-          formattedStyle: TextStyle(
-              color: kTextPrimaryColor,
-              fontSize: 18,
-              fontFamily: 'BaiJamJuree'),
+    formWidget.add(
+      new Text(
+        'Amount:',
+        style: TextStyle(
+          fontSize: 14,
+          //fontFamily: 'BaiJamJuree',
         ),
       ),
-    ));
+    );
+    //Amount field widget
+    formWidget.add(
+      ListTile(
+        leading: Text(
+          'K',
+          style: TextStyle(
+            fontSize: 20,
+            fontFamily: 'BaiJamJuree',
+          ),
+        ),
+        title: new TextFormField(
+          controller: topUpAmountField,
+          validator: (value) {
+            _decimalValueNoCommas =
+                topUpAmountField.text.replaceAll(new RegExp(r","), '');
+
+            if (_decimalValueNoCommas.isNotEmpty ||
+                _decimalValueNoCommas != null) {
+              try {
+                _validDouble = double.parse(_decimalValueNoCommas);
+
+                if (_validDouble < MyGlobalVariables.minimumTopUpAmount) {
+                  return 'Minimum allowed is K${currencyConvertor.format(MyGlobalVariables.minimumTopUpAmount)}';
+                } else {
+                  if (_validDouble > MyGlobalVariables.maximumTopUpAmount) {
+                    return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
+                  }
+                  return null;
+                }
+              } catch (identifier) {
+                return 'Enter amount';
+              }
+            } else {
+              return 'String is null or empty';
+            }
+          },
+          inputFormatters: [
+            CurrencyTextInputFormatter(
+              //locale: 'zm',
+              decimalDigits: 2,
+              //symbol: 'K',
+            )
+          ],
+          onSaved: (String value) {
+            // print('Value:' +
+            //     value +
+            //     ' or _decimalValueNoCommas:' +
+            //     _decimalValueNoCommas.toString() +
+            //     ' or _validDouble:' +
+            //     _validDouble.toString());
+            // setState(() {
+            //   dummyData = _validDouble.toString();
+
+            //   if (dummyData == null) {
+            //     _isQRVisible = false;
+            //   }
+            // });
+          },
+          textAlign: TextAlign.center,
+          keyboardType: TextInputType.number,
+          style: TextStyle(
+            fontSize: 20,
+            //fontWeight: FontWeight.bold,
+            fontFamily: 'BaiJamJuree',
+          ),
+        ),
+      ),
+    );
+
+    // formWidget.add(
+    //   new MoneyTextFormField(
+    //     settings: MoneyTextFormFieldSettings(
+    //       controller: topUpAmountField,
+    //       validator: (value) {
+    //         if (double.parse(value) < MyGlobalVariables.minimumTopUpAmount) {
+    //           return 'Minimum allowed is K${currencyConvertor.format(MyGlobalVariables.minimumTopUpAmount)}';
+    //         } else {
+    //           if (double.parse(value) > MyGlobalVariables.maximumTopUpAmount) {
+    //             return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
+    //           }
+    //           return value;
+    //         }
+    //       },
+    //       moneyFormatSettings: MoneyFormatSettings(
+    //         currencySymbol: 'K',
+    //         fractionDigits: 2,
+    //         displayFormat: MoneyDisplayFormat.symbolOnLeft,
+    //       ),
+    //       appearanceSettings: AppearanceSettings(
+    //         hintText: 'Enter amount',
+    //         labelText: 'Amount:',
+    //         labelStyle: TextStyle(
+    //           color: kTextPrimaryColor,
+    //           fontSize: 19,
+    //           fontFamily: 'Roboto',
+    //         ),
+    //         inputStyle: TextStyle(
+    //             color: kTextPrimaryColor,
+    //             fontSize: 18,
+    //             fontFamily: 'BaiJamJuree'),
+    //         formattedStyle: TextStyle(
+    //             color: kTextPrimaryColor,
+    //             fontSize: 18,
+    //             fontFamily: 'BaiJamJuree'),
+    //       ),
+    //     ),
+    //   ),
+    // );
 
     void onPressedSubmit() {
       if (_formKey.currentState.validate()) {
@@ -341,7 +426,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
             print(GetKeyValues.getFundSourceValue(_selectedFundSource));
             print(number.phoneNumber);
             print('Top up amount:' +
-                double.parse(topUpAmountField.text).toString());
+                double.parse(_decimalValueNoCommas).toString());
             //print('Tried the amount');
             //amount = new NumberFormat("###.0#", "en_US");
             Navigator.push(
@@ -353,9 +438,9 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   to: MyGlobalVariables.topUpWalletDestination,
                   destinationPlatform: MyGlobalVariables.topUpWalletDestination,
                   purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
-                  amount: double.parse(topUpAmountField.text),
+                  amount: double.parse(_decimalValueNoCommas),
                   currentBalance: widget.currentBalance +
-                      double.parse(topUpAmountField.text),
+                      double.parse(_decimalValueNoCommas),
                   transactionType:
                       GetKeyValues.getTransactionTypeValue(_transactionType),
                 ),
@@ -364,10 +449,10 @@ class _TopUpScreenState extends State<TopUpScreen> {
             break;
           case 1:
             print(GetKeyValues.getFundSourceValue(_selectedFundSource));
-            print(double.parse(topUpAmountField.text));
+            print(double.parse(_decimalValueNoCommas));
             //print('Tried the amount');
             print(MyGlobalVariables.zmcurrencySymbol +
-                currencyConvertor.format(double.parse(topUpAmountField.text)));
+                currencyConvertor.format(double.parse(_decimalValueNoCommas)));
             // print("Eg. 2: ${oCcy.format(.7)}");
             // print("Eg. 3: ${oCcy.format(12345678975 / 100)}");
             // print("Eg. 4: ${oCcy.format(int.parse('12345678975') / 100)}");
@@ -382,9 +467,9 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   to: MyGlobalVariables.topUpWalletDestination,
                   destinationPlatform: MyGlobalVariables.topUpWalletDestination,
                   purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
-                  amount: double.parse(topUpAmountField.text),
+                  amount: double.parse(_decimalValueNoCommas),
                   currentBalance: widget.currentBalance +
-                      double.parse(topUpAmountField.text),
+                      double.parse(_decimalValueNoCommas),
                   transactionType:
                       GetKeyValues.getTransactionTypeValue(_transactionType),
                 ),
@@ -424,18 +509,19 @@ class _TopUpScreenState extends State<TopUpScreen> {
     );
     formWidget.add(
       new RaisedButton(
-          color: kDefaultPrimaryColor,
-          textColor: kTextPrimaryColor,
-          padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
-          child: new Text(
-            MyGlobalVariables.nextButton.toUpperCase(),
-            style: TextStyle(
-              fontSize: kSubmitButtonFontSize,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'BaiJamJuree',
-            ),
+        color: kDefaultPrimaryColor,
+        textColor: kTextPrimaryColor,
+        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
+        child: new Text(
+          MyGlobalVariables.nextButton.toUpperCase(),
+          style: TextStyle(
+            fontSize: kSubmitButtonFontSize,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'BaiJamJuree',
           ),
-          onPressed: onPressedSubmit),
+        ),
+        onPressed: onPressedSubmit,
+      ),
     );
     return formWidget;
   }

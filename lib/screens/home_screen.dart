@@ -12,6 +12,7 @@ import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 class HomeScreen extends StatefulWidget {
   final double walletBalance;
@@ -32,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
     if (widget.walletBalance.toString().isEmpty ||
         widget.walletBalance == null) {
       _currentBalance = 0.0;
@@ -43,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
         title: Center(
