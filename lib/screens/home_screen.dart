@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          //Top header
+          //Top header section
           Expanded(
             flex: 2,
             child: Container(
@@ -104,7 +104,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           //First section buttons
-          //HomeFirstSection(selectedIndex: _selectedIndex),
           Expanded(
             flex: 2,
             child: Row(
@@ -135,7 +134,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            //Image.asset('icons8-check-100.png'),
                             Icon(
                               CustomIcons.plus,
                               color: kDefaultPrimaryColor,
@@ -178,7 +176,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            //Image.asset('icons8-check-100.png'),
                             Icon(
                               CustomIcons.qr_code,
                               color: kDefaultPrimaryColor,
@@ -207,13 +204,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: RaisedButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.rightToLeft,
-                                child: SendScreen(
-                                  incomingData: _selectedIndex,
-                                  currentBalance: _currentBalance,
-                                )));
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: SendScreen(
+                              incomingData: _selectedIndex,
+                              currentBalance: _currentBalance,
+                            ),
+                          ),
+                        );
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -224,7 +223,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            //Image.asset('icons8-check-100.png'),
                             Icon(
                               CustomIcons.initiate_money_transfer,
                               color: kDefaultPrimaryColor,
@@ -249,7 +247,101 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           //Second section buttons
-          HomeSecondSection(selectedIndex: _selectedIndex),
+          //HomeSecondSection(selectedIndex: _selectedIndex),
+          Expanded(
+            flex: 3,
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.all(10.0),
+                    child: RaisedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: InvoicingScreen(
+                              incomingData: _selectedIndex,
+                              currentBalance: _currentBalance,
+                            ),
+                          ),
+                        );
+                      },
+                      color: Colors.white,
+                      elevation: 5.0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              CustomIcons.bill,
+                              color: kDefaultPrimaryColor,
+                              size: 45.0,
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Text(
+                              'Invoicing',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.all(10.0),
+                    child: RaisedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MarketplaceScreen(
+                                  incomingData: _selectedIndex)),
+                        );
+                      },
+                      elevation: 5.0,
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              CustomIcons.shopping_cart,
+                              color: kDefaultPrimaryColor,
+                              size: 45.0,
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Text(
+                              'Marketplace',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           //Banner of adverts
           Expanded(
             flex: 4,
@@ -259,175 +351,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BottomNavigation(
         incomingData: _selectedIndex,
-      ),
-    );
-  }
-}
-
-// class HomeTopHeader extends StatelessWidget {
-//   final walletBalance;
-//   HomeTopHeader({
-//     Key key,
-//     this.walletBalance,
-//   })  : _currentBalance = walletBalance,
-//         super(key: key);
-
-//   //double _walletBalance = 1962.45;
-//   final double _currentBalance;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Expanded(
-//       flex: 2,
-//       child: Container(
-//         color: kDefaultPrimaryColor,
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             Text(
-//               'Wallet Balance',
-//               style: TextStyle(
-//                 fontSize: 18.0,
-//               ),
-//             ),
-//             SizedBox(
-//               height: 10.0,
-//             ),
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: <Widget>[
-//                 Text(
-//                   'ZMW',
-//                   style: TextStyle(
-//                     fontSize: 15.0,
-//                   ),
-//                 ),
-//                 Text(
-//                   _currentBalance.toString(),
-//                   style: TextStyle(
-//                     fontSize: 40.0,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class HomeFirstSection extends StatelessWidget {
-//   final int _selectedIndex;
-//   const HomeFirstSection({
-//     Key key,
-//     @required selectedIndex,
-//   })  : _selectedIndex = selectedIndex,
-//         super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return
-//   }
-// }
-
-class HomeSecondSection extends StatelessWidget {
-  const HomeSecondSection({
-    Key key,
-    @required int selectedIndex,
-  })  : _selectedIndex = selectedIndex,
-        super(key: key);
-
-  final int _selectedIndex;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: 3,
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.all(10.0),
-              child: RaisedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            InvoicingScreen(incomingData: _selectedIndex)),
-                  );
-                },
-                color: Colors.white,
-                elevation: 5.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        CustomIcons.bill,
-                        color: kDefaultPrimaryColor,
-                        size: 45.0,
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Text(
-                        'Invoicing',
-                        style: TextStyle(
-                          fontSize: 14.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.all(10.0),
-              child: RaisedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            MarketplaceScreen(incomingData: _selectedIndex)),
-                  );
-                },
-                elevation: 5.0,
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        CustomIcons.shopping_cart,
-                        color: kDefaultPrimaryColor,
-                        size: 45.0,
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Text(
-                        'Marketplace',
-                        style: TextStyle(
-                          fontSize: 14.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

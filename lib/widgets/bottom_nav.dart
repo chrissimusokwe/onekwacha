@@ -8,7 +8,7 @@ class BottomNavigation extends StatelessWidget {
   final int incomingData;
   BottomNavigation({
     Key key,
-    @required this.incomingData,
+    this.incomingData,
   }) : super(key: key);
 
   final List<String> _selectedOption = ["/", "/History", "/Profile"];

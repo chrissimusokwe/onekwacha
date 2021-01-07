@@ -43,7 +43,7 @@ class BankUtils {
     Widget widget;
     if (img.isNotEmpty) {
       widget = new Image.asset(
-        'assets/images/$img',
+        'assets/banks/$img',
         width: 25.0,
       );
     } else {

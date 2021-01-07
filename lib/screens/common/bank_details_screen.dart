@@ -38,111 +38,23 @@ class BankDetailsScreen extends StatefulWidget {
 
 class _BankDetailsScreenState extends State<BankDetailsScreen> {
   int _selectedBank = 0;
-  //FocusNode _focusNode = new FocusNode();
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _formKey = new GlobalKey<FormState>();
-  //TextEditingController numberController = new TextEditingController();
   TextEditingController _accountName = new TextEditingController();
   TextEditingController _accountNumber = new TextEditingController();
   TextEditingController _branchCode = new TextEditingController();
+  // AutovalidateMode _autoValidate;
 
   BankDetails _bankDetail = BankDetails();
-  //bool _autoValidate = false;
-  //PaymentCard _card = new PaymentCard();
-  List<DropdownMenuItem<int>> bankList = [];
 
   @override
   void initState() {
     super.initState();
-    //_focusNode = FocusNode();
-    //_paymentCard.type = CardType.Others;
-    //numberController.addListener(_getCardTypeFrmNumber);
-  }
-
-  // void _requestFocus() {
-  //   setState(() {
-  //     FocusScope.of(context).requestFocus(_focusNode);
-  //   });
-  // }
-  void loadBankList() {
-    bankList = [];
-    bankList.add(DropdownMenuItem(
-      child: ListTile(
-        leading: Icon(
-          Icons.account_balance,
-          color: kDarkPrimaryColor,
-        ),
-        title: Text(
-          GetKeyValues.getBankListValue(0),
-        ),
-      ),
-      value: 0,
-    ));
-    bankList.add(DropdownMenuItem(
-      child: ListTile(
-        leading: Icon(
-          Icons.account_balance,
-          color: kDarkPrimaryColor,
-        ),
-        title: Text(
-          GetKeyValues.getBankListValue(1),
-        ),
-      ),
-      value: 1,
-    ));
-    bankList.add(DropdownMenuItem(
-      child: ListTile(
-        leading: Icon(
-          Icons.account_balance,
-          color: kDarkPrimaryColor,
-        ),
-        title: Text(
-          GetKeyValues.getBankListValue(2),
-        ),
-      ),
-      value: 2,
-    ));
-    bankList.add(DropdownMenuItem(
-      child: ListTile(
-        leading: Icon(
-          Icons.account_balance,
-          color: kDarkPrimaryColor,
-        ),
-        title: Text(
-          GetKeyValues.getBankListValue(3),
-        ),
-      ),
-      value: 3,
-    ));
-    bankList.add(DropdownMenuItem(
-      child: ListTile(
-        leading: Icon(
-          Icons.account_balance,
-          color: kDarkPrimaryColor,
-        ),
-        title: Text(
-          GetKeyValues.getBankListValue(4),
-        ),
-      ),
-      value: 4,
-    ));
-    bankList.add(DropdownMenuItem(
-      child: ListTile(
-        leading: Icon(
-          Icons.account_balance,
-          color: kDarkPrimaryColor,
-        ),
-        title: Text(
-          GetKeyValues.getBankListValue(5),
-        ),
-      ),
-      value: 5,
-    ));
   }
 
   @override
   Widget build(BuildContext context) {
-    loadBankList();
+    GetKeyValues.loadBankList();
     return new Scaffold(
         key: _scaffoldKey,
         backgroundColor: Colors.grey.shade100,
@@ -161,7 +73,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
           child: new Form(
               key: _formKey,
               autovalidateMode:
-                  AutovalidateMode.disabled, //autovalidate: _autoValidate,
+                  AutovalidateMode.disabled, //  autovalidate: _autoValidate,
               child: new ListView(
                 children: <Widget>[
                   new SizedBox(
@@ -257,7 +169,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                   new DropdownButton(
                     hint: Text('Select bank'),
                     value: _selectedBank,
-                    items: bankList,
+                    items: GetKeyValues.bankList,
                     onChanged: (value) {
                       setState(() {
                         _selectedBank = value;
@@ -270,7 +182,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                     height: 20.0,
                   ),
                   new Text(
-                    " IMPORTANT: Funds sent to incorrect banking details can't be reversed. Ensure that the above details are correct before submitting.",
+                    "IMPORTANT: Funds sent to incorrect banking details can't be reversed. Ensure that the above details are correct before submitting.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
@@ -291,21 +203,10 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
 
   @override
   void dispose() {
-    // Clean up the controller when the Widget is removed from the Widget tree
-    //numberController.removeListener(_getCardTypeFrmNumber);
-    //numberController.dispose();
-    //_focusNode.dispose();
     super.dispose();
   }
 
-  // void _getCardTypeFrmNumber() {
-  //   String input = CardUtils.getCleanedNumber(numberController.text);
-  //   CardType cardType = CardUtils.getCardTypeFrmNumber(input);
-  //   setState(() {
-  //     this._bankDetail.type = cardType;
-  //   });
-  // }
-
+  //Validating form inputs
   void _validateInputs() {
     final FormState form = _formKey.currentState;
     if (!form.validate()) {
@@ -343,6 +244,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
     }
   }
 
+  //Submit button
   Widget _getSubmitButton() {
     if (Platform.isIOS) {
       return new CupertinoButton(
@@ -357,10 +259,6 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
       return new RaisedButton(
         onPressed: _validateInputs,
         color: kDefaultPrimaryColor,
-        //splashColor: Colors.deepPurple,
-        // shape: RoundedRectangleBorder(
-        //   borderRadius: const BorderRadius.all(const Radius.circular(100.0)),
-        // ),
         padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 60.0),
         textColor: kTextPrimaryColor,
         child: new Text(

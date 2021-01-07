@@ -34,24 +34,26 @@ class QRViewScreen extends StatefulWidget {
 }
 
 class _QRViewScreenState extends State<QRViewScreen> {
-  final _formKey = GlobalKey<FormState>();
-  //TextEditingController topUpAmountField = TextEditingController();
   Barcode result;
-  var flashState = flashOn;
-  var cameraState = frontCamera;
   QRViewController controller;
+  final _formKey = GlobalKey<FormState>();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  TextEditingController qrTextController = TextEditingController();
-  String dummyData;
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
+
+  TextEditingController qrTextController = TextEditingController();
   bool _isQRVisible = false;
   bool _isGenerateEnabled = false;
   String _decimalValueNoCommas;
+  String qrDataString;
+  String _destinationPhoneNumber;
   double _validDouble = 0.0;
+  double _transferAmount = 0;
   int _transactionType = 1;
   int _selectedFundDestination = 0;
-  String fullPhoneNumber;
-  double transferAmount = 0;
+  int _selectedPurpose = 4;
+
+  var flashState = flashOn;
+  var cameraState = frontCamera;
 
   @override
   void initState() {
@@ -73,6 +75,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    GetKeyValues.loadPuporseList();
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -100,7 +103,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
         ),
         body: Form(
           key: _formKey,
-          autovalidateMode: AutovalidateMode.always,
+          autovalidateMode: AutovalidateMode.disabled,
           child: TabBarView(
             children: getQRFormWidget(), //getGeneratorFormWidget(),
           ),
@@ -154,10 +157,12 @@ class _QRViewScreenState extends State<QRViewScreen> {
                               _formKey.currentState.save();
                               setState(() {
                                 List values = result.code.split("|");
-                                print(values[0]);
-                                print(values[1]);
-                                fullPhoneNumber = values[1];
-                                transferAmount = double.parse(values[0]);
+                                // print(values[0]);
+                                // print(values[1]);
+                                // print(values[2]);
+                                _destinationPhoneNumber = values[0];
+                                _selectedPurpose = values[1];
+                                _transferAmount = double.parse(values[2]);
                                 if (result.code != null) {
                                   Navigator.push(
                                     context,
@@ -166,12 +171,13 @@ class _QRViewScreenState extends State<QRViewScreen> {
                                       child: ConfirmationScreen(
                                         from: MyGlobalVariables
                                             .topUpWalletDestination,
-                                        to: fullPhoneNumber,
+                                        to: _destinationPhoneNumber,
                                         destinationPlatform: GetKeyValues
                                             .getFundDestinationValue(
                                                 _selectedFundDestination),
-                                        //purpose: ,
-                                        amount: transferAmount,
+                                        purpose: GetKeyValues.getPurposeValue(
+                                            _selectedPurpose),
+                                        amount: _transferAmount,
                                         currentBalance: widget.currentBalance,
                                         transactionType: GetKeyValues
                                             .getTransactionTypeValue(
@@ -294,11 +300,44 @@ class _QRViewScreenState extends State<QRViewScreen> {
 
     //Generate QR Tab
     formWidget.add(
-      Column(
-        children: [
-          Card(
-            elevation: 5,
-            child: ListTile(
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 30,
+            ),
+            new Text(
+              'Purpose:',
+              style: TextStyle(
+                fontSize: 14,
+                //fontFamily: 'BaiJamJuree',
+              ),
+            ),
+            new DropdownButton(
+              hint: Text('Select Purpose'),
+              value: _selectedPurpose,
+              items: GetKeyValues.purposeList,
+              onChanged: (value) {
+                setState(() {
+                  _selectedPurpose = value;
+                });
+              },
+              isExpanded: true,
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            new Text(
+              'Amount:',
+              //textAlign: TextAlign.left,
+              style: TextStyle(
+                fontSize: 14,
+                //fontFamily: 'BaiJamJuree',
+              ),
+            ),
+            ListTile(
               leading: Text(
                 'K',
                 style: TextStyle(
@@ -330,28 +369,25 @@ class _QRViewScreenState extends State<QRViewScreen> {
                           return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
                         }
                         _isGenerateEnabled = true;
-                        print('Valid amount entered');
-                        dummyData =
-                            _decimalValueNoCommas.toString() + '|+260987456321';
+
+                        //Assign QR data a tab delimited string - Wallet Number + Purpose + Amount
+                        qrDataString = GetKeyValues.onekwachaWalletNumber +
+                            '|' +
+                            _selectedPurpose.toString() +
+                            '|' +
+                            _decimalValueNoCommas.toString();
+                        print(qrDataString);
                         return null;
                       }
                     } catch (identifier) {
                       _isGenerateEnabled = false;
-                      dummyData = null;
+                      qrDataString = null;
                       _isQRVisible = false;
-
-                      // print('Value:' +
-                      //     value +
-                      //     ' or _decimalValueNoCommas:' +
-                      //     _decimalValueNoCommas +
-                      //     ' or _validDouble:' +
-                      //     _validDouble.toString());
-                      // print('Catch error. ' + identifier.toString());
                       return 'Enter amount';
                     }
                   } else {
                     _isGenerateEnabled = false;
-                    dummyData = null;
+                    qrDataString = null;
                     _isQRVisible = false;
                     return 'String is null or empty';
                   }
@@ -363,21 +399,8 @@ class _QRViewScreenState extends State<QRViewScreen> {
                     //symbol: 'K',
                   )
                 ],
-                onSaved: (String value) {
-                  // print('Value:' +
-                  //     value +
-                  //     ' or _decimalValueNoCommas:' +
-                  //     _decimalValueNoCommas.toString() +
-                  //     ' or _validDouble:' +
-                  //     _validDouble.toString());
-                  // setState(() {
-                  //   dummyData = _validDouble.toString();
-
-                  //   if (dummyData == null) {
-                  //     _isQRVisible = false;
-                  //   }
-                  // });
-                },
+                onSaved: (String value) {},
+                decoration: InputDecoration(hintText: 'Enter amount'),
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
                 style: TextStyle(
@@ -389,8 +412,6 @@ class _QRViewScreenState extends State<QRViewScreen> {
               trailing: new RaisedButton(
                 color: kDefaultPrimaryColor,
                 textColor: kTextPrimaryColor,
-                // padding:
-                //     const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
                 child: new Text(
                   'Generate',
                   style: TextStyle(
@@ -403,46 +424,42 @@ class _QRViewScreenState extends State<QRViewScreen> {
                   if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
                     setState(() {
-                      //dummyData = _decimalValueNoCommas;
-
-                      if (dummyData != null && _isGenerateEnabled) {
+                      if (qrDataString != null && _isGenerateEnabled) {
                         _isQRVisible = true;
                       } else {
-                        dummyData = null;
+                        qrDataString = null;
                         _isQRVisible = false;
-                        formWidget.removeAt(1);
-                        print('Removed widget');
                       }
                     });
                   }
                 },
               ),
             ),
-          ),
-          //QR Code display
-          (dummyData == null)
-              ? Container()
-              : new Visibility(
-                  visible: _isQRVisible,
-                  child: Column(children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20.0, horizontal: 50.0),
-                      child: Column(
-                        children: [
-                          Text('Present below QR'),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          QrImage(
-                            data: dummyData,
-                            gapless: true,
-                          ),
-                        ],
+            //QR Code display
+            (qrDataString == null)
+                ? Container()
+                : new Visibility(
+                    visible: _isQRVisible,
+                    child: Column(children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20.0, horizontal: 50.0),
+                        child: Column(
+                          children: [
+                            Text('Present below QR'),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            QrImage(
+                              data: qrDataString,
+                              gapless: true,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ])),
-        ],
+                    ])),
+          ],
+        ),
       ),
     );
 
