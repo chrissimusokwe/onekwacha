@@ -67,6 +67,7 @@ class GetKeyValues {
   //Need to dynamically pull this from user's profile
   static String onekwachaWalletNumber = '+260987456321';
   static double newInvoiceFee = 50.0;
+  static double currentBalance = 6984.0;
 
   static List<DropdownMenuItem<int>> purposeList = [];
 

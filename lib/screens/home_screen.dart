@@ -5,6 +5,7 @@ import 'package:onekwacha/screens/scanpay/qrview_screen.dart';
 import 'package:onekwacha/screens/send/send_screen.dart';
 import 'package:onekwacha/screens/topUp/top_up_screen.dart';
 import 'package:onekwacha/utils/custom_icons.dart';
+import 'package:onekwacha/utils/get_key_values.dart';
 import 'package:onekwacha/widgets/image_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
     if (widget.walletBalance.toString().isEmpty ||
         widget.walletBalance == null) {
-      _currentBalance = 0.0;
+      _currentBalance = GetKeyValues.currentBalance;
     } else {
       _currentBalance = _currentBalance + widget.walletBalance;
     }

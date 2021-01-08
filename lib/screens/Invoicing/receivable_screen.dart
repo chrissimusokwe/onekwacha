@@ -1,52 +1,57 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:onekwacha/models/InvoicingModel.dart';
+import 'package:onekwacha/screens/invoicing/invoices_screen.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
+import 'package:onekwacha/screens/common/cards_details_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:onekwacha/utils/global_strings.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:onekwacha/utils/get_key_values.dart';
+import 'package:onekwacha/screens/common/success_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:onekwacha/screens/home_screen.dart';
-import 'package:onekwacha/utils/get_key_values.dart';
-import 'package:onekwacha/models/InvoicingModel.dart';
-import 'package:onekwacha/screens/invoicing/invoicing_success.dart';
 
-class InvoicingConfirmationScreen extends StatefulWidget {
-  final String requestFrom;
+class ReceivableScreen extends StatefulWidget {
+  final int incomingData;
+  final String from;
+  final String to;
+  final String destinationPlatform;
   final String purpose;
   final double amount;
+  final double currentBalance;
   final String transactionType;
-  InvoicingConfirmationScreen({
+  final String accountName;
+  final int accountNumber;
+  final int brankCode;
+  final String bankName;
+  final QueryDocumentSnapshot document;
+  ReceivableScreen({
     Key key,
-    this.requestFrom,
+    this.incomingData,
+    @required this.from,
+    @required this.to,
+    @required this.destinationPlatform,
     this.purpose,
     this.amount,
-    this.transactionType,
+    this.currentBalance,
+    @required this.transactionType,
+    this.accountName,
+    this.accountNumber,
+    this.brankCode,
+    this.bankName,
+    @required this.document,
   }) : super(key: key);
 
   @override
-  _InvoicingConfirmationScreenState createState() =>
-      _InvoicingConfirmationScreenState();
+  _ReceivableScreenState createState() => _ReceivableScreenState();
 }
 
-class _InvoicingConfirmationScreenState
-    extends State<InvoicingConfirmationScreen> {
+class _ReceivableScreenState extends State<ReceivableScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
-  String _receivableUserID;
-  String _payableUserID;
-  String _purpose;
-  double _amount;
-  String _transactionType;
-  String _fee;
 
   @override
   Widget build(BuildContext context) {
-    _receivableUserID = GetKeyValues.onekwachaWalletNumber;
-    _payableUserID = widget.requestFrom;
-    _purpose = widget.purpose;
-    _amount = widget.amount;
-    _transactionType = widget.transactionType.toString();
-    _fee = GetKeyValues.newInvoiceFee.toString();
-
     return Form(
         child: Scaffold(
       backgroundColor: kBackgroundShade,
@@ -54,7 +59,7 @@ class _InvoicingConfirmationScreenState
         title: Column(
           children: <Widget>[
             Text(
-              'Confirm invoice',
+              'Receivable',
               style: TextStyle(
                 fontSize: kAppBarFontSize,
               ),
@@ -68,6 +73,9 @@ class _InvoicingConfirmationScreenState
           children: getConfirmationFormWidget(),
         ),
       ),
+      // bottomNavigationBar: BottomNavigation(
+      //   incomingData: _selectedIndex,
+      // ),
     ));
   }
 
@@ -96,7 +104,7 @@ class _InvoicingConfirmationScreenState
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Invoice Details',
+                      'Receivable Details',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         //decoration: TextDecoration.underline,
@@ -116,7 +124,7 @@ class _InvoicingConfirmationScreenState
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Request from:',
+                      'From:',
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -126,20 +134,20 @@ class _InvoicingConfirmationScreenState
                   Expanded(
                     flex: 2,
                     child: new Text(
-                      _payableUserID,
+                      widget.from,
                     ),
                   ),
                 ],
               ),
               SizedBox(
-                height: 10,
+                height: 5,
               ),
               Row(
                 children: [
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Send to:',
+                      'Destination:',
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -148,14 +156,33 @@ class _InvoicingConfirmationScreenState
                   ),
                   Expanded(
                     flex: 2,
-                    child: new Text(
-                      _receivableUserID,
-                    ),
+                    child: new Text(widget.destinationPlatform),
                   ),
                 ],
               ),
               SizedBox(
-                height: 10,
+                height: 5,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'Destination #:',
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: new Text(widget.to),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 5,
               ),
               Row(
                 children: [
@@ -172,20 +199,21 @@ class _InvoicingConfirmationScreenState
                   Expanded(
                     flex: 2,
                     child: new Text(
-                      _purpose,
+                      widget.purpose,
+                      //style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
               ),
               SizedBox(
-                height: 10,
+                height: 5,
               ),
               Row(
                 children: [
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Requested Amt:',
+                      'Transaction Amt:',
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -196,14 +224,14 @@ class _InvoicingConfirmationScreenState
                     flex: 2,
                     child: new Text(
                       MyGlobalVariables.zmcurrencySymbol +
-                          currencyConvertor.format(_amount),
+                          currencyConvertor.format(widget.amount),
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
               ),
               SizedBox(
-                height: 10,
+                height: 5,
               ),
               Row(
                 children: [
@@ -219,12 +247,30 @@ class _InvoicingConfirmationScreenState
                   ),
                   Expanded(
                     flex: 2,
-                    child: new Text(_transactionType),
+                    child: new Text(widget.transactionType),
                   ),
                 ],
               ),
               SizedBox(
                 height: 5,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'Transaction ID:',
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: new Text(widget.document.id),
+                  ),
+                ],
               ),
             ],
           ),
@@ -232,17 +278,23 @@ class _InvoicingConfirmationScreenState
       ),
     );
 
-    void onPressedCancel() {
+    void onPressedDelete(String id) {
+      InvoicingModel.deactivateInvoice(id);
+
+      //bool _route = false;
       Navigator.pushAndRemoveUntil(
           context,
           PageTransition(
-            child: HomeScreen(
-                //walletBalance: widget.currentBalance,
-                ),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.leftToRight,
+            child: InvoicingScreen(
+              incomingData: 0,
+              selectedTab: 1,
+            ),
           ),
           (route) => false);
     }
+
+    void onPressedEdit() {}
 
     formWidget.add(
       Column(
@@ -255,56 +307,34 @@ class _InvoicingConfirmationScreenState
             children: [
               //Transaction Confirmation button
               new RaisedButton(
-                  color: kDefaultPrimaryColor,
-                  textColor: kTextPrimaryColor,
-                  child: new Text(
-                    MyGlobalVariables.processTranscation.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: kSubmitButtonFontSize,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'BaiJamJuree',
-                    ),
+                color: kDefaultPrimaryColor,
+                textColor: kTextPrimaryColor,
+                child: new Text(
+                  'DELETE',
+                  style: TextStyle(
+                    fontSize: kSubmitButtonFontSize,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'BaiJamJuree',
                   ),
-                  onPressed: () async {
-                    //Create New Invoice
-                    DocumentReference document;
-                    document = await InvoicingModel.createInvoice(
-                        _amount.toString(),
-                        _fee,
-                        _purpose,
-                        _receivableUserID,
-                        _payableUserID);
-
-                    //Navigate to the success screen once done
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.rightToLeft,
-                          child: InvoicingSuccessScreen(
-                            requestFrom: _payableUserID,
-                            sendTo: _receivableUserID,
-                            purpose: _purpose,
-                            amount: _amount,
-                            transactionType: _transactionType,
-                            documentID: document.id,
-                          ),
-                        ),
-                        (route) => false);
-                  }),
+                ),
+                onPressed: () {
+                  onPressedDelete(widget.document.id);
+                },
+              ),
 
               //Transaction Cancellation button
               new RaisedButton(
                   color: kDefaultPrimaryColor,
                   textColor: kTextPrimaryColor,
                   child: new Text(
-                    MyGlobalVariables.cancelTranscation.toUpperCase(),
+                    'EDIT',
                     style: TextStyle(
                       fontSize: kSubmitButtonFontSize,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'BaiJamJuree',
                     ),
                   ),
-                  onPressed: onPressedCancel),
+                  onPressed: onPressedEdit),
             ],
           ),
         ],

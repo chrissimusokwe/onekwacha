@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:page_transition/page_transition.dart';
@@ -20,6 +21,7 @@ class TransactionSuccessScreen extends StatefulWidget {
   final int cardCvv;
   final int cardMonth;
   final int cardYear;
+  final QueryDocumentSnapshot document;
   TransactionSuccessScreen({
     Key key,
     this.incomingData,
@@ -35,6 +37,7 @@ class TransactionSuccessScreen extends StatefulWidget {
     this.cardCvv,
     this.cardMonth,
     this.cardYear,
+    this.document,
   }) : super(key: key);
 
   @override
@@ -265,6 +268,27 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   Expanded(
                     flex: 2,
                     child: new Text(widget.transactionType),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'Transaction ID:',
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: new Text(widget.document.id),
                   ),
                 ],
               ),

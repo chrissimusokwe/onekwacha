@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/screens/common/cards_details_screen.dart';
@@ -22,6 +23,7 @@ class ConfirmationScreen extends StatefulWidget {
   final int accountNumber;
   final int brankCode;
   final String bankName;
+  final QueryDocumentSnapshot document;
   ConfirmationScreen({
     Key key,
     this.incomingData,
@@ -36,6 +38,7 @@ class ConfirmationScreen extends StatefulWidget {
     this.accountNumber,
     this.brankCode,
     this.bankName,
+    @required this.document,
   }) : super(key: key);
 
   @override

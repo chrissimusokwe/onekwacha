@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:page_transition/page_transition.dart';
@@ -16,6 +17,7 @@ class ErrorScreen extends StatefulWidget {
   final double amount;
   final double currentBalance;
   final String transactionType;
+  final QueryDocumentSnapshot document;
   ErrorScreen({
     Key key,
     this.incomingData,
@@ -27,6 +29,7 @@ class ErrorScreen extends StatefulWidget {
     this.amount,
     this.currentBalance,
     @required this.transactionType,
+    @required this.document,
   }) : super(key: key);
 
   @override

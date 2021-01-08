@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:page_transition/page_transition.dart';
@@ -12,6 +13,7 @@ class InvoicingSuccessScreen extends StatefulWidget {
   final String purpose;
   final double amount;
   final String transactionType;
+  final String documentID;
   InvoicingSuccessScreen({
     Key key,
     this.requestFrom,
@@ -19,6 +21,7 @@ class InvoicingSuccessScreen extends StatefulWidget {
     this.purpose,
     this.amount,
     this.transactionType,
+    this.documentID,
   }) : super(key: key);
 
   @override
@@ -32,6 +35,7 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
   String _purpose;
   double _amount;
   String _transactionType;
+  String _transactionID;
 
   //int _selectedIndex = 0;
   @override
@@ -41,6 +45,8 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
     _purpose = widget.purpose;
     _amount = widget.amount;
     _transactionType = widget.transactionType.toString();
+    _transactionID = widget.documentID;
+
     return Form(
         child: Scaffold(
       backgroundColor: Colors.grey.shade300,
@@ -212,6 +218,27 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                   Expanded(
                     flex: 2,
                     child: new Text(_transactionType),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'Transaction ID:',
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: new Text(_transactionID.toString()),
                   ),
                 ],
               ),
