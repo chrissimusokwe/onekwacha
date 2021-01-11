@@ -38,7 +38,7 @@ class ConfirmationScreen extends StatefulWidget {
     this.accountNumber,
     this.brankCode,
     this.bankName,
-    @required this.document,
+    this.document,
   }) : super(key: key);
 
   @override

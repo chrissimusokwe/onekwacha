@@ -8,9 +8,18 @@ class GetKeyValues {
     0: 'Business',
     1: 'Entertainment',
     2: 'Education',
-    3: 'Family & Friends Support',
+    3: 'Family & Friends',
     4: 'Groceries',
     5: 'Travel',
+  };
+
+  static Map<String, IconData> _purposeIcons = {
+    'Business': CustomIcons.clock,
+    'Entertainment': CustomIcons.video,
+    'Education': CustomIcons.department,
+    'Family & Friends': CustomIcons.user,
+    'Groceries': CustomIcons.add_shopping_cart,
+    'Travel': CustomIcons.globe_earth,
   };
 
   static Map<int, String> _bank = {
@@ -37,10 +46,16 @@ class GetKeyValues {
     1: 'Transfer',
     2: 'Invoicing',
     3: 'Marketplace',
+    4: 'Cash out',
   };
 
   static String getPurposeValue(int index) {
     String value = _purpose[index];
+    return value;
+  }
+
+  static IconData getPurposeIcons(String purpose) {
+    IconData value = _purposeIcons[purpose];
     return value;
   }
 
@@ -64,10 +79,7 @@ class GetKeyValues {
     return value;
   }
 
-  //Need to dynamically pull this from user's profile
-  static String onekwachaWalletNumber = '+260987456321';
-  static double newInvoiceFee = 50.0;
-  static double currentBalance = 6984.0;
+  //static List<DropdownMenuItem<int>> purposeIcons = [];
 
   static List<DropdownMenuItem<int>> purposeList = [];
 

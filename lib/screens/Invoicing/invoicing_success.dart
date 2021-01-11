@@ -1,21 +1,23 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
+import 'package:onekwacha/utils/get_key_values.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:onekwacha/utils/global_strings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:onekwacha/screens/invoicing/invoices_screen.dart';
+import 'package:onekwacha/screens/home_screen.dart';
 
 class InvoicingSuccessScreen extends StatefulWidget {
+  final double currentBalance;
   final String requestFrom;
   final String sendTo;
   final String purpose;
   final double amount;
-  final String transactionType;
+  final int transactionType;
   final String documentID;
   InvoicingSuccessScreen({
     Key key,
+    this.currentBalance,
     this.requestFrom,
     this.sendTo,
     this.purpose,
@@ -33,18 +35,17 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
   String _receivableUserID;
   String _payableUserID;
   String _purpose;
-  double _amount;
-  String _transactionType;
+  double _transactionAmount;
+  int _transactionType;
   String _transactionID;
 
-  //int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     _receivableUserID = widget.sendTo;
     _payableUserID = widget.requestFrom;
     _purpose = widget.purpose;
-    _amount = widget.amount;
-    _transactionType = widget.transactionType.toString();
+    _transactionAmount = widget.amount;
+    _transactionType = widget.transactionType;
     _transactionID = widget.documentID;
 
     return Form(
@@ -93,15 +94,28 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                 children: [
                   Expanded(
                     flex: 1,
-                    child: new Text(
-                      'SUCCESS!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        //decoration: TextDecoration.underline,
-                        fontSize: 18.0,
-                        fontFamily: 'BaiJamJuree',
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.check_circle_outline_rounded,
+                          color: Colors.green,
+                          size: 50,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        new Text(
+                          'Transaction Successful!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            //decoration: TextDecoration.underline,
+                            fontSize: 18.0,
+                            fontFamily: 'BaiJamJuree',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -194,7 +208,7 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                     flex: 2,
                     child: new Text(
                       MyGlobalVariables.zmcurrencySymbol +
-                          currencyConvertor.format(_amount),
+                          currencyConvertor.format(_transactionAmount),
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -217,12 +231,13 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                   ),
                   Expanded(
                     flex: 2,
-                    child: new Text(_transactionType),
+                    child: new Text(
+                        GetKeyValues.getTransactionTypeValue(_transactionType)),
                   ),
                 ],
               ),
               SizedBox(
-                height: 5,
+                height: 10,
               ),
               Row(
                 children: [
@@ -252,8 +267,9 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
       Navigator.pushAndRemoveUntil(
           context,
           PageTransition(
-            child: InvoicingScreen(
-              incomingData: 0,
+            child: HomeScreen(
+              //incomingData: 0,
+              walletBalance: widget.currentBalance,
             ),
             type: PageTransitionType.fade,
           ),

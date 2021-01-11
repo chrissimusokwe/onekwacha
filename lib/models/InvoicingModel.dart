@@ -20,21 +20,55 @@ class InvoicingModel {
   //     this.status,
   //     this.payableUserID});
 
-  static Future createInvoice(String _amount, String _fee, String _purpose,
-      String _receivableUserID, String _payableUserID) async {
+  static Future createInvoice(
+    double _amount,
+    String _fee,
+    String _purpose,
+    String _payableUserID,
+    String _receivableUserID,
+  ) async {
     DocumentReference document =
         await FirebaseFirestore.instance.collection("Invoices").add({
-      'Amount': _amount,
-      'Fee': _fee,
+      'Amount': _amount.toString(),
+      'Fee': _fee.toString(),
       'InvoiceDate': DateTime.now().toString(),
-      'Purpose': _purpose,
-      'ReceivableUserID': _receivableUserID,
+      'Purpose': _purpose.toString(),
+      'ReceivableUserID': _receivableUserID.toString(),
       'SettlementDate': '',
-      'PayableUserID': _payableUserID,
-      'Status': 'Active'
+      'PayableUserID': _payableUserID.toString(),
+      'Status': 'Active',
+    }).catchError((e) {
+      return null;
     });
 
     return document;
+  }
+
+  static Future<bool> payInvoice(
+    String id,
+    double _amount,
+    double _fee,
+    String _purpose,
+    String _payableUserID,
+    String _receivableUserID,
+    String _settlementDate,
+    String _status,
+  ) async {
+    bool _paid = true;
+    await FirebaseFirestore.instance.collection("Invoices").doc(id).update({
+      'Amount': _amount.toString(),
+      'Fee': _fee.toString(),
+      'Purpose': _purpose.toString(),
+      'PayableUserID': _payableUserID.toString(),
+      'ReceivableUserID': _receivableUserID.toString(),
+      'SettlementDate': _settlementDate.toString(),
+      'Status': _status.toString(),
+    }).catchError((e) {
+      _paid = false;
+      print(e);
+      print(id.toString());
+    });
+    return _paid;
   }
 
   static Future<void> deactivateInvoice(String id) async {
@@ -42,13 +76,6 @@ class InvoicingModel {
         .collection("Invoices")
         .doc(id)
         .update({"Status": "InActive"});
-  }
-
-  Future<void> editInvoice(bool _isFavourite, String id) async {
-    await FirebaseFirestore.instance
-        .collection("products")
-        .doc(id)
-        .update({"isFavourite": !_isFavourite});
   }
 
   Future<void> deleteProduct(DocumentSnapshot doc) async {

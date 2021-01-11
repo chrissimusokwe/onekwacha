@@ -205,8 +205,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
               requestFrom: requestFromPhoneNumber,
               purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
               amount: double.parse(_decimalValueNoCommas),
-              transactionType:
-                  GetKeyValues.getTransactionTypeValue(_transactionType),
+              transactionType: _transactionType,
             ),
           ),
         );

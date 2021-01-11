@@ -14,7 +14,7 @@ class InvoicingConfirmationScreen extends StatefulWidget {
   final String requestFrom;
   final String purpose;
   final double amount;
-  final String transactionType;
+  final int transactionType;
   InvoicingConfirmationScreen({
     Key key,
     this.requestFrom,
@@ -35,17 +35,17 @@ class _InvoicingConfirmationScreenState
   String _payableUserID;
   String _purpose;
   double _amount;
-  String _transactionType;
+  int _transactionType;
   String _fee;
 
   @override
   Widget build(BuildContext context) {
-    _receivableUserID = GetKeyValues.onekwachaWalletNumber;
+    _receivableUserID = MyGlobalVariables.onekwachaWalletNumber;
     _payableUserID = widget.requestFrom;
     _purpose = widget.purpose;
     _amount = widget.amount;
-    _transactionType = widget.transactionType.toString();
-    _fee = GetKeyValues.newInvoiceFee.toString();
+    _transactionType = widget.transactionType;
+    _fee = MyGlobalVariables.feeInvoicing.toString();
 
     return Form(
         child: Scaffold(
@@ -219,7 +219,8 @@ class _InvoicingConfirmationScreenState
                   ),
                   Expanded(
                     flex: 2,
-                    child: new Text(_transactionType),
+                    child: new Text(
+                        GetKeyValues.getTransactionTypeValue(_transactionType)),
                   ),
                 ],
               ),
@@ -269,11 +270,12 @@ class _InvoicingConfirmationScreenState
                     //Create New Invoice
                     DocumentReference document;
                     document = await InvoicingModel.createInvoice(
-                        _amount.toString(),
-                        _fee,
-                        _purpose,
-                        _receivableUserID,
-                        _payableUserID);
+                      _amount,
+                      _fee,
+                      _purpose,
+                      _payableUserID,
+                      _receivableUserID,
+                    );
 
                     //Navigate to the success screen once done
                     Navigator.pushAndRemoveUntil(

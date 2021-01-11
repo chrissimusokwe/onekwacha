@@ -371,7 +371,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
                         _isGenerateEnabled = true;
 
                         //Assign QR data a tab delimited string - Wallet Number + Purpose + Amount
-                        qrDataString = GetKeyValues.onekwachaWalletNumber +
+                        qrDataString = MyGlobalVariables.onekwachaWalletNumber +
                             '|' +
                             _selectedPurpose.toString() +
                             '|' +

@@ -13,5 +13,16 @@ class MyGlobalVariables {
   static const double minimumTopUpAmount = 50.00;
   static const String errorInssufficientBalance =
       'Wallet has insufficient balance';
+  static const double dialogFontSize = 14.00;
+  static const double sizedBoxHeight = 10.00;
+  static const double sizedBoxWidth = 5.00;
   static const String errorHeadline = 'Wallet has insufficient balance';
+  static const double feeInvoicing = 50.00;
+  static const double feeTopUp = 0;
+  static const double feeTransfer = 0;
+  static const double feeCashout = 0;
+
+  //Need to dynamically pull this from user's profile
+  static String onekwachaWalletNumber = '+260987456321';
+  static double currentBalance = 6000.0;
 }

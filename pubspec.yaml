@@ -37,6 +37,7 @@ dependencies:
   firebase_auth: ^0.18.4+1
   date_format: ^1.0.9
   flutter_slidable: ^0.5.7
+  flutter_dialogs: ^1.1.0
   # intl: ^0.15.7
   # moneytextformfield: ^0.3.5+1  
   # barcode_scan:

@@ -29,7 +29,7 @@ class ErrorScreen extends StatefulWidget {
     this.amount,
     this.currentBalance,
     @required this.transactionType,
-    @required this.document,
+    this.document,
   }) : super(key: key);
 
   @override

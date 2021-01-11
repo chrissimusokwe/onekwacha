@@ -3,14 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:onekwacha/models/InvoicingModel.dart';
 import 'package:onekwacha/screens/invoicing/invoices_screen.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
-import 'package:onekwacha/screens/common/cards_details_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:onekwacha/utils/global_strings.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:onekwacha/utils/get_key_values.dart';
-import 'package:onekwacha/screens/common/success_screen.dart';
 import 'package:intl/intl.dart';
-import 'package:onekwacha/screens/home_screen.dart';
 
 class ReceivableScreen extends StatefulWidget {
   final int incomingData;
