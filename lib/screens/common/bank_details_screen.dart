@@ -43,6 +43,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
   TextEditingController _accountName = new TextEditingController();
   TextEditingController _accountNumber = new TextEditingController();
   TextEditingController _branchCode = new TextEditingController();
+  GetKeyValues getKeyValues = new GetKeyValues();
   // AutovalidateMode _autoValidate;
 
   BankDetails _bankDetail = BankDetails();
@@ -54,7 +55,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    GetKeyValues.loadBankList();
+    getKeyValues.loadBankList();
     return new Scaffold(
         key: _scaffoldKey,
         backgroundColor: Colors.grey.shade100,
@@ -169,7 +170,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                   new DropdownButton(
                     hint: Text('Select bank'),
                     value: _selectedBank,
-                    items: GetKeyValues.bankList,
+                    items: getKeyValues.bankList,
                     onChanged: (value) {
                       setState(() {
                         _selectedBank = value;
@@ -224,7 +225,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
           type: PageTransitionType.rightToLeft,
           child: ConfirmationScreen(
             from: MyGlobalVariables.topUpWalletDestination,
-            to: GetKeyValues.getBankListValue(_selectedBank) +
+            to: getKeyValues.getBankListValue(_selectedBank) +
                 ' - ' +
                 _branchCode.text +
                 ' - ' +
@@ -237,7 +238,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
             accountName: _accountName.text,
             accountNumber: int.parse(_accountNumber.text),
             brankCode: int.parse(_branchCode.text),
-            bankName: GetKeyValues.getBankListValue(_selectedBank),
+            bankName: getKeyValues.getBankListValue(_selectedBank),
           ),
         ),
       );

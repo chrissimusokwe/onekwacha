@@ -20,6 +20,7 @@ class CardScreen extends StatefulWidget {
   final double amount;
   final double currentBalance;
   final String transactionType;
+  final String fee;
   CardScreen({
     Key key,
     this.incomingData,
@@ -27,9 +28,10 @@ class CardScreen extends StatefulWidget {
     @required this.to,
     @required this.destinationPlatform,
     @required this.purpose,
-    this.amount,
+    @required this.amount,
     this.currentBalance,
     @required this.transactionType,
+    @required this.fee,
   }) : super(key: key);
 
   @override
@@ -45,6 +47,7 @@ class _CardScreenState extends State<CardScreen> {
   PaymentCard _paymentCard = PaymentCard();
   //bool _autoValidate = false;
   PaymentCard _card = new PaymentCard();
+  //double _fee = ;
 
   @override
   void initState() {
@@ -230,6 +233,7 @@ class _CardScreenState extends State<CardScreen> {
       form.save();
       // Encrypt and send send payment details to payment gateway
       //_showInSnackBar('Payment card is valid');
+
       Navigator.pushAndRemoveUntil(
           context,
           PageTransition(
@@ -242,6 +246,7 @@ class _CardScreenState extends State<CardScreen> {
                 amount: widget.amount,
                 currentBalance: widget.currentBalance,
                 transactionType: widget.transactionType,
+                fee: widget.fee,
                 cardName: _card.name,
                 cardNumber: _paymentCard.number,
                 cardCvv: _paymentCard.cvv,

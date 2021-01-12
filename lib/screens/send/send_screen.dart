@@ -59,11 +59,12 @@ class _SendScreenState extends State<SendScreen> {
   String _decimalValueNoCommas;
   double _validDouble = 0.0;
   double transferAmount = 0;
+  GetKeyValues getKeyValues = new GetKeyValues();
 
   @override
   Widget build(BuildContext context) {
-    GetKeyValues.loadFundDestinationList();
-    GetKeyValues.loadPuporseList();
+    getKeyValues.loadFundDestinationList();
+    getKeyValues.loadPuporseList();
     return Form(
         key: _formKey,
         autovalidateMode: AutovalidateMode.disabled,
@@ -102,7 +103,7 @@ class _SendScreenState extends State<SendScreen> {
     //Fund destination field widget
     formWidget.add(new DropdownButton(
       //hint: Text('Select Source'),
-      items: GetKeyValues.fundDestinationList,
+      items: getKeyValues.fundDestinationList,
       value: _selectedFundDestination,
       onChanged: (value) {
         setState(() {
@@ -171,7 +172,7 @@ class _SendScreenState extends State<SendScreen> {
     formWidget.add(new DropdownButton(
       hint: Text('Select Purpose'),
       value: _selectedPurpose,
-      items: GetKeyValues.purposeList,
+      items: getKeyValues.purposeList,
       onChanged: (value) {
         setState(() {
           _selectedPurpose = value;
@@ -265,14 +266,14 @@ class _SendScreenState extends State<SendScreen> {
                   child: ErrorScreen(
                     from: MyGlobalVariables.topUpWalletDestination,
                     to: fullPhoneNumber,
-                    destinationPlatform: GetKeyValues.getFundDestinationValue(
-                        _selectedFundDestination),
-                    purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
+                    destinationPlatform: getKeyValues
+                        .getFundDestinationValue(_selectedFundDestination),
+                    purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                     errorMessage: MyGlobalVariables.errorInssufficientBalance,
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: widget.currentBalance,
                     transactionType:
-                        GetKeyValues.getTransactionTypeValue(_transactionType),
+                        getKeyValues.getTransactionType(_transactionType),
                   ),
                 ),
               );
@@ -284,13 +285,13 @@ class _SendScreenState extends State<SendScreen> {
                   child: ConfirmationScreen(
                     from: MyGlobalVariables.topUpWalletDestination,
                     to: fullPhoneNumber,
-                    destinationPlatform: GetKeyValues.getFundDestinationValue(
-                        _selectedFundDestination),
-                    purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
+                    destinationPlatform: getKeyValues
+                        .getFundDestinationValue(_selectedFundDestination),
+                    purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: _balance,
                     transactionType:
-                        GetKeyValues.getTransactionTypeValue(_transactionType),
+                        getKeyValues.getTransactionType(_transactionType),
                   ),
                 ),
               );
@@ -307,14 +308,14 @@ class _SendScreenState extends State<SendScreen> {
                   child: ErrorScreen(
                     from: MyGlobalVariables.topUpWalletDestination,
                     to: fullPhoneNumber,
-                    destinationPlatform: GetKeyValues.getFundDestinationValue(
-                        _selectedFundDestination),
-                    purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
+                    destinationPlatform: getKeyValues
+                        .getFundDestinationValue(_selectedFundDestination),
+                    purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                     errorMessage: MyGlobalVariables.errorInssufficientBalance,
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: widget.currentBalance,
                     transactionType:
-                        GetKeyValues.getTransactionTypeValue(_transactionType),
+                        getKeyValues.getTransactionType(_transactionType),
                   ),
                 ),
               );
@@ -326,13 +327,13 @@ class _SendScreenState extends State<SendScreen> {
                   child: ConfirmationScreen(
                     from: MyGlobalVariables.topUpWalletDestination,
                     to: fullPhoneNumber,
-                    destinationPlatform: GetKeyValues.getFundDestinationValue(
-                        _selectedFundDestination),
-                    purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
+                    destinationPlatform: getKeyValues
+                        .getFundDestinationValue(_selectedFundDestination),
+                    purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: _balance,
                     transactionType:
-                        GetKeyValues.getTransactionTypeValue(_transactionType),
+                        getKeyValues.getTransactionType(_transactionType),
                   ),
                 ),
               );
@@ -347,16 +348,16 @@ class _SendScreenState extends State<SendScreen> {
                   type: PageTransitionType.rightToLeft,
                   child: ErrorScreen(
                     from: MyGlobalVariables.topUpWalletDestination,
-                    to: GetKeyValues.getFundDestinationValue(
-                        _selectedFundDestination),
-                    destinationPlatform: GetKeyValues.getFundDestinationValue(
-                        _selectedFundDestination),
-                    purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
+                    to: getKeyValues
+                        .getFundDestinationValue(_selectedFundDestination),
+                    destinationPlatform: getKeyValues
+                        .getFundDestinationValue(_selectedFundDestination),
+                    purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                     errorMessage: MyGlobalVariables.errorInssufficientBalance,
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: widget.currentBalance,
                     transactionType:
-                        GetKeyValues.getTransactionTypeValue(_transactionType),
+                        getKeyValues.getTransactionType(_transactionType),
                   ),
                 ),
               );
@@ -368,15 +369,15 @@ class _SendScreenState extends State<SendScreen> {
                   type: PageTransitionType.rightToLeft,
                   child: BankDetailsScreen(
                     from: MyGlobalVariables.topUpWalletDestination,
-                    to: GetKeyValues.getFundDestinationValue(
-                        _selectedFundDestination),
-                    destinationPlatform: GetKeyValues.getFundDestinationValue(
-                        _selectedFundDestination),
-                    purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
+                    to: getKeyValues
+                        .getFundDestinationValue(_selectedFundDestination),
+                    destinationPlatform: getKeyValues
+                        .getFundDestinationValue(_selectedFundDestination),
+                    purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: _balance,
                     transactionType:
-                        GetKeyValues.getTransactionTypeValue(_transactionType),
+                        getKeyValues.getTransactionType(_transactionType),
                   ),
                 ),
               );

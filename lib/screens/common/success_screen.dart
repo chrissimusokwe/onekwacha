@@ -6,6 +6,7 @@ import 'package:onekwacha/utils/global_strings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:onekwacha/screens/home_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:onekwacha/utils/get_key_values.dart';
 
 class TransactionSuccessScreen extends StatefulWidget {
   final int incomingData;
@@ -22,23 +23,25 @@ class TransactionSuccessScreen extends StatefulWidget {
   final int cardMonth;
   final int cardYear;
   final QueryDocumentSnapshot document;
-  TransactionSuccessScreen({
-    Key key,
-    this.incomingData,
-    @required this.from,
-    @required this.to,
-    @required this.destinationPlatform,
-    @required this.purpose,
-    this.amount,
-    this.currentBalance,
-    @required this.transactionType,
-    this.cardName,
-    this.cardNumber,
-    this.cardCvv,
-    this.cardMonth,
-    this.cardYear,
-    this.document,
-  }) : super(key: key);
+  final String fee;
+  TransactionSuccessScreen(
+      {Key key,
+      this.incomingData,
+      @required this.from,
+      @required this.to,
+      @required this.destinationPlatform,
+      @required this.purpose,
+      this.amount,
+      this.currentBalance,
+      @required this.transactionType,
+      this.cardName,
+      this.cardNumber,
+      this.cardCvv,
+      this.cardMonth,
+      this.cardYear,
+      this.document,
+      @required this.fee})
+      : super(key: key);
 
   @override
   _TransactionSuccessScreenState createState() =>
@@ -47,10 +50,25 @@ class TransactionSuccessScreen extends StatefulWidget {
 
 class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
+  GetKeyValues getKeyValues = new GetKeyValues();
+  String _receivableUserID;
+  String _payableUserID;
+  String _purpose;
+  String _fee;
+  double _totalAmount;
+  String _transactionType;
+  String _transactionID;
 
   //int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
+    _receivableUserID = widget.to;
+    _payableUserID = widget.from;
+    _purpose = widget.purpose;
+    _transactionType = widget.transactionType;
+    _transactionID = widget.document.id.toString();
+    _fee = widget.fee;
+    _totalAmount = widget.amount;
     return Form(
         child: Scaffold(
       backgroundColor: Colors.grey.shade300,
@@ -76,10 +94,23 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
   List<Widget> getConfirmationFormWidget() {
     List<Widget> formWidget = new List();
 
+    void onPressedConfirm() {
+      Navigator.pushAndRemoveUntil(
+          context,
+          PageTransition(
+            child: HomeScreen(
+              //incomingData: 0,
+              walletBalance: widget.currentBalance,
+            ),
+            type: PageTransitionType.fade,
+          ),
+          (route) => false);
+    }
+
     formWidget.add(
       Card(
         elevation: 5,
-        color: kDefaultPrimaryColor,
+        color: kDarkPrimaryColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -97,15 +128,28 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                 children: [
                   Expanded(
                     flex: 1,
-                    child: new Text(
-                      'SUCCESS!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        //decoration: TextDecoration.underline,
-                        fontSize: 20.0,
-                        fontFamily: 'BaiJamJuree',
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.check_circle_outline_rounded,
+                          color: kDarkPrimaryColor,
+                          size: 50,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        new Text(
+                          'Transaction Successful!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            //decoration: TextDecoration.underline,
+                            fontSize: 18.0,
+                            fontFamily: 'BaiJamJuree',
+                            fontWeight: FontWeight.bold,
+                            color: kDarkPrimaryColor,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -118,7 +162,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'From:',
+                      'Request from:',
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -128,21 +172,20 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   Expanded(
                     flex: 2,
                     child: new Text(
-                      widget.from,
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      _payableUserID,
                     ),
                   ),
                 ],
               ),
               SizedBox(
-                height: 5,
+                height: 10,
               ),
               Row(
                 children: [
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Destination:',
+                      'Send to:',
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -151,33 +194,14 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   ),
                   Expanded(
                     flex: 2,
-                    child: new Text(widget.destinationPlatform),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 1,
                     child: new Text(
-                      'Destination #:',
-                      textAlign: TextAlign.right,
+                      _receivableUserID,
                     ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: new Text(widget.to),
                   ),
                 ],
               ),
               SizedBox(
-                height: 5,
+                height: 10,
               ),
               Row(
                 children: [
@@ -194,21 +218,20 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   Expanded(
                     flex: 2,
                     child: new Text(
-                      widget.purpose,
-                      //style: TextStyle(fontWeight: FontWeight.bold),
+                      _purpose,
                     ),
                   ),
                 ],
               ),
               SizedBox(
-                height: 5,
+                height: 10,
               ),
               Row(
                 children: [
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Transaction Amt:',
+                      'Fees:',
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -219,21 +242,21 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                     flex: 2,
                     child: new Text(
                       MyGlobalVariables.zmcurrencySymbol +
-                          currencyConvertor.format(widget.amount),
+                          currencyConvertor.format(_fee),
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
               ),
               SizedBox(
-                height: 5,
+                height: 10,
               ),
               Row(
                 children: [
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Wallet Balance:',
+                      'Total Amt:',
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -244,14 +267,15 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                     flex: 2,
                     child: new Text(
                       MyGlobalVariables.zmcurrencySymbol +
-                          currencyConvertor.format(widget.currentBalance),
+                          currencyConvertor.format(_totalAmount) +
+                          '*',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
               ),
               SizedBox(
-                height: 5,
+                height: 10,
               ),
               Row(
                 children: [
@@ -267,12 +291,12 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   ),
                   Expanded(
                     flex: 2,
-                    child: new Text(widget.transactionType),
+                    child: new Text(_transactionType),
                   ),
                 ],
               ),
               SizedBox(
-                height: 5,
+                height: 10,
               ),
               Row(
                 children: [
@@ -288,53 +312,56 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   ),
                   Expanded(
                     flex: 2,
-                    child: new Text(widget.document.id),
+                    child: new Text(_transactionID.toString()),
                   ),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(children: [
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      ' *Includes transaction fees.',
+                      style: TextStyle(fontSize: 10),
+                    ),
+                  ),
+                )
+              ]),
+              SizedBox(
+                height: 30,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  //Transaction Confirmation button
+                  new RaisedButton(
+                    color: Colors.grey.shade100,
+                    textColor: kTextPrimaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                      side: BorderSide(
+                        color: kDarkPrimaryColor,
+                        width: 3,
+                      ),
+                    ),
+                    child: new Text(
+                      MyGlobalVariables.successTranscation.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: kSubmitButtonFontSize,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'BaiJamJuree',
+                        color: kDarkPrimaryColor,
+                      ),
+                    ),
+                    onPressed: onPressedConfirm,
+                  )
                 ],
               ),
             ],
           ),
         ),
-      ),
-    );
-
-    void onPressedConfirm() {
-      Navigator.pushAndRemoveUntil(
-          context,
-          PageTransition(
-            child: HomeScreen(
-              walletBalance: widget.currentBalance,
-            ),
-            type: PageTransitionType.fade,
-          ),
-          (route) => false);
-    }
-
-    formWidget.add(
-      Column(
-        children: [
-          SizedBox(
-            height: 20,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              //Transaction Confirmation button
-              new RaisedButton(
-                  color: kDefaultPrimaryColor,
-                  textColor: kTextPrimaryColor,
-                  child: new Text(
-                    MyGlobalVariables.successTranscation.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: kSubmitButtonFontSize,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'BaiJamJuree',
-                    ),
-                  ),
-                  onPressed: onPressedConfirm),
-            ],
-          ),
-        ],
       ),
     );
     return formWidget;

@@ -290,49 +290,30 @@ class _ReceivableScreenState extends State<ReceivableScreen> {
           (route) => false);
     }
 
-    void onPressedEdit() {}
-
     formWidget.add(
       Column(
         children: [
           SizedBox(
             height: 20,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              //Transaction Confirmation button
-              new RaisedButton(
-                color: kDefaultPrimaryColor,
-                textColor: kTextPrimaryColor,
-                child: new Text(
-                  'DELETE',
-                  style: TextStyle(
-                    fontSize: kSubmitButtonFontSize,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'BaiJamJuree',
-                  ),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            //Transaction Confirmation button
+            new RaisedButton(
+              color: kDefaultPrimaryColor,
+              textColor: kTextPrimaryColor,
+              child: new Text(
+                'DELETE',
+                style: TextStyle(
+                  fontSize: kSubmitButtonFontSize,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'BaiJamJuree',
                 ),
-                onPressed: () {
-                  onPressedDelete(widget.document.id);
-                },
               ),
-
-              //Transaction Cancellation button
-              new RaisedButton(
-                  color: kDefaultPrimaryColor,
-                  textColor: kTextPrimaryColor,
-                  child: new Text(
-                    'EDIT',
-                    style: TextStyle(
-                      fontSize: kSubmitButtonFontSize,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'BaiJamJuree',
-                    ),
-                  ),
-                  onPressed: onPressedEdit),
-            ],
-          ),
+              onPressed: () {
+                onPressedDelete(widget.document.id);
+              },
+            ),
+          ]),
         ],
       ),
     );

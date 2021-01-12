@@ -47,6 +47,7 @@ class ConfirmationScreen extends StatefulWidget {
 
 class _ConfirmationScreenState extends State<ConfirmationScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
+  GetKeyValues getKeyValues = new GetKeyValues();
 
   @override
   Widget build(BuildContext context) {
@@ -299,42 +300,42 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     );
 
     void onPressedConfirm() {
-      String _cardFundSource = GetKeyValues.getFundSourceValue(1);
+      String _cardFundSource = getKeyValues.getFundSourceValue(1);
 
       //Check if fund source is Card
       if (widget.from.toLowerCase() == _cardFundSource.toLowerCase()) {
-        Navigator.push(
-          context,
-          PageTransition(
-            type: PageTransitionType.rightToLeft,
-            child: CardScreen(
-              from: widget.from,
-              to: widget.to,
-              destinationPlatform: widget.destinationPlatform,
-              purpose: widget.purpose,
-              amount: widget.amount,
-              currentBalance: widget.currentBalance,
-              transactionType: widget.transactionType,
-            ),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   PageTransition(
+        //     type: PageTransitionType.rightToLeft,
+        //     child: CardScreen(
+        //       from: widget.from,
+        //       to: widget.to,
+        //       destinationPlatform: widget.destinationPlatform,
+        //       purpose: widget.purpose,
+        //       amount: widget.amount,
+        //       currentBalance: widget.currentBalance,
+        //       transactionType: widget.transactionType,
+        //     ),
+        //   ),
+        // );
       } else {
         //bool _route = false;
-        Navigator.pushAndRemoveUntil(
-            context,
-            PageTransition(
-              type: PageTransitionType.rightToLeft,
-              child: TransactionSuccessScreen(
-                from: widget.from,
-                to: widget.to,
-                destinationPlatform: widget.destinationPlatform,
-                purpose: widget.purpose,
-                amount: widget.amount,
-                currentBalance: widget.currentBalance,
-                transactionType: widget.transactionType,
-              ),
-            ),
-            (route) => false);
+        // Navigator.pushAndRemoveUntil(
+        //     context,
+        //     PageTransition(
+        //       type: PageTransitionType.rightToLeft,
+        //       child: TransactionSuccessScreen(
+        //         from: widget.from,
+        //         to: widget.to,
+        //         destinationPlatform: widget.destinationPlatform,
+        //         purpose: widget.purpose,
+        //         amount: widget.amount,
+        //         currentBalance: widget.currentBalance,
+        //         transactionType: widget.transactionType,
+        //       ),
+        //     ),
+        //     (route) => false);
       }
     }
 

@@ -21,7 +21,7 @@ class InvoicingModel {
   //     this.payableUserID});
 
   static Future createInvoice(
-    double _amount,
+    String _amount,
     String _fee,
     String _purpose,
     String _payableUserID,
@@ -46,8 +46,8 @@ class InvoicingModel {
 
   static Future<bool> payInvoice(
     String id,
-    double _amount,
-    double _fee,
+    String _amount,
+    String _fee,
     String _purpose,
     String _payableUserID,
     String _receivableUserID,
@@ -65,8 +65,6 @@ class InvoicingModel {
       'Status': _status.toString(),
     }).catchError((e) {
       _paid = false;
-      print(e);
-      print(id.toString());
     });
     return _paid;
   }
@@ -75,7 +73,14 @@ class InvoicingModel {
     await FirebaseFirestore.instance
         .collection("Invoices")
         .doc(id)
-        .update({"Status": "InActive"});
+        .update({"Status": "Deleted"});
+  }
+
+  static Future<void> declineInvoice(String id) async {
+    await FirebaseFirestore.instance
+        .collection("Invoices")
+        .doc(id)
+        .update({"Status": "Declined"});
   }
 
   Future<void> deleteProduct(DocumentSnapshot doc) async {

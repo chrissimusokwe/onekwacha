@@ -86,10 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        'ZMW',
+                        MyGlobalVariables.zmcurrencySymbol,
                         style: TextStyle(
-                          fontSize: 15.0,
+                          fontSize: 20.0,
                         ),
+                      ),
+                      SizedBox(
+                        width: 2,
                       ),
                       Text(
                         currencyConvertor.format(_currentBalance),

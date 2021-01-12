@@ -18,26 +18,27 @@ class BankDetails {
 
 class BankUtils {
   static Widget getBankIcon(int _selectedBank) {
+    GetKeyValues getKeyValues = new GetKeyValues();
     String img = "";
     Icon icon;
     switch (_selectedBank) {
       case 0:
-        img = GetKeyValues.getBankListValue(_selectedBank) + '.png';
+        img = getKeyValues.getBankListValue(_selectedBank) + '.png';
         break;
       case 1:
-        img = GetKeyValues.getBankListValue(_selectedBank) + '.png';
+        img = getKeyValues.getBankListValue(_selectedBank) + '.png';
         break;
       case 2:
-        img = GetKeyValues.getBankListValue(_selectedBank) + '.png';
+        img = getKeyValues.getBankListValue(_selectedBank) + '.png';
         break;
       case 3:
-        img = GetKeyValues.getBankListValue(_selectedBank) + '.png';
+        img = getKeyValues.getBankListValue(_selectedBank) + '.png';
         break;
       case 4:
-        img = GetKeyValues.getBankListValue(_selectedBank) + '.png';
+        img = getKeyValues.getBankListValue(_selectedBank) + '.png';
         break;
       case 5:
-        img = GetKeyValues.getBankListValue(_selectedBank) + '.png';
+        img = getKeyValues.getBankListValue(_selectedBank) + '.png';
         break;
     }
     Widget widget;

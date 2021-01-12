@@ -30,12 +30,14 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
   List<String> country = ['ZM', 'AU'];
   String _decimalValueNoCommas;
   double _validDouble = 0.0;
-  double transferAmount = 0;
+  //double transferAmount = 0;
+  GetKeyValues getKeyValues = new GetKeyValues();
+  //double _fee;
 
   @override
   Widget build(BuildContext context) {
-    GetKeyValues.loadFundDestinationList();
-    GetKeyValues.loadPuporseList();
+    getKeyValues.loadFundDestinationList();
+    getKeyValues.loadPuporseList();
     return Form(
         key: _formKey,
         autovalidateMode: AutovalidateMode.disabled,
@@ -116,7 +118,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
     formWidget.add(new DropdownButton(
       hint: Text('Select Purpose'),
       value: _selectedPurpose,
-      items: GetKeyValues.purposeList,
+      items: getKeyValues.purposeList,
       onChanged: (value) {
         setState(() {
           _selectedPurpose = value;
@@ -143,7 +145,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
     formWidget.add(
       ListTile(
         leading: Text(
-          'K',
+          MyGlobalVariables.zmcurrencySymbol,
           style: TextStyle(
             fontSize: 20,
             fontFamily: 'BaiJamJuree',
@@ -203,8 +205,9 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
             type: PageTransitionType.rightToLeft,
             child: InvoicingConfirmationScreen(
               requestFrom: requestFromPhoneNumber,
-              purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
+              purpose: getKeyValues.getPurposeValue(_selectedPurpose),
               amount: double.parse(_decimalValueNoCommas),
+              //fee: _fee,
               transactionType: _transactionType,
             ),
           ),

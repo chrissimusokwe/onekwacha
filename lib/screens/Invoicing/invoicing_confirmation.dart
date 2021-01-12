@@ -14,12 +14,14 @@ class InvoicingConfirmationScreen extends StatefulWidget {
   final String requestFrom;
   final String purpose;
   final double amount;
+  //final double fee;
   final int transactionType;
   InvoicingConfirmationScreen({
     Key key,
     this.requestFrom,
     this.purpose,
     this.amount,
+    //this.fee,
     this.transactionType,
   }) : super(key: key);
 
@@ -31,12 +33,15 @@ class InvoicingConfirmationScreen extends StatefulWidget {
 class _InvoicingConfirmationScreenState
     extends State<InvoicingConfirmationScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
+  GetKeyValues getKeyValues = new GetKeyValues();
   String _receivableUserID;
   String _payableUserID;
   String _purpose;
-  double _amount;
+  String _transactionTypeString;
+  double _amount = 0;
+  double _totalAmount = 0;
   int _transactionType;
-  String _fee;
+  double _fee = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +50,9 @@ class _InvoicingConfirmationScreenState
     _purpose = widget.purpose;
     _amount = widget.amount;
     _transactionType = widget.transactionType;
-    _fee = MyGlobalVariables.feeInvoicing.toString();
+    _transactionTypeString = getKeyValues.getTransactionType(_transactionType);
+    _fee = getKeyValues.calculateFee(_amount, _transactionTypeString);
+    _totalAmount = _fee + _amount;
 
     return Form(
         child: Scaffold(
@@ -210,6 +217,56 @@ class _InvoicingConfirmationScreenState
                   Expanded(
                     flex: 1,
                     child: new Text(
+                      'Fees:',
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: new Text(
+                      MyGlobalVariables.zmcurrencySymbol +
+                          currencyConvertor.format(_fee),
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'Total Amount:',
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: new Text(
+                      MyGlobalVariables.zmcurrencySymbol +
+                          currencyConvertor.format(_totalAmount),
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
                       'Transaction:',
                       textAlign: TextAlign.right,
                     ),
@@ -220,7 +277,7 @@ class _InvoicingConfirmationScreenState
                   Expanded(
                     flex: 2,
                     child: new Text(
-                        GetKeyValues.getTransactionTypeValue(_transactionType)),
+                        getKeyValues.getTransactionType(_transactionType)),
                   ),
                 ],
               ),
@@ -270,8 +327,8 @@ class _InvoicingConfirmationScreenState
                     //Create New Invoice
                     DocumentReference document;
                     document = await InvoicingModel.createInvoice(
-                      _amount,
-                      _fee,
+                      _totalAmount.toString(),
+                      _fee.toString(),
                       _purpose,
                       _payableUserID,
                       _receivableUserID,
@@ -286,7 +343,8 @@ class _InvoicingConfirmationScreenState
                             requestFrom: _payableUserID,
                             sendTo: _receivableUserID,
                             purpose: _purpose,
-                            amount: _amount,
+                            amount: _totalAmount,
+                            fee: _fee,
                             transactionType: _transactionType,
                             documentID: document.id,
                           ),

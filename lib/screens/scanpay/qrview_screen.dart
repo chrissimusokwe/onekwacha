@@ -39,6 +39,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
   final _formKey = GlobalKey<FormState>();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
+  GetKeyValues getKeyValues = new GetKeyValues();
 
   TextEditingController qrTextController = TextEditingController();
   bool _isQRVisible = false;
@@ -75,7 +76,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    GetKeyValues.loadPuporseList();
+    getKeyValues.loadPuporseList();
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -112,6 +113,36 @@ class _QRViewScreenState extends State<QRViewScreen> {
     );
   }
 
+  String _getDestinationNumber(String result) {
+    String value;
+    setState(() {
+      List values = result.split("|");
+      // print(values[0]);
+      // print(values[1]);
+      // print(values[2]);
+      value = values[0];
+      _destinationPhoneNumber = value;
+    });
+
+    print(value);
+    return value;
+  }
+
+  double _getAmountNumber(String result) {
+    double value;
+    setState(() {
+      List values = result.split("|");
+      // print(values[0]);
+      // print(values[1]);
+      // print(values[2]);
+      value = double.parse(values[2]);
+      _transferAmount = value;
+      //_selectedPurpose = int.parse(values[1]);
+    });
+
+    return value;
+  }
+
   List<Widget> getQRFormWidget() {
     List<Widget> formWidget = new List();
 
@@ -122,176 +153,240 @@ class _QRViewScreenState extends State<QRViewScreen> {
           Expanded(flex: 2, child: _buildQrView(context)),
           Expanded(
             flex: 1,
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  if (result != null)
-
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                (result != null)
+                    ?
                     //Pay button after scanning QR Code
                     Card(
-                      child: ListTile(
-                        title: Text(
-                          'Scanned Data: ${result.code}',
-                          style: TextStyle(
-                            fontSize: 8,
-                            fontFamily: 'BaiJamJuree',
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.check_circle_outlined,
+                            color: kDefaultPrimaryColor,
+                            size: 35,
                           ),
-                        ),
-                        trailing: new RaisedButton(
-                          color: kDefaultPrimaryColor,
-                          textColor: kTextPrimaryColor,
-                          // padding:
-                          //     const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
-                          child: new Text(
-                            'Pay',
-                            style: TextStyle(
-                              fontSize: kSubmitButtonFontSize,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'BaiJamJuree',
-                            ),
-                          ),
-                          onPressed: () {
-                            if (_formKey.currentState.validate()) {
-                              _formKey.currentState.save();
-                              setState(() {
-                                List values = result.code.split("|");
-                                // print(values[0]);
-                                // print(values[1]);
-                                // print(values[2]);
-                                _destinationPhoneNumber = values[0];
-                                _selectedPurpose = values[1];
-                                _transferAmount = double.parse(values[2]);
-                                if (result.code != null) {
-                                  Navigator.push(
-                                    context,
-                                    PageTransition(
-                                      type: PageTransitionType.rightToLeft,
-                                      child: ConfirmationScreen(
-                                        from: MyGlobalVariables
-                                            .topUpWalletDestination,
-                                        to: _destinationPhoneNumber,
-                                        destinationPlatform: GetKeyValues
-                                            .getFundDestinationValue(
-                                                _selectedFundDestination),
-                                        purpose: GetKeyValues.getPurposeValue(
-                                            _selectedPurpose),
-                                        amount: _transferAmount,
-                                        currentBalance: widget.currentBalance,
-                                        transactionType: GetKeyValues
-                                            .getTransactionTypeValue(
-                                                _transactionType),
-                                      ),
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Payee: ' + _getDestinationNumber(result.code),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  //fontFamily: 'BaiJamJuree',
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                'Purpose: ' +
+                                    getKeyValues
+                                        .getPurposeValue(_selectedPurpose),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  //fontFamily: 'BaiJamJuree',
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                'Amount: ' +
+                                    MyGlobalVariables.zmcurrencySymbol +
+                                    currencyConvertor.format(
+                                      _getAmountNumber(result.code),
                                     ),
-                                  );
-                                }
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                    )
-                  else
-                    Text(
-                      'Position QR inside square',
-                      style: TextStyle(
-                        fontSize: 8,
-                        fontFamily: 'BaiJamJuree',
-                      ),
-                    ),
-
-                  //Flash and Front/Back Camera
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.all(8),
-                        child: RaisedButton(
-                          color: kDefaultPrimaryColor,
-                          textColor: kTextPrimaryColor,
-                          onPressed: () {
-                            if (controller != null) {
-                              controller.toggleFlash();
-                              if (_isFlashOn(flashState)) {
-                                setState(() {
-                                  flashState = flashOff;
-                                });
-                              } else {
-                                setState(() {
-                                  flashState = flashOn;
-                                });
-                              }
-                            }
-                          },
-                          child: Text(
-                            flashState,
-                            style: TextStyle(
-                              fontSize: kSubmitButtonFontSize,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'BaiJamJuree',
-                            ),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  //fontFamily: 'BaiJamJuree',
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              // Text(
+                              //   'Scanned Data: ${result.code}',
+                              //   style: TextStyle(
+                              //     fontSize: 12,
+                              //     //fontFamily: 'BaiJamJuree',
+                              //   ),
+                              // ),
+                            ],
                           ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(8),
-                        child: RaisedButton(
-                          color: kDefaultPrimaryColor,
-                          textColor: kTextPrimaryColor,
-                          onPressed: () {
-                            if (controller != null) {
-                              controller.flipCamera();
-                              if (_isBackCamera(cameraState)) {
+                          trailing: new RaisedButton(
+                            color: kDefaultPrimaryColor,
+                            textColor: kTextPrimaryColor,
+                            // padding:
+                            //     const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
+                            child: new Text(
+                              'Pay',
+                              style: TextStyle(
+                                fontSize: kSubmitButtonFontSize,
+                                fontWeight: FontWeight.bold,
+                                //fontFamily: 'BaiJamJuree',
+                              ),
+                            ),
+                            onPressed: () {
+                              if (_formKey.currentState.validate()) {
+                                _formKey.currentState.save();
                                 setState(() {
-                                  cameraState = frontCamera;
-                                });
-                              } else {
-                                setState(() {
-                                  cameraState = backCamera;
+                                  // List values = result.code.split("|");
+                                  // // print(values[0]);
+                                  // // print(values[1]);
+                                  // // print(values[2]);
+                                  // _destinationPhoneNumber = values[0];
+                                  // _selectedPurpose = values[1];
+                                  // _transferAmount = double.parse(values[2]);
+                                  if (result.code != null) {
+                                    print(_destinationPhoneNumber);
+                                    print(getKeyValues.getFundDestinationValue(
+                                        _selectedFundDestination));
+                                    print(getKeyValues
+                                        .getPurposeValue(_selectedPurpose));
+                                    print(_transferAmount);
+                                    print(getKeyValues
+                                        .getTransactionType(_transactionType));
+
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        type: PageTransitionType.rightToLeft,
+                                        child: ConfirmationScreen(
+                                          from: MyGlobalVariables
+                                              .topUpWalletDestination,
+                                          to: _destinationPhoneNumber,
+                                          destinationPlatform: getKeyValues
+                                              .getFundDestinationValue(
+                                                  _selectedFundDestination),
+                                          purpose: getKeyValues.getPurposeValue(
+                                              _selectedPurpose),
+                                          amount: _transferAmount,
+                                          currentBalance:
+                                              MyGlobalVariables.currentBalance,
+                                          transactionType:
+                                              getKeyValues.getTransactionType(
+                                                  _transactionType),
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 });
                               }
-                            }
-                          },
-                          child: Text(
-                            cameraState,
-                            style: TextStyle(
-                              fontSize: kSubmitButtonFontSize,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'BaiJamJuree',
-                            ),
+                            },
                           ),
                         ),
                       )
-                    ],
-                  ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   crossAxisAlignment: CrossAxisAlignment.center,
-                  //   children: <Widget>[
-                  //     Container(
-                  //       margin: EdgeInsets.all(8),
-                  //       child: RaisedButton(
-                  //         onPressed: () {
-                  //           controller?.pauseCamera();
-                  //         },
-                  //         child: Text('Pause', style: TextStyle(fontSize: 20)),
-                  //       ),
-                  //     ),
-                  //     Container(
-                  //       margin: EdgeInsets.all(8),
-                  //       child: RaisedButton(
-                  //         onPressed: () {
-                  //           controller?.resumeCamera();
-                  //         },
-                  //         child: Text('Resume', style: TextStyle(fontSize: 20)),
-                  //       ),
-                  //     )
-                  //   ],
-                  // ),
-                ],
-              ),
+                    : Text(
+                        'Position QR inside square',
+                        style: TextStyle(
+                          fontSize: 18,
+                          //fontFamily: 'BaiJamJuree',
+                        ),
+                      ),
+
+                //Flash and Front/Back Camera
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.all(8),
+                      child: RaisedButton(
+                        color: Colors.grey.shade100,
+                        textColor: kTextPrimaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                          side: BorderSide(
+                            color: kDefaultPrimaryColor,
+                            width: 3,
+                          ),
+                        ),
+                        onPressed: () {
+                          if (controller != null) {
+                            controller.toggleFlash();
+                            if (_isFlashOn(flashState)) {
+                              setState(() {
+                                flashState = flashOff;
+                              });
+                            } else {
+                              setState(() {
+                                flashState = flashOn;
+                              });
+                            }
+                          }
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.flash_on_outlined,
+                              color: kDefaultPrimaryColor,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              flashState,
+                              style: TextStyle(
+                                fontSize: kSubmitButtonFontSize,
+                                fontWeight: FontWeight.bold,
+                                //fontFamily: 'BaiJamJuree',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(8),
+                      child: RaisedButton(
+                        color: Colors.grey.shade100,
+                        textColor: kTextPrimaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                          side: BorderSide(
+                            color: kDefaultPrimaryColor,
+                            width: 3,
+                          ),
+                        ),
+                        onPressed: () {
+                          if (controller != null) {
+                            controller.flipCamera();
+                            if (_isBackCamera(cameraState)) {
+                              setState(() {
+                                cameraState = frontCamera;
+                              });
+                            } else {
+                              setState(() {
+                                cameraState = backCamera;
+                              });
+                            }
+                          }
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.camera_enhance_outlined,
+                              color: kDefaultPrimaryColor,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              cameraState,
+                              style: TextStyle(
+                                fontSize: kSubmitButtonFontSize,
+                                fontWeight: FontWeight.bold,
+                                //fontFamily: 'BaiJamJuree',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ],
             ),
           )
         ],
@@ -318,7 +413,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
             new DropdownButton(
               hint: Text('Select Purpose'),
               value: _selectedPurpose,
-              items: GetKeyValues.purposeList,
+              items: getKeyValues.purposeList,
               onChanged: (value) {
                 setState(() {
                   _selectedPurpose = value;
@@ -339,7 +434,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
             ),
             ListTile(
               leading: Text(
-                'K',
+                MyGlobalVariables.zmcurrencySymbol,
                 style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
@@ -410,14 +505,21 @@ class _QRViewScreenState extends State<QRViewScreen> {
                 ),
               ),
               trailing: new RaisedButton(
-                color: kDefaultPrimaryColor,
+                color: Colors.grey.shade100,
                 textColor: kTextPrimaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                  side: BorderSide(
+                    color: kDefaultPrimaryColor,
+                    width: 3,
+                  ),
+                ),
                 child: new Text(
                   'Generate',
                   style: TextStyle(
                     fontSize: kSubmitButtonFontSize,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'BaiJamJuree',
+                    //fontFamily: 'BaiJamJuree',
                   ),
                 ),
                 onPressed: () {

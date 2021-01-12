@@ -4,7 +4,7 @@ import 'package:onekwacha/utils/custom_icons.dart';
 import 'package:onekwacha/utils/bank_details.dart';
 
 class GetKeyValues {
-  static Map<int, String> _purpose = {
+  Map<int, String> _purpose = {
     0: 'Business',
     1: 'Entertainment',
     2: 'Education',
@@ -13,7 +13,15 @@ class GetKeyValues {
     5: 'Travel',
   };
 
-  static Map<String, IconData> _purposeIcons = {
+  Map<String, IconData> _transactionTypeIcons = {
+    'Top up': CustomIcons.plus,
+    'Transfer': CustomIcons.initiate_money_transfer,
+    'Invoicing': CustomIcons.bill,
+    'Marketplace': CustomIcons.shopping_cart,
+    'Cash out': CustomIcons.wallet_app,
+  };
+
+  Map<String, IconData> _purposeIcons = {
     'Business': CustomIcons.clock,
     'Entertainment': CustomIcons.video,
     'Education': CustomIcons.department,
@@ -22,7 +30,7 @@ class GetKeyValues {
     'Travel': CustomIcons.globe_earth,
   };
 
-  static Map<int, String> _bank = {
+  Map<int, String> _bank = {
     0: 'Absa',
     1: 'Access',
     2: 'Ecobank',
@@ -31,17 +39,17 @@ class GetKeyValues {
     5: 'Zanaco',
   };
 
-  static Map<int, String> _fundSource = {
+  Map<int, String> _fundSource = {
     0: 'Mobile Money',
     1: 'Card',
   };
 
-  static Map<int, String> _fundDestination = {
+  Map<int, String> _fundDestination = {
     0: 'OneKwacha Wallet',
     1: 'Mobile Money',
     2: 'Bank Account',
   };
-  static Map<int, String> _transactionType = {
+  Map<int, String> _transactionType = {
     0: 'Top up',
     1: 'Transfer',
     2: 'Invoicing',
@@ -49,41 +57,71 @@ class GetKeyValues {
     4: 'Cash out',
   };
 
-  static String getPurposeValue(int index) {
+  Map<String, double> _transactionTypeRate = {
+    'Top up': 2.5,
+    'Transfer': 1,
+    'Invoicing': 2.5,
+    'Marketplace': 3,
+    'Cash out': 5,
+  };
+
+  double calculateTotalAmount(
+      double transacationAmount, String transactionType) {
+    double value =
+        transacationAmount + calculateFee(transacationAmount, transactionType);
+    return value;
+  }
+
+  double calculateFee(double transacationAmount, String transactionType) {
+    double value = transacationAmount * (getFeeRate(transactionType) / 100);
+    return value;
+  }
+
+  double getFeeRate(String transactionType) {
+    double value = _transactionTypeRate[transactionType];
+    return value;
+  }
+
+  IconData getTransactionTypeIcons(String transactionType) {
+    IconData value = _transactionTypeIcons[transactionType];
+    return value;
+  }
+
+  String getPurposeValue(int index) {
     String value = _purpose[index];
     return value;
   }
 
-  static IconData getPurposeIcons(String purpose) {
+  IconData getPurposeIcons(String purpose) {
     IconData value = _purposeIcons[purpose];
     return value;
   }
 
-  static String getBankListValue(int index) {
+  String getBankListValue(int index) {
     String value = _bank[index];
     return value;
   }
 
-  static String getFundSourceValue(int index) {
+  String getFundSourceValue(int index) {
     String value = _fundSource[index];
     return value;
   }
 
-  static String getFundDestinationValue(int index) {
+  String getFundDestinationValue(int index) {
     String value = _fundDestination[index];
     return value;
   }
 
-  static String getTransactionTypeValue(int index) {
+  String getTransactionType(int index) {
     String value = _transactionType[index];
     return value;
   }
 
   //static List<DropdownMenuItem<int>> purposeIcons = [];
 
-  static List<DropdownMenuItem<int>> purposeList = [];
+  List<DropdownMenuItem<int>> purposeList = [];
 
-  static void loadPuporseList() {
+  void loadPuporseList() {
     purposeList = [];
     purposeList.add(DropdownMenuItem(
       child: ListTile(
@@ -159,9 +197,9 @@ class GetKeyValues {
     ));
   }
 
-  static List<DropdownMenuItem<int>> fundSourceList = [];
+  List<DropdownMenuItem<int>> fundSourceList = [];
 
-  static void loadFundSourceList() {
+  void loadFundSourceList() {
     fundSourceList = [];
     fundSourceList.add(DropdownMenuItem(
       child: ListTile(
@@ -189,9 +227,9 @@ class GetKeyValues {
     ));
   }
 
-  static List<DropdownMenuItem<int>> fundDestinationList = [];
+  List<DropdownMenuItem<int>> fundDestinationList = [];
 
-  static void loadFundDestinationList() {
+  void loadFundDestinationList() {
     fundDestinationList = [];
     fundDestinationList.add(DropdownMenuItem(
       child: ListTile(
@@ -231,9 +269,9 @@ class GetKeyValues {
     ));
   }
 
-  static List<DropdownMenuItem<int>> bankList = [];
+  List<DropdownMenuItem<int>> bankList = [];
 
-  static void loadBankList() {
+  void loadBankList() {
     bankList = [];
     bankList.add(DropdownMenuItem(
       child: ListTile(
@@ -289,5 +327,20 @@ class GetKeyValues {
       ),
       value: 5,
     ));
+  }
+
+  String formatPhoneNumberWithSpaces(String number) {
+    String part1;
+    String part2;
+    String part3;
+    String part4;
+    String result;
+
+    part1 = number.substring(0, 4);
+    part2 = number.substring(4, 7);
+    part3 = number.substring(7, 10);
+    part4 = number.substring(10, 13);
+    result = part1 + ' ' + part2 + ' ' + part3 + ' ' + part4;
+    return result;
   }
 }

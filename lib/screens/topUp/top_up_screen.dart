@@ -48,6 +48,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
   int _transactionType = 0;
   String fullPhoneNumber = '';
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
+  GetKeyValues getKeyValues = new GetKeyValues();
 
   TextEditingController topUpAmountField = TextEditingController();
   TextEditingController sourcePhoneNumerField = TextEditingController();
@@ -61,8 +62,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    GetKeyValues.loadFundSourceList();
-    GetKeyValues.loadPuporseList();
+    getKeyValues.loadFundSourceList();
+    getKeyValues.loadPuporseList();
     return Form(
         key: _formKey,
         autovalidateMode: AutovalidateMode.disabled,
@@ -101,7 +102,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
     //Fund source field widget
     formWidget.add(new DropdownButton(
       //hint: Text('Select Source'),
-      items: GetKeyValues.fundSourceList,
+      items: getKeyValues.fundSourceList,
       value: _selectedFundSource,
       onChanged: (value) {
         setState(() {
@@ -168,7 +169,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
     formWidget.add(new DropdownButton(
       hint: Text('Select Purpose'),
       value: _selectedPurpose,
-      items: GetKeyValues.purposeList,
+      items: getKeyValues.purposeList,
       onChanged: (value) {
         setState(() {
           _selectedPurpose = value;
@@ -262,12 +263,12 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   from: fullPhoneNumber,
                   to: MyGlobalVariables.topUpWalletDestination,
                   destinationPlatform: MyGlobalVariables.topUpWalletDestination,
-                  purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
+                  purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                   amount: double.parse(_decimalValueNoCommas),
                   currentBalance: widget.currentBalance +
                       double.parse(_decimalValueNoCommas),
                   transactionType:
-                      GetKeyValues.getTransactionTypeValue(_transactionType),
+                      getKeyValues.getTransactionType(_transactionType),
                 ),
               ),
             );
@@ -279,15 +280,15 @@ class _TopUpScreenState extends State<TopUpScreen> {
               PageTransition(
                 type: PageTransitionType.rightToLeft,
                 child: ConfirmationScreen(
-                  from: GetKeyValues.getFundSourceValue(_selectedFundSource),
+                  from: getKeyValues.getFundSourceValue(_selectedFundSource),
                   to: MyGlobalVariables.topUpWalletDestination,
                   destinationPlatform: MyGlobalVariables.topUpWalletDestination,
-                  purpose: GetKeyValues.getPurposeValue(_selectedPurpose),
+                  purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                   amount: double.parse(_decimalValueNoCommas),
                   currentBalance: widget.currentBalance +
                       double.parse(_decimalValueNoCommas),
                   transactionType:
-                      GetKeyValues.getTransactionTypeValue(_transactionType),
+                      getKeyValues.getTransactionType(_transactionType),
                 ),
               ),
             );

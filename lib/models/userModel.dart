@@ -39,7 +39,7 @@ class UserModel {
     });
   }
 
-  static Future<bool> updateUser(
+  Future<bool> updateUser(
     String _userID,
     _accountStatus,
     _address,
@@ -80,5 +80,38 @@ class UserModel {
       _updated = false;
     });
     return _updated;
+  }
+
+  Future<bool> updateUserBalance(
+    String _userID,
+    _currentBalance,
+  ) async {
+    bool _updated = true;
+    DocumentReference documentRef =
+        FirebaseFirestore.instance.collection("Users").doc(_userID);
+    documentRef.get().then((document) async {
+      await FirebaseFirestore.instance.collection("Users").doc(_userID).update({
+        'CurrentBalance': _currentBalance,
+        'OldBalance': document['CurrentBalance'],
+        'PreviousUdpateDate': document['LastUpdateDate'],
+        'LastUpdateDate': DateTime.now(),
+        'UpdateReason': 'Balance Update'
+      }).catchError((e) {
+        _updated = false;
+      });
+    });
+
+    return _updated;
+  }
+
+  Future<double> getUserBalance(String _userID) async {
+    double _currentBalance;
+
+    DocumentReference documentRef =
+        FirebaseFirestore.instance.collection("Users").doc(_userID);
+    documentRef.get().then((document) {
+      _currentBalance = document['CurrentBalance'];
+    });
+    return _currentBalance;
   }
 }

@@ -34,7 +34,7 @@ class TransactionModel {
   //   this.userID,
   // });
 
-  static Future createTransaction(
+  Future createTransaction(
     double _currentBalance,
     _fee,
     _oldBalance,
@@ -51,6 +51,7 @@ class TransactionModel {
     _source,
     _time,
     _userID,
+    _invoiceID,
   ) async {
     DocumentReference documentRef =
         await FirebaseFirestore.instance.collection("Transactions").add({
@@ -69,6 +70,7 @@ class TransactionModel {
       'TransactionAmount': _transactionAmount.toString(),
       'TransactionType': _transactionType.toString(),
       'UserID': _userID.toString(),
+      'InvoiceID': _invoiceID.toString(),
     });
     return documentRef;
   }

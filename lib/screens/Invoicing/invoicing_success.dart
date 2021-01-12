@@ -13,6 +13,7 @@ class InvoicingSuccessScreen extends StatefulWidget {
   final String sendTo;
   final String purpose;
   final double amount;
+  final double fee;
   final int transactionType;
   final String documentID;
   InvoicingSuccessScreen({
@@ -22,6 +23,7 @@ class InvoicingSuccessScreen extends StatefulWidget {
     this.sendTo,
     this.purpose,
     this.amount,
+    this.fee,
     this.transactionType,
     this.documentID,
   }) : super(key: key);
@@ -32,10 +34,12 @@ class InvoicingSuccessScreen extends StatefulWidget {
 
 class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
+  GetKeyValues getKeyValues = new GetKeyValues();
   String _receivableUserID;
   String _payableUserID;
   String _purpose;
-  double _transactionAmount;
+  double _fee;
+  double _totalAmount;
   int _transactionType;
   String _transactionID;
 
@@ -44,9 +48,10 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
     _receivableUserID = widget.sendTo;
     _payableUserID = widget.requestFrom;
     _purpose = widget.purpose;
-    _transactionAmount = widget.amount;
     _transactionType = widget.transactionType;
     _transactionID = widget.documentID;
+    _fee = widget.fee;
+    _totalAmount = widget.amount;
 
     return Form(
         child: Scaffold(
@@ -73,10 +78,23 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
   List<Widget> getConfirmationFormWidget() {
     List<Widget> formWidget = new List();
 
+    void onPressedConfirm() {
+      Navigator.pushAndRemoveUntil(
+          context,
+          PageTransition(
+            child: HomeScreen(
+              //incomingData: 0,
+              walletBalance: widget.currentBalance,
+            ),
+            type: PageTransitionType.fade,
+          ),
+          (route) => false);
+    }
+
     formWidget.add(
       Card(
         elevation: 5,
-        color: kDefaultPrimaryColor,
+        color: kDarkPrimaryColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -98,7 +116,7 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                       children: [
                         Icon(
                           Icons.check_circle_outline_rounded,
-                          color: Colors.green,
+                          color: kDarkPrimaryColor,
                           size: 50,
                         ),
                         SizedBox(
@@ -112,7 +130,7 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                             fontSize: 18.0,
                             fontFamily: 'BaiJamJuree',
                             fontWeight: FontWeight.bold,
-                            color: Colors.green,
+                            color: kDarkPrimaryColor,
                           ),
                         ),
                       ],
@@ -197,7 +215,7 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Requested Amt:',
+                      'Fees:',
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -208,7 +226,33 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                     flex: 2,
                     child: new Text(
                       MyGlobalVariables.zmcurrencySymbol +
-                          currencyConvertor.format(_transactionAmount),
+                          currencyConvertor.format(_fee),
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: new Text(
+                      'Total Amt:',
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: new Text(
+                      MyGlobalVariables.zmcurrencySymbol +
+                          currencyConvertor.format(_totalAmount) +
+                          '*',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -232,7 +276,7 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                   Expanded(
                     flex: 2,
                     child: new Text(
-                        GetKeyValues.getTransactionTypeValue(_transactionType)),
+                        getKeyValues.getTransactionType(_transactionType)),
                   ),
                 ],
               ),
@@ -257,50 +301,52 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                   ),
                 ],
               ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(children: [
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      ' *Includes transaction fees.',
+                      style: TextStyle(fontSize: 10),
+                    ),
+                  ),
+                )
+              ]),
+              SizedBox(
+                height: 30,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  //Transaction Confirmation button
+                  new RaisedButton(
+                    color: Colors.grey.shade100,
+                    textColor: kTextPrimaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                      side: BorderSide(
+                        color: kDarkPrimaryColor,
+                        width: 3,
+                      ),
+                    ),
+                    child: new Text(
+                      MyGlobalVariables.successTranscation.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: kSubmitButtonFontSize,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'BaiJamJuree',
+                        color: kDarkPrimaryColor,
+                      ),
+                    ),
+                    onPressed: onPressedConfirm,
+                  )
+                ],
+              ),
             ],
           ),
         ),
-      ),
-    );
-
-    void onPressedConfirm() {
-      Navigator.pushAndRemoveUntil(
-          context,
-          PageTransition(
-            child: HomeScreen(
-              //incomingData: 0,
-              walletBalance: widget.currentBalance,
-            ),
-            type: PageTransitionType.fade,
-          ),
-          (route) => false);
-    }
-
-    formWidget.add(
-      Column(
-        children: [
-          SizedBox(
-            height: 20,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              //Transaction Confirmation button
-              new RaisedButton(
-                  color: kDefaultPrimaryColor,
-                  textColor: kTextPrimaryColor,
-                  child: new Text(
-                    MyGlobalVariables.successTranscation.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: kSubmitButtonFontSize,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'BaiJamJuree',
-                    ),
-                  ),
-                  onPressed: onPressedConfirm),
-            ],
-          ),
-        ],
       ),
     );
     return formWidget;
