@@ -10,6 +10,7 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
 //import 'package:onekwacha/screens/scanpay/scan_pay_screen.dart';
 import 'package:flutter/services.dart';
+import 'package:onekwacha/models/userModel.dart';
 
 class HistoryScreen extends StatefulWidget {
   final int incomingData;
@@ -29,22 +30,37 @@ class _HistoryScreenState extends State<HistoryScreen> {
   //final _formKey = GlobalKey<FormState>();
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
   GetKeyValues getKeyValues = new GetKeyValues();
+  UserModel userModel = new UserModel();
   String _transactionMonthYear, _transactionTime, _currencyAmount;
   double _currentBalance = 0;
   int _transactionDay = 0;
+  String _currentUserLoginID;
+  String _userFirstName;
 
   double _transactionAmount = 0;
 
   @override
   void initState() {
     super.initState();
+    listenToBalanceUpdates();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    if (widget.walletBalance.toString().isEmpty ||
-        widget.walletBalance == null) {
-      _currentBalance = MyGlobalVariables.currentBalance;
-    } else {
-      _currentBalance = _currentBalance + widget.walletBalance;
-    }
+  }
+
+  listenToBalanceUpdates() {
+    _currentUserLoginID = getKeyValues.getCurrentUserLoginID();
+
+    FirebaseFirestore.instance
+        .collection('Users')
+        .doc(_currentUserLoginID)
+        .snapshots()
+        .listen((DocumentSnapshot userSnapshot) {
+      if (this.mounted) {
+        setState(() {
+          _currentBalance = double.parse(userSnapshot['CurrentBalance']);
+          _userFirstName = userSnapshot['FirstName'];
+        });
+      }
+    });
   }
 
   @override
@@ -239,7 +255,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
                   ),
                   SizedBox(
-                    width: 10,
+                    width: MyGlobalVariables.sizedBoxWidth,
                   ),
                   Row(
                     children: [
@@ -258,34 +274,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
               SizedBox(
                 height: MyGlobalVariables.sizedBoxHeight,
               ),
-              // Row(
-              //   children: [
-              //     new Text(
-              //       'Wallet Balance:',
-              //       textAlign: TextAlign.right,
-              //       style: TextStyle(
-              //           fontSize: MyGlobalVariables.dialogFontSize),
-              //     ),
-              //     SizedBox(
-              //       width: 10,
-              //     ),
-              //     Row(
-              //       children: [
-              //         new Text(
-              //           MyGlobalVariables.zmcurrencySymbol +
-              //               currencyConvertor.format(_availableBalance) +
-              //               '*',
-              //           style: TextStyle(
-              //               fontSize: MyGlobalVariables.dialogFontSize,
-              //               fontWeight: FontWeight.bold),
-              //         ),
-              //       ],
-              //     ),
-              //   ],
-              // ),
-              // SizedBox(
-              //   height: MyGlobalVariables.sizedBoxHeight,
-              // ),
               Row(
                 children: [
                   new Text(
@@ -295,7 +283,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
                   ),
                   SizedBox(
-                    width: 10,
+                    width: MyGlobalVariables.sizedBoxWidth,
                   ),
                   new Text(
                     document['TransactionType'],
@@ -310,13 +298,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
               Row(
                 children: [
                   new Text(
-                    'ID:',
+                    'Receipt No:',
                     textAlign: TextAlign.right,
                     style:
                         TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
                   ),
                   SizedBox(
-                    width: 10,
+                    width: MyGlobalVariables.sizedBoxWidth,
                   ),
                   new Text(
                     document.id,
@@ -328,24 +316,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
               SizedBox(
                 height: MyGlobalVariables.sizedBoxHeight,
               ),
-              // Row(
-              //   children: [
-              //     new Text(
-              //       'Invoice ID:',
-              //       textAlign: TextAlign.right,
-              //       style:
-              //           TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-              //     ),
-              //     SizedBox(
-              //       width: 10,
-              //     ),
-              //     new Text(
-              //       document.id,
-              //       style:
-              //           TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-              //     ),
-              //   ],
-              // ),
               SizedBox(
                 height: 20,
               ),
@@ -408,12 +378,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     SizedBox(
                       width: 2,
                     ),
-                    Text(
-                      currencyConvertor.format(_currentBalance),
-                      style: TextStyle(
-                        fontSize: 40.0,
-                      ),
-                    ),
+                    (_currentBalance != null)
+                        ? Text(
+                            currencyConvertor.format(_currentBalance),
+                            style: TextStyle(
+                              fontSize: 40.0,
+                            ),
+                          )
+                        : Text(
+                            'Loading...',
+                            style: TextStyle(
+                              fontSize: 40.0,
+                            ),
+                          )
                   ],
                 ),
               ],
@@ -426,8 +403,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             stream: FirebaseFirestore.instance
                 .collection("Transactions")
                 .orderBy('Date', descending: true)
-                .where("UserID",
-                    isEqualTo: MyGlobalVariables.onekwachaWalletNumber)
+                .where("UserID", isEqualTo: '+260987456321')
                 //.where("Status", isEqualTo: 'Active')
                 .snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -532,14 +508,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                       //fontFamily: 'BaiJamJuree',
                                     ),
                                   ),
-                                  Text(
-                                    getKeyValues.formatPhoneNumberWithSpaces(
-                                        document['Destination']),
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      //fontFamily: 'Metrophobic',
-                                    ),
-                                  ),
+                                  (document['DestinationType'] ==
+                                          'Bank Account')
+                                      ? Text(
+                                          'Bank Account',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            //fontFamily: 'Metrophobic',
+                                          ),
+                                        )
+                                      : Text(
+                                          getKeyValues
+                                              .formatPhoneNumberWithSpaces(
+                                                  document['Destination']),
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            //fontFamily: 'Metrophobic',
+                                          ),
+                                        ),
                                 ],
                               ),
                             ],
@@ -600,6 +586,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         ),
                                       ],
                                     ),
+                              SizedBox(
+                                height: 5,
+                              ),
                             ],
                           ),
                           trailing: Column(
@@ -608,57 +597,55 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               // SizedBox(
                               //   height: 10,
                               // ),
-                              GestureDetector(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  //crossAxisAlignment: CrossAxisAlignment.center,
-                                  //mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    (document['Destination'] ==
-                                            MyGlobalVariables
-                                                .onekwachaWalletNumber)
-                                        ? Text(
-                                            '+' +
-                                                MyGlobalVariables
-                                                    .zmcurrencySymbol +
-                                                _currencyAmount,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                //fontWeight: FontWeight.bold,
-                                                fontFamily: 'BaiJamJuree',
-                                                color: Colors.green),
-                                          )
-                                        : Text(
-                                            '-' +
-                                                MyGlobalVariables
-                                                    .zmcurrencySymbol +
-                                                _currencyAmount,
-                                            style: TextStyle(
-                                              fontSize: 15,
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                //crossAxisAlignment: CrossAxisAlignment.center,
+                                //mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  (document['Destination'] ==
+                                          getKeyValues.getCurrentUserLoginID())
+                                      ? Text(
+                                          '+' +
+                                              MyGlobalVariables
+                                                  .zmcurrencySymbol +
+                                              _currencyAmount,
+                                          style: TextStyle(
+                                              fontSize: 16,
                                               //fontWeight: FontWeight.bold,
                                               fontFamily: 'BaiJamJuree',
-                                              color: Colors.red,
-                                            ),
+                                              color: Colors.green),
+                                        )
+                                      : Text(
+                                          '-' +
+                                              MyGlobalVariables
+                                                  .zmcurrencySymbol +
+                                              _currencyAmount,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            //fontWeight: FontWeight.bold,
+                                            fontFamily: 'BaiJamJuree',
+                                            color: Colors.red,
                                           ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    GestureDetector(
-                                      child: Icon(
-                                        Icons.info_outline_rounded,
-                                        //color: kDarkPrimaryColor,
-                                        size: 15,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                onTap: () {
-                                  _transactionDetailsDialog(document);
-                                },
+                                        ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Icon(
+                                    Icons.info_outline_rounded,
+                                    //color: kDarkPrimaryColor,
+                                    size: 20,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                           //dense: true,
+                          onTap: () {
+                            _transactionDetailsDialog(document);
+                          },
                         ),
                       );
                     });

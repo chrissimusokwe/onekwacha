@@ -14,6 +14,9 @@ import 'package:page_transition/page_transition.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:onekwacha/utils/global_strings.dart';
+import 'package:onekwacha/models/userModel.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:onekwacha/utils/get_key_values.dart';
 
 class HomeScreen extends StatefulWidget {
   final double walletBalance;
@@ -28,19 +31,34 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  double _currentBalance = 0.0;
+  //String _userID; // = MyGlobalVariables.onekwachaWalletNumber;
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
+  UserModel userModel = new UserModel();
+  GetKeyValues getKeyValues = new GetKeyValues();
+  double _currentBalance;
+  String _currentUserLoginID;
 
   @override
   void initState() {
     super.initState();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    if (widget.walletBalance.toString().isEmpty ||
-        widget.walletBalance == null) {
-      _currentBalance = MyGlobalVariables.currentBalance;
-    } else {
-      _currentBalance = _currentBalance + widget.walletBalance;
-    }
+    listenToBalanceUpdates();
+  }
+
+  listenToBalanceUpdates() {
+    _currentUserLoginID = getKeyValues.getCurrentUserLoginID();
+
+    FirebaseFirestore.instance
+        .collection('Users')
+        .doc(_currentUserLoginID)
+        .snapshots()
+        .listen((DocumentSnapshot userSnapshot) {
+      if (this.mounted) {
+        setState(() {
+          _currentBalance = double.parse(userSnapshot['CurrentBalance']);
+        });
+      }
+    });
   }
 
   @override
@@ -94,12 +112,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(
                         width: 2,
                       ),
-                      Text(
-                        currencyConvertor.format(_currentBalance),
-                        style: TextStyle(
-                          fontSize: 40.0,
-                        ),
-                      ),
+                      (_currentBalance != null)
+                          ? Text(
+                              currencyConvertor.format(_currentBalance),
+                              style: TextStyle(
+                                fontSize: 40.0,
+                              ),
+                            )
+                          : Text(
+                              'Loading...',
+                              style: TextStyle(
+                                fontSize: 40.0,
+                              ),
+                            )
                     ],
                   ),
                 ],

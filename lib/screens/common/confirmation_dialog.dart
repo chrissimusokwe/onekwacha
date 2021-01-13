@@ -312,7 +312,7 @@ class ConfirmationDialog {
                       width: MyGlobalVariables.sizedBoxWidth,
                     ),
                     new Text(
-                      MyGlobalVariables.onekwachaWalletNumber,
+                      getKeyValues.getCurrentUserLoginID(),
                       style:
                           TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
                     ),

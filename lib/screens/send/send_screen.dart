@@ -23,31 +23,12 @@ class SendScreen extends StatefulWidget {
   _SendScreenState createState() => _SendScreenState();
 }
 
-// enum CardType {
-//   MasterCard,
-//   Visa,
-//   Verve,
-//   Others, // Any other card issuer
-//   Invalid // We'll use this when the card is invalid
-// }
-
-// class PaymentCard {
-//   CardType type;
-//   String number;
-//   String name;
-//   int month;
-//   int year;
-//   int cvv;
-
-//   PaymentCard(
-//       {this.type, this.number, this.name, this.month, this.year, this.cvv});
-// }
-
 class _SendScreenState extends State<SendScreen> {
   final _formKey = GlobalKey<FormState>();
   int _selectedFundDestination = 0;
   int _selectedPurpose = 3;
   int _transactionType = 1;
+  int _sourceType = 2;
   String fullPhoneNumber = '';
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
   TextEditingController topUpAmountField = TextEditingController();
@@ -127,7 +108,7 @@ class _SendScreenState extends State<SendScreen> {
         child: Column(
           children: [
             SizedBox(
-              height: 30,
+              height: 20,
             ),
             new InternationalPhoneNumberInput(
               onInputChanged: (PhoneNumber number) {
@@ -157,7 +138,7 @@ class _SendScreenState extends State<SendScreen> {
     //Transaction Purpose field widget
     formWidget.add(
       SizedBox(
-        height: 30,
+        height: 20,
       ),
     );
     formWidget.add(
@@ -182,7 +163,7 @@ class _SendScreenState extends State<SendScreen> {
     ));
     formWidget.add(
       SizedBox(
-        height: 40,
+        height: 20,
       ),
     );
 
@@ -199,7 +180,7 @@ class _SendScreenState extends State<SendScreen> {
     formWidget.add(
       ListTile(
         leading: Text(
-          'K',
+          MyGlobalVariables.zmcurrencySymbol,
           style: TextStyle(
             fontSize: 20,
             fontFamily: 'BaiJamJuree',
@@ -239,7 +220,7 @@ class _SendScreenState extends State<SendScreen> {
             )
           ],
           onSaved: (String value) {},
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.right,
           keyboardType: TextInputType.number,
           style: TextStyle(
             fontSize: 20,
@@ -259,12 +240,13 @@ class _SendScreenState extends State<SendScreen> {
           case 0:
             //Destination OneKwacha Wallet
             if (_balance < 0) {
+              //Error Screen
               Navigator.push(
                 context,
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
                   child: ErrorScreen(
-                    from: MyGlobalVariables.topUpWalletDestination,
+                    from: getKeyValues.getCurrentUserLoginID(),
                     to: fullPhoneNumber,
                     destinationPlatform: getKeyValues
                         .getFundDestinationValue(_selectedFundDestination),
@@ -278,20 +260,22 @@ class _SendScreenState extends State<SendScreen> {
                 ),
               );
             } else {
+              //Confirmation Screen
               Navigator.push(
                 context,
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
                   child: ConfirmationScreen(
-                    from: MyGlobalVariables.topUpWalletDestination,
+                    from: getKeyValues.getCurrentUserLoginID(),
                     to: fullPhoneNumber,
-                    destinationPlatform: getKeyValues
+                    destinationType: getKeyValues
                         .getFundDestinationValue(_selectedFundDestination),
+                    sourceType:
+                        getKeyValues.getTransferFundSourceValue(_sourceType),
                     purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: _balance,
-                    transactionType:
-                        getKeyValues.getTransactionType(_transactionType),
+                    transactionType: _transactionType,
                   ),
                 ),
               );
@@ -301,12 +285,13 @@ class _SendScreenState extends State<SendScreen> {
           case 1:
             //Destination Mobile Money
             if (_balance < 0) {
+              //Error Screen
               Navigator.push(
                 context,
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
                   child: ErrorScreen(
-                    from: MyGlobalVariables.topUpWalletDestination,
+                    from: getKeyValues.getCurrentUserLoginID(),
                     to: fullPhoneNumber,
                     destinationPlatform: getKeyValues
                         .getFundDestinationValue(_selectedFundDestination),
@@ -320,20 +305,22 @@ class _SendScreenState extends State<SendScreen> {
                 ),
               );
             } else {
+              //Confirmation Screen
               Navigator.push(
                 context,
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
                   child: ConfirmationScreen(
-                    from: MyGlobalVariables.topUpWalletDestination,
+                    from: getKeyValues.getCurrentUserLoginID(),
                     to: fullPhoneNumber,
-                    destinationPlatform: getKeyValues
+                    destinationType: getKeyValues
                         .getFundDestinationValue(_selectedFundDestination),
+                    sourceType:
+                        getKeyValues.getTransferFundSourceValue(_sourceType),
                     purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: _balance,
-                    transactionType:
-                        getKeyValues.getTransactionType(_transactionType),
+                    transactionType: _transactionType,
                   ),
                 ),
               );
@@ -342,12 +329,13 @@ class _SendScreenState extends State<SendScreen> {
           case 2:
             //Destination Bank Account
             if (_balance < 0) {
+              //Error Screen
               Navigator.push(
                 context,
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
                   child: ErrorScreen(
-                    from: MyGlobalVariables.topUpWalletDestination,
+                    from: getKeyValues.getCurrentUserLoginID(),
                     to: getKeyValues
                         .getFundDestinationValue(_selectedFundDestination),
                     destinationPlatform: getKeyValues
@@ -363,21 +351,22 @@ class _SendScreenState extends State<SendScreen> {
               );
             } else {
               print('balance = ' + _balance.toString());
+              //Bank Details Screen
               Navigator.push(
                 context,
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
                   child: BankDetailsScreen(
-                    from: MyGlobalVariables.topUpWalletDestination,
+                    from: getKeyValues.getCurrentUserLoginID(),
                     to: getKeyValues
                         .getFundDestinationValue(_selectedFundDestination),
-                    destinationPlatform: getKeyValues
+                    destinationType: getKeyValues
                         .getFundDestinationValue(_selectedFundDestination),
+                    sourceType: _sourceType,
                     purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: _balance,
-                    transactionType:
-                        getKeyValues.getTransactionType(_transactionType),
+                    transactionType: _transactionType,
                   ),
                 ),
               );
@@ -390,7 +379,7 @@ class _SendScreenState extends State<SendScreen> {
     //Button to go to next page
     formWidget.add(
       SizedBox(
-        height: 40,
+        height: 30,
       ),
     );
     formWidget.add(
@@ -411,41 +400,3 @@ class _SendScreenState extends State<SendScreen> {
     return formWidget;
   }
 }
-
-// formWidget.add(new MoneyTextFormField(
-//   settings: MoneyTextFormFieldSettings(
-//     controller: topUpAmountField,
-//     validator: (value) {
-//       if (double.parse(value) < MyGlobalVariables.minimumTopUpAmount) {
-//         return 'Minimum allowed is K${currencyConvertor.format(MyGlobalVariables.minimumTopUpAmount)}';
-//       } else {
-//         if (double.parse(value) > MyGlobalVariables.maximumTopUpAmount) {
-//           return 'Maximum allowed is K${currencyConvertor.format(MyGlobalVariables.maximumTopUpAmount)}';
-//         }
-//         return value;
-//       }
-//     },
-//     moneyFormatSettings: MoneyFormatSettings(
-//       currencySymbol: 'K',
-//       fractionDigits: 2,
-//       displayFormat: MoneyDisplayFormat.symbolOnLeft,
-//     ),
-//     appearanceSettings: AppearanceSettings(
-//       hintText: 'Enter amount',
-//       labelText: 'Amount:',
-//       labelStyle: TextStyle(
-//         color: kTextPrimaryColor,
-//         fontSize: 19,
-//         fontFamily: 'Roboto',
-//       ),
-//       inputStyle: TextStyle(
-//           color: kTextPrimaryColor,
-//           fontSize: 18,
-//           fontFamily: 'BaiJamJuree'),
-//       formattedStyle: TextStyle(
-//           color: kTextPrimaryColor,
-//           fontSize: 18,
-//           fontFamily: 'BaiJamJuree'),
-//     ),
-//   ),
-// ));

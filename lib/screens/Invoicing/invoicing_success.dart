@@ -288,7 +288,7 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Transaction ID:',
+                      'Receipt Number:',
                       textAlign: TextAlign.right,
                     ),
                   ),

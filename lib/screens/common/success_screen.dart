@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:page_transition/page_transition.dart';
@@ -10,9 +9,10 @@ import 'package:onekwacha/utils/get_key_values.dart';
 
 class TransactionSuccessScreen extends StatefulWidget {
   final int incomingData;
-  final String from;
-  final String to;
-  final String destinationPlatform;
+  final String source;
+  final String sourceType;
+  final String destination;
+  final String destinationType;
   final String purpose;
   final double amount;
   final double currentBalance;
@@ -22,26 +22,27 @@ class TransactionSuccessScreen extends StatefulWidget {
   final int cardCvv;
   final int cardMonth;
   final int cardYear;
-  final QueryDocumentSnapshot document;
-  final String fee;
-  TransactionSuccessScreen(
-      {Key key,
-      this.incomingData,
-      @required this.from,
-      @required this.to,
-      @required this.destinationPlatform,
-      @required this.purpose,
-      this.amount,
-      this.currentBalance,
-      @required this.transactionType,
-      this.cardName,
-      this.cardNumber,
-      this.cardCvv,
-      this.cardMonth,
-      this.cardYear,
-      this.document,
-      @required this.fee})
-      : super(key: key);
+  final String documentID;
+  final double fee;
+  TransactionSuccessScreen({
+    Key key,
+    this.incomingData,
+    @required this.source,
+    @required this.sourceType,
+    @required this.destination,
+    @required this.destinationType,
+    @required this.purpose,
+    this.amount,
+    this.currentBalance,
+    @required this.transactionType,
+    this.cardName,
+    this.cardNumber,
+    this.cardCvv,
+    this.cardMonth,
+    this.cardYear,
+    this.documentID,
+    @required this.fee,
+  }) : super(key: key);
 
   @override
   _TransactionSuccessScreenState createState() =>
@@ -51,10 +52,10 @@ class TransactionSuccessScreen extends StatefulWidget {
 class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
   GetKeyValues getKeyValues = new GetKeyValues();
-  String _receivableUserID;
-  String _payableUserID;
+  String _destination;
+  String _source;
   String _purpose;
-  String _fee;
+  double _fee;
   double _totalAmount;
   String _transactionType;
   String _transactionID;
@@ -62,11 +63,11 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
   //int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    _receivableUserID = widget.to;
-    _payableUserID = widget.from;
+    _destination = widget.destination;
+    _source = widget.source;
     _purpose = widget.purpose;
     _transactionType = widget.transactionType;
-    _transactionID = widget.document.id.toString();
+    _transactionID = widget.documentID;
     _fee = widget.fee;
     _totalAmount = widget.amount;
     return Form(
@@ -98,10 +99,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
       Navigator.pushAndRemoveUntil(
           context,
           PageTransition(
-            child: HomeScreen(
-              //incomingData: 0,
-              walletBalance: widget.currentBalance,
-            ),
+            child: HomeScreen(),
             type: PageTransitionType.fade,
           ),
           (route) => false);
@@ -162,7 +160,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Request from:',
+                      'Source #:',
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -172,7 +170,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   Expanded(
                     flex: 2,
                     child: new Text(
-                      _payableUserID,
+                      _source,
                     ),
                   ),
                 ],
@@ -185,7 +183,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Send to:',
+                      'Destination #:',
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -195,7 +193,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   Expanded(
                     flex: 2,
                     child: new Text(
-                      _receivableUserID,
+                      _destination,
                     ),
                   ),
                 ],
@@ -256,7 +254,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Total Amt:',
+                      'Transaction Amt:',
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -303,7 +301,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Transaction ID:',
+                      'Receipt Number:',
                       textAlign: TextAlign.right,
                     ),
                   ),

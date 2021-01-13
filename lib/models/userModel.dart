@@ -82,6 +82,7 @@ class UserModel {
     return _updated;
   }
 
+  //Update user balance
   Future<bool> updateUserBalance(
     String _userID,
     _currentBalance,
@@ -91,11 +92,11 @@ class UserModel {
         FirebaseFirestore.instance.collection("Users").doc(_userID);
     documentRef.get().then((document) async {
       await FirebaseFirestore.instance.collection("Users").doc(_userID).update({
-        'CurrentBalance': _currentBalance,
-        'OldBalance': document['CurrentBalance'],
-        'PreviousUdpateDate': document['LastUpdateDate'],
-        'LastUpdateDate': DateTime.now(),
-        'UpdateReason': 'Balance Update'
+        'CurrentBalance': _currentBalance.toString(),
+        'OldBalance': document['CurrentBalance'].toString(),
+        'PreviousUpdateDate': document['LastUpdateDate'].toString(),
+        'LastUpdateDate': DateTime.now().toString(),
+        'UpdateReason': 'Balance Update',
       }).catchError((e) {
         _updated = false;
       });
@@ -104,14 +105,25 @@ class UserModel {
     return _updated;
   }
 
+  //Get user balance
   Future<double> getUserBalance(String _userID) async {
-    double _currentBalance;
+    CollectionReference users = FirebaseFirestore.instance.collection('Users');
 
-    DocumentReference documentRef =
-        FirebaseFirestore.instance.collection("Users").doc(_userID);
-    documentRef.get().then((document) {
-      _currentBalance = document['CurrentBalance'];
+    Future<DocumentSnapshot> userSnapshot = users.doc(_userID).get();
+
+    return userSnapshot.then((_user) {
+      return double.parse(_user.data()['CurrentBalance']);
     });
-    return _currentBalance;
+  }
+
+  //Get user first name
+  Future<String> getUserFirstName(String _userID) async {
+    CollectionReference users = FirebaseFirestore.instance.collection('Users');
+
+    Future<DocumentSnapshot> userSnapshot = users.doc(_userID).get();
+
+    return userSnapshot.then((_user) {
+      return _user.data()['FirstName'];
+    });
   }
 }

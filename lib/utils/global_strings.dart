@@ -23,6 +23,6 @@ class MyGlobalVariables {
   static const double feeCashout = 0;
 
   //Need to dynamically pull this from user's profile
-  static String onekwachaWalletNumber = '+260987456321';
+  //static String onekwachaWalletNumber = '+260987456321';
   static double currentBalance = 6000.0;
 }

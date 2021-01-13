@@ -52,6 +52,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
   int _transactionType = 1;
   int _selectedFundDestination = 0;
   int _selectedPurpose = 4;
+  int _sourceType = 2;
 
   var flashState = flashOn;
   var cameraState = frontCamera;
@@ -159,123 +160,138 @@ class _QRViewScreenState extends State<QRViewScreen> {
                 (result != null)
                     ?
                     //Pay button after scanning QR Code
-                    Card(
-                        child: ListTile(
-                          leading: Icon(
-                            Icons.check_circle_outlined,
-                            color: kDefaultPrimaryColor,
-                            size: 35,
-                          ),
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                'Payee: ' + _getDestinationNumber(result.code),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  //fontFamily: 'BaiJamJuree',
-                                ),
+                              Icon(
+                                Icons.check_circle_outline_rounded,
+                                color: kDarkPrimaryColor,
+                                size: 50,
                               ),
                               SizedBox(
-                                height: 5,
+                                width: 10,
                               ),
                               Text(
-                                'Purpose: ' +
-                                    getKeyValues
-                                        .getPurposeValue(_selectedPurpose),
+                                'QR Scan Successful!',
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: 12,
-                                  //fontFamily: 'BaiJamJuree',
+                                  //decoration: TextDecoration.underline,
+                                  fontSize: 25.0,
+                                  fontFamily: 'BaiJamJuree',
+                                  fontWeight: FontWeight.bold,
+                                  color: kDarkPrimaryColor,
                                 ),
                               ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                'Amount: ' +
-                                    MyGlobalVariables.zmcurrencySymbol +
-                                    currencyConvertor.format(
-                                      _getAmountNumber(result.code),
-                                    ),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  //fontFamily: 'BaiJamJuree',
-                                ),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              // Text(
-                              //   'Scanned Data: ${result.code}',
-                              //   style: TextStyle(
-                              //     fontSize: 12,
-                              //     //fontFamily: 'BaiJamJuree',
-                              //   ),
-                              // ),
                             ],
                           ),
-                          trailing: new RaisedButton(
-                            color: kDefaultPrimaryColor,
-                            textColor: kTextPrimaryColor,
-                            // padding:
-                            //     const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
-                            child: new Text(
-                              'Pay',
-                              style: TextStyle(
-                                fontSize: kSubmitButtonFontSize,
-                                fontWeight: FontWeight.bold,
-                                //fontFamily: 'BaiJamJuree',
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Card(
+                            child: ListTile(
+                              // leading: Icon(
+                              //   Icons.check_circle_outlined,
+                              //   color: kDefaultPrimaryColor,
+                              //   size: 40,
+                              // ),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Send To: ' +
+                                        getKeyValues
+                                            .formatPhoneNumberWithSpaces(
+                                                _getDestinationNumber(
+                                                    result.code)),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      //fontFamily: 'BaiJamJuree',
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    'Purpose: ' +
+                                        getKeyValues
+                                            .getPurposeValue(_selectedPurpose),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      //fontFamily: 'BaiJamJuree',
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    'Amount: ' +
+                                        MyGlobalVariables.zmcurrencySymbol +
+                                        currencyConvertor.format(
+                                          _getAmountNumber(result.code),
+                                        ),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      //fontFamily: 'BaiJamJuree',
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                ],
+                              ),
+                              trailing: new RaisedButton(
+                                color: kDefaultPrimaryColor,
+                                textColor: kTextPrimaryColor,
+                                // padding:
+                                //     const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
+                                child: new Text(
+                                  'Pay',
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    //fontFamily: 'BaiJamJuree',
+                                  ),
+                                ),
+                                onPressed: () {
+                                  if (_formKey.currentState.validate()) {
+                                    _formKey.currentState.save();
+                                    setState(() {
+                                      if (result.code != null) {
+                                        Navigator.push(
+                                          context,
+                                          PageTransition(
+                                            type:
+                                                PageTransitionType.rightToLeft,
+                                            child: ConfirmationScreen(
+                                              from: getKeyValues
+                                                  .getCurrentUserLoginID(),
+                                              to: _destinationPhoneNumber,
+                                              destinationType: getKeyValues
+                                                  .getFundDestinationValue(
+                                                      _selectedFundDestination),
+                                              sourceType: getKeyValues
+                                                  .getTransferFundSourceValue(
+                                                      _sourceType),
+                                              purpose:
+                                                  getKeyValues.getPurposeValue(
+                                                      _selectedPurpose),
+                                              amount: _transferAmount,
+                                              currentBalance: MyGlobalVariables
+                                                  .currentBalance,
+                                              transactionType: _transactionType,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    });
+                                  }
+                                },
                               ),
                             ),
-                            onPressed: () {
-                              if (_formKey.currentState.validate()) {
-                                _formKey.currentState.save();
-                                setState(() {
-                                  // List values = result.code.split("|");
-                                  // // print(values[0]);
-                                  // // print(values[1]);
-                                  // // print(values[2]);
-                                  // _destinationPhoneNumber = values[0];
-                                  // _selectedPurpose = values[1];
-                                  // _transferAmount = double.parse(values[2]);
-                                  if (result.code != null) {
-                                    print(_destinationPhoneNumber);
-                                    print(getKeyValues.getFundDestinationValue(
-                                        _selectedFundDestination));
-                                    print(getKeyValues
-                                        .getPurposeValue(_selectedPurpose));
-                                    print(_transferAmount);
-                                    print(getKeyValues
-                                        .getTransactionType(_transactionType));
-
-                                    Navigator.push(
-                                      context,
-                                      PageTransition(
-                                        type: PageTransitionType.rightToLeft,
-                                        child: ConfirmationScreen(
-                                          from: MyGlobalVariables
-                                              .topUpWalletDestination,
-                                          to: _destinationPhoneNumber,
-                                          destinationPlatform: getKeyValues
-                                              .getFundDestinationValue(
-                                                  _selectedFundDestination),
-                                          purpose: getKeyValues.getPurposeValue(
-                                              _selectedPurpose),
-                                          amount: _transferAmount,
-                                          currentBalance:
-                                              MyGlobalVariables.currentBalance,
-                                          transactionType:
-                                              getKeyValues.getTransactionType(
-                                                  _transactionType),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                });
-                              }
-                            },
                           ),
-                        ),
+                        ],
                       )
                     : Text(
                         'Position QR inside square',
@@ -466,7 +482,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
                         _isGenerateEnabled = true;
 
                         //Assign QR data a tab delimited string - Wallet Number + Purpose + Amount
-                        qrDataString = MyGlobalVariables.onekwachaWalletNumber +
+                        qrDataString = getKeyValues.getCurrentUserLoginID() +
                             '|' +
                             _selectedPurpose.toString() +
                             '|' +

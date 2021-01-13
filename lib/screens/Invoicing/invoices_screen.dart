@@ -54,7 +54,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
       _transactionType = 2,
       _selectedFundDestination = 0;
   double _fee = 0, _previousBalance = 0;
-  double _transactionAmount = 0, _currentBalance = 0, _availableBalance = 0;
+  double _transactionTotal = 0, _currentBalance = 0, _availableBalance = 0;
   double _amount = 0;
   bool _paid = false;
 
@@ -290,7 +290,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                       width: MyGlobalVariables.sizedBoxWidth,
                     ),
                     new Text(
-                      MyGlobalVariables.onekwachaWalletNumber,
+                      _source,
                       style:
                           TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
                     ),
@@ -499,6 +499,12 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
       _amount = double.parse(document['Amount']);
       _availableBalance = _currentBalance - _amount;
       _fee = double.parse(document['Fee']);
+      _destination = document['ReceivableUserID'];
+      _purpose = document['Purpose'];
+      _source = document['PayableUserID'];
+      _userID = document['PayableUserID'];
+      _status = 'Paid';
+      _transactionTypeName = getKeyValues.getTransactionType(_transactionType);
 
       //Check if wallet balance is enough to process required transaction amount
       if (_availableBalance < 0) {
@@ -676,7 +682,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                         width: MyGlobalVariables.sizedBoxWidth,
                       ),
                       new Text(
-                        MyGlobalVariables.onekwachaWalletNumber,
+                        _source,
                         style: TextStyle(
                             fontSize: MyGlobalVariables.dialogFontSize),
                       ),
@@ -719,7 +725,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                         width: MyGlobalVariables.sizedBoxWidth,
                       ),
                       new Text(
-                        document['ReceivableUserID'],
+                        _destination,
                         style: TextStyle(
                             fontSize: MyGlobalVariables.dialogFontSize),
                       ),
@@ -917,14 +923,6 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                     am,
                   ]));
 
-                  _destination = document['ReceivableUserID'];
-                  _purpose = document['Purpose'];
-                  _source = document['PayableUserID'];
-                  _userID = document['PayableUserID'];
-                  _status = 'Paid';
-                  _transactionTypeName =
-                      getKeyValues.getTransactionType(_transactionType);
-
                   //Create transaction
                   documentRef = await transactionModel.createTransaction(
                     _availableBalance,
@@ -999,7 +997,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                   .collection("Invoices")
                   .orderBy('InvoiceDate', descending: true)
                   .where("PayableUserID",
-                      isEqualTo: MyGlobalVariables.onekwachaWalletNumber)
+                      isEqualTo: getKeyValues.getCurrentUserLoginID())
                   .where("Status", isEqualTo: 'Active')
                   .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -1014,11 +1012,11 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                         QueryDocumentSnapshot document =
                             snapshot.data.docs[index];
 
-                        _transactionAmount = double.parse(document['Amount']);
+                        _transactionTotal = double.parse(document['Amount']);
                         _fee = double.parse(document['Fee']);
 
                         _currencyAmount =
-                            currencyConvertor.format(_transactionAmount);
+                            currencyConvertor.format(_transactionTotal);
                         _invoiceDay = int.parse(formatDate(
                             DateTime.parse(document['InvoiceDate']), [
                           dd,
@@ -1183,7 +1181,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                   //.orderBy('Status')
                   .orderBy('InvoiceDate', descending: true)
                   .where("ReceivableUserID",
-                      isEqualTo: MyGlobalVariables.onekwachaWalletNumber)
+                      isEqualTo: getKeyValues.getCurrentUserLoginID())
                   .where("Status", whereIn: ['Active', 'Declined']).snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) return Text('Errored');
@@ -1197,11 +1195,11 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                         QueryDocumentSnapshot document =
                             snapshot.data.docs[index];
 
-                        _transactionAmount = double.parse(document['Amount']);
+                        _transactionTotal = double.parse(document['Amount']);
                         _fee = double.parse(document['Fee']);
 
                         _currencyAmount =
-                            currencyConvertor.format(_transactionAmount);
+                            currencyConvertor.format(_transactionTotal);
                         _invoiceDay = int.parse(formatDate(
                             DateTime.parse(document['InvoiceDate']), [
                           dd,

@@ -45,7 +45,7 @@ class _InvoicingConfirmationScreenState
 
   @override
   Widget build(BuildContext context) {
-    _receivableUserID = MyGlobalVariables.onekwachaWalletNumber;
+    _receivableUserID = getKeyValues.getCurrentUserLoginID();
     _payableUserID = widget.requestFrom;
     _purpose = widget.purpose;
     _amount = widget.amount;

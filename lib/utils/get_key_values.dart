@@ -39,15 +39,29 @@ class GetKeyValues {
     5: 'Zanaco',
   };
 
-  Map<int, String> _fundSource = {
+  Map<int, String> _topUpfundSource = {
     0: 'Mobile Money',
     1: 'Card',
+  };
+
+  Map<int, String> _transferFundSource = {
+    0: 'Mobile Money',
+    1: 'Card',
+    2: 'OneKwacha Wallet',
   };
 
   Map<int, String> _fundDestination = {
     0: 'OneKwacha Wallet',
     1: 'Mobile Money',
     2: 'Bank Account',
+  };
+
+  Map<String, double> _transactionTypeRate = {
+    'Top up': 1.5,
+    'Transfer': 1,
+    'Invoicing': 2.5,
+    'Marketplace': 3,
+    'Cash out': 5,
   };
   Map<int, String> _transactionType = {
     0: 'Top up',
@@ -57,13 +71,44 @@ class GetKeyValues {
     4: 'Cash out',
   };
 
-  Map<String, double> _transactionTypeRate = {
-    'Top up': 2.5,
-    'Transfer': 1,
-    'Invoicing': 2.5,
-    'Marketplace': 3,
-    'Cash out': 5,
-  };
+  String getCurrentUserLoginID() {
+    String value;
+    value = '+260987456321';
+    return value;
+  }
+
+  double calculateNewWalletBalance(
+    int transactionType,
+    double fee,
+    transactionTotal,
+    currentBalance,
+  ) {
+    double value;
+    switch (transactionType) {
+      case 0:
+        //top up
+        value = currentBalance + (transactionTotal - fee);
+        break;
+      case 1:
+        //Tranfers
+        value = currentBalance - (transactionTotal);
+        break;
+      case 2:
+        //Invoicing
+        value = currentBalance - (transactionTotal);
+        break;
+      case 3:
+        //Marketplace
+        value = currentBalance - (transactionTotal - fee);
+        break;
+      case 4:
+        //Cash out
+        value = currentBalance - (transactionTotal);
+        break;
+    }
+
+    return value;
+  }
 
   double calculateTotalAmount(
       double transacationAmount, String transactionType) {
@@ -102,8 +147,13 @@ class GetKeyValues {
     return value;
   }
 
-  String getFundSourceValue(int index) {
-    String value = _fundSource[index];
+  String getTransferFundSourceValue(int index) {
+    String value = _transferFundSource[index];
+    return value;
+  }
+
+  String getTopUpFundSourceValue(int index) {
+    String value = _topUpfundSource[index];
     return value;
   }
 
@@ -208,7 +258,7 @@ class GetKeyValues {
           color: kDarkPrimaryColor,
         ),
         title: Text(
-          getFundSourceValue(0),
+          getTopUpFundSourceValue(0),
         ),
       ),
       value: 0,
@@ -220,7 +270,7 @@ class GetKeyValues {
           color: kDarkPrimaryColor,
         ),
         title: Text(
-          getFundSourceValue(1),
+          getTopUpFundSourceValue(1),
         ),
       ),
       value: 1,

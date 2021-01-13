@@ -1,7 +1,8 @@
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:onekwacha/utils/input_formatters.dart';
 import 'package:onekwacha/utils/payment_card.dart';
 import 'package:onekwacha/utils/global_strings.dart';
@@ -10,25 +11,34 @@ import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/utils/custom_icons.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:onekwacha/screens/common/success_screen.dart';
+import 'package:flutter_dialogs/flutter_dialogs.dart';
+import 'package:onekwacha/models/userModel.dart';
+import 'package:onekwacha/models/transactionModel.dart';
+import 'package:date_format/date_format.dart';
+import 'package:onekwacha/utils/get_key_values.dart';
 
 class CardScreen extends StatefulWidget {
   final int incomingData;
   final String from;
   final String to;
-  final String destinationPlatform;
+  final String destinationType;
+  final String sourceType;
   final String purpose;
   final double amount;
+  final double totalAmount;
   final double currentBalance;
-  final String transactionType;
-  final String fee;
+  final int transactionType;
+  final double fee;
   CardScreen({
     Key key,
     this.incomingData,
     @required this.from,
     @required this.to,
-    @required this.destinationPlatform,
+    @required this.destinationType,
+    @required this.sourceType,
     @required this.purpose,
     @required this.amount,
+    @required this.totalAmount,
     this.currentBalance,
     @required this.transactionType,
     @required this.fee,
@@ -39,6 +49,7 @@ class CardScreen extends StatefulWidget {
 }
 
 class _CardScreenState extends State<CardScreen> {
+  final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
   //int _selectedIndex = 2;
   //FocusNode _focusNode = new FocusNode();
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -47,7 +58,31 @@ class _CardScreenState extends State<CardScreen> {
   PaymentCard _paymentCard = PaymentCard();
   //bool _autoValidate = false;
   PaymentCard _card = new PaymentCard();
-  //double _fee = ;
+  GetKeyValues getKeyValues = new GetKeyValues();
+  String _invoiceID;
+  double _amount = 0;
+  double _totalAmount = 0;
+  double _fee = 0;
+  double _newWalletBalance = 0;
+  //double _previousBalance = 0;
+  double creditAmount = 0;
+  double debitAmount = 0;
+  //double _availableBalance = 0;
+  double _currentBalance = 0;
+  String _transactionTypeString;
+  String _transactionDate,
+      _transactionTime,
+      _destination,
+      _destinationType,
+      _sourceType,
+      _purpose,
+      _source,
+      _transactionTypeName,
+      _userID;
+  int _transactionType, _transactionDay, _transactionMonth, _transactionYear;
+  UserModel userModel = new UserModel();
+  TransactionModel transactionModel = new TransactionModel();
+  bool _updated = false;
 
   @override
   void initState() {
@@ -65,6 +100,20 @@ class _CardScreenState extends State<CardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _purpose = widget.purpose;
+    _transactionType = widget.transactionType;
+    _amount = widget.amount;
+    _transactionTypeString =
+        getKeyValues.getTransactionType(widget.transactionType);
+    _fee = getKeyValues.calculateFee(_amount, _transactionTypeString);
+    _totalAmount =
+        getKeyValues.calculateTotalAmount(_amount, _transactionTypeString);
+    _userID = getKeyValues.getCurrentUserLoginID();
+    _destinationType = widget.destinationType;
+    _destination = widget.to;
+    _source = widget.from;
+    _sourceType = widget.sourceType;
+
     return new Scaffold(
         key: _scaffoldKey,
         backgroundColor: Colors.grey.shade100,
@@ -222,7 +271,86 @@ class _CardScreenState extends State<CardScreen> {
     });
   }
 
-  void _validateInputs() {
+  void _connectionErrorDialog(BuildContext context) {
+    showPlatformDialog(
+      context: context,
+      builder: (_) => BasicDialogAlert(
+          title: Center(
+              child: Column(
+            children: [
+              Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 50,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Connection Error',
+                style: TextStyle(color: Colors.red),
+              ),
+            ],
+          )),
+          content: Text(
+            'Transaction encountered a connection error. Please try again later.',
+            style: TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+          ),
+          actions: <Widget>[
+            BasicDialogAction(
+              title: Text(
+                "Cancel",
+                style: TextStyle(color: kDarkPrimaryColor),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ]),
+    );
+  }
+
+  void _notPaidDialog(BuildContext context) {
+    showPlatformDialog(
+      context: context,
+      builder: (_) => BasicDialogAlert(
+          title: Center(
+              child: Column(
+            children: [
+              Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 50,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Transaction Unsuccessful',
+                style: TextStyle(color: Colors.red),
+              ),
+            ],
+          )),
+          content: Text(
+            'Transaction was not processed. Please try again later',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+          ),
+          actions: <Widget>[
+            BasicDialogAction(
+              title: Text(
+                "Cancel",
+                style: TextStyle(color: kDarkPrimaryColor),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ]),
+    );
+  }
+
+  void _validateInputs() async {
     final FormState form = _formKey.currentState;
     if (!form.validate()) {
       setState(() {
@@ -232,28 +360,118 @@ class _CardScreenState extends State<CardScreen> {
     } else {
       form.save();
       // Encrypt and send send payment details to payment gateway
-      //_showInSnackBar('Payment card is valid');
+      //Check for card detail success, otherwise redirect to error screen
+      //Once payment card details to payment gateway are confirmed,
+      //record the transaction in the database and on
 
-      Navigator.pushAndRemoveUntil(
-          context,
-          PageTransition(
-            type: PageTransitionType.rightToLeft,
-            child: TransactionSuccessScreen(
-                from: widget.from,
-                to: widget.to,
-                destinationPlatform: widget.destinationPlatform,
-                purpose: widget.purpose,
-                amount: widget.amount,
-                currentBalance: widget.currentBalance,
-                transactionType: widget.transactionType,
-                fee: widget.fee,
-                cardName: _card.name,
-                cardNumber: _paymentCard.number,
-                cardCvv: _paymentCard.cvv,
-                cardMonth: _paymentCard.month,
-                cardYear: _paymentCard.year),
-          ),
-          (route) => false);
+      _transactionTypeName = getKeyValues.getTransactionType(_transactionType);
+      _invoiceID = 'Non-Invoice';
+
+      //Get user's current balance
+      _currentBalance = await userModel.getUserBalance(_userID);
+
+      //Compute what the new balance will be
+      _newWalletBalance = getKeyValues.calculateNewWalletBalance(
+          widget.transactionType, _fee, _totalAmount, _currentBalance);
+
+      DocumentReference documentRef;
+      _transactionDate = DateTime.now().toString();
+
+      _transactionDay = int.parse(formatDate(DateTime.parse(_transactionDate), [
+        dd,
+      ]));
+      _transactionMonth =
+          int.parse(formatDate(DateTime.parse(_transactionDate), [
+        mm,
+      ]));
+      _transactionYear =
+          int.parse(formatDate(DateTime.parse(_transactionDate), [
+        yy,
+      ]));
+      _transactionTime = (formatDate(DateTime.parse(_transactionDate), [
+        hh,
+        ':',
+        nn,
+        ' ',
+        am,
+      ]));
+
+      //Pay off invoice and remove it from the Payables tab by setting Status to paid
+      _updated = await userModel.updateUserBalance(
+        _userID,
+        _newWalletBalance,
+      );
+
+      //Create transaction
+      documentRef = await transactionModel.createTransaction(
+        _newWalletBalance,
+        _fee,
+        _currentBalance,
+        _totalAmount,
+        _transactionDay,
+        _transactionMonth,
+        _transactionYear,
+        _transactionTypeName,
+        _destinationType,
+        _sourceType,
+        _transactionDate,
+        _destination,
+        _purpose,
+        _source,
+        _transactionTime,
+        _userID,
+        _invoiceID,
+      );
+
+      if (documentRef != null) {
+        if (_updated) {
+          //To Success Screen
+          Navigator.pushAndRemoveUntil(
+              context,
+              PageTransition(
+                type: PageTransitionType.rightToLeft,
+                child: TransactionSuccessScreen(
+                  source: _source,
+                  sourceType: _sourceType,
+                  destination: _destination,
+                  destinationType: _destinationType,
+                  purpose: _purpose,
+                  amount: _totalAmount,
+                  fee: _fee,
+                  currentBalance: _currentBalance,
+                  transactionType: _transactionTypeString,
+                  documentID: documentRef.id,
+                ),
+              ),
+              (route) => false);
+        } else {
+          _notPaidDialog(context);
+        }
+      } else {
+        _connectionErrorDialog(context);
+      }
+
+      // Navigator.pushAndRemoveUntil(
+      //     context,
+      //     PageTransition(
+      //       type: PageTransitionType.rightToLeft,
+      //       child: TransactionSuccessScreen(
+      //           source: widget.from,
+      //           sourceType: 'Card',
+      //           destination: widget.to,
+      //           destinationType: widget.destinationType,
+      //           purpose: widget.purpose,
+      //           amount: widget.amount,
+      //           currentBalance: widget.currentBalance,
+      //           transactionType: _transactionTypeString,
+      //           fee: _fee,
+      //           cardName: _card.name,
+      //           cardNumber: _paymentCard.number,
+      //           cardCvv: _paymentCard.cvv,
+      //           cardMonth: _paymentCard.month,
+      //           cardYear: _paymentCard.year),
+      //     ),
+      //     (route) => false);
     }
   }
 

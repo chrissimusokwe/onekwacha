@@ -59,6 +59,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
   String _decimalValueNoCommas;
   double _validDouble = 0.0;
   double transferAmount = 0;
+  //double _totalAmount = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -111,6 +112,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
             _phoneNumberVisibility = true;
           } else {
             _phoneNumberVisibility = false;
+            sourcePhoneNumerField.text = '';
           }
         });
       },
@@ -124,7 +126,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
         child: Column(
           children: [
             SizedBox(
-              height: 30,
+              height: 20,
             ),
             new InternationalPhoneNumberInput(
               onInputChanged: (PhoneNumber number) {
@@ -154,7 +156,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
     //Transaction Purpose field widget
     formWidget.add(
       SizedBox(
-        height: 30,
+        height: 20,
       ),
     );
     formWidget.add(
@@ -179,7 +181,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
     ));
     formWidget.add(
       SizedBox(
-        height: 40,
+        height: 20,
       ),
     );
 
@@ -197,7 +199,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
     formWidget.add(
       ListTile(
         leading: Text(
-          'K',
+          MyGlobalVariables.zmcurrencySymbol,
           style: TextStyle(
             fontSize: 20,
             fontFamily: 'BaiJamJuree',
@@ -237,7 +239,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
             )
           ],
           onSaved: (String value) {},
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.right,
           keyboardType: TextInputType.number,
           style: TextStyle(
             fontSize: 20,
@@ -261,14 +263,14 @@ class _TopUpScreenState extends State<TopUpScreen> {
                 type: PageTransitionType.rightToLeft,
                 child: ConfirmationScreen(
                   from: fullPhoneNumber,
-                  to: MyGlobalVariables.topUpWalletDestination,
-                  destinationPlatform: MyGlobalVariables.topUpWalletDestination,
+                  to: getKeyValues.getCurrentUserLoginID(),
+                  destinationType: getKeyValues.getTransferFundSourceValue(2),
+                  sourceType:
+                      getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
                   purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                   amount: double.parse(_decimalValueNoCommas),
-                  currentBalance: widget.currentBalance +
-                      double.parse(_decimalValueNoCommas),
-                  transactionType:
-                      getKeyValues.getTransactionType(_transactionType),
+                  currentBalance: widget.currentBalance,
+                  transactionType: _transactionType,
                 ),
               ),
             );
@@ -280,15 +282,16 @@ class _TopUpScreenState extends State<TopUpScreen> {
               PageTransition(
                 type: PageTransitionType.rightToLeft,
                 child: ConfirmationScreen(
-                  from: getKeyValues.getFundSourceValue(_selectedFundSource),
-                  to: MyGlobalVariables.topUpWalletDestination,
-                  destinationPlatform: MyGlobalVariables.topUpWalletDestination,
+                  from:
+                      getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
+                  to: getKeyValues.getCurrentUserLoginID(),
+                  destinationType: getKeyValues.getTransferFundSourceValue(2),
+                  sourceType:
+                      getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
                   purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                   amount: double.parse(_decimalValueNoCommas),
-                  currentBalance: widget.currentBalance +
-                      double.parse(_decimalValueNoCommas),
-                  transactionType:
-                      getKeyValues.getTransactionType(_transactionType),
+                  currentBalance: widget.currentBalance,
+                  transactionType: _transactionType,
                 ),
               ),
             );

@@ -15,17 +15,19 @@ class BankDetailsScreen extends StatefulWidget {
   final int incomingData;
   final String from;
   final String to;
-  final String destinationPlatform;
+  final String destinationType;
+  final int sourceType;
   final String purpose;
   final double amount;
   final double currentBalance;
-  final String transactionType;
+  final int transactionType;
   BankDetailsScreen({
     Key key,
     this.incomingData,
     @required this.from,
     @required this.to,
-    @required this.destinationPlatform,
+    @required this.destinationType,
+    @required this.sourceType,
     @required this.purpose,
     this.amount,
     this.currentBalance,
@@ -38,6 +40,7 @@ class BankDetailsScreen extends StatefulWidget {
 
 class _BankDetailsScreenState extends State<BankDetailsScreen> {
   int _selectedBank = 0;
+  int _sourceType = 0;
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _formKey = new GlobalKey<FormState>();
   TextEditingController _accountName = new TextEditingController();
@@ -55,6 +58,8 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _sourceType = widget.sourceType;
+
     getKeyValues.loadBankList();
     return new Scaffold(
         key: _scaffoldKey,
@@ -224,13 +229,14 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
         PageTransition(
           type: PageTransitionType.rightToLeft,
           child: ConfirmationScreen(
-            from: MyGlobalVariables.topUpWalletDestination,
+            from: widget.from,
             to: getKeyValues.getBankListValue(_selectedBank) +
                 ' - ' +
                 _branchCode.text +
                 ' - ' +
                 _accountNumber.text,
-            destinationPlatform: widget.destinationPlatform,
+            destinationType: widget.destinationType,
+            sourceType: getKeyValues.getTransferFundSourceValue(_sourceType),
             purpose: widget.purpose,
             amount: widget.amount,
             currentBalance: widget.currentBalance,
