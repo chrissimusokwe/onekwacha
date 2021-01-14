@@ -21,7 +21,7 @@ class CardScreen extends StatefulWidget {
   final int incomingData;
   final String from;
   final String to;
-  final String destinationType;
+  final int destinationType;
   final String sourceType;
   final String purpose;
   final double amount;
@@ -109,7 +109,8 @@ class _CardScreenState extends State<CardScreen> {
     _totalAmount =
         getKeyValues.calculateTotalAmount(_amount, _transactionTypeString);
     _userID = getKeyValues.getCurrentUserLoginID();
-    _destinationType = widget.destinationType;
+    _destinationType =
+        getKeyValues.getFundDestinationValue(widget.destinationType);
     _destination = widget.to;
     _source = widget.from;
     _sourceType = widget.sourceType;
@@ -396,12 +397,6 @@ class _CardScreenState extends State<CardScreen> {
         am,
       ]));
 
-      //Pay off invoice and remove it from the Payables tab by setting Status to paid
-      _updated = await userModel.updateUserBalance(
-        _userID,
-        _newWalletBalance,
-      );
-
       //Create transaction
       documentRef = await transactionModel.createTransaction(
         _newWalletBalance,
@@ -424,6 +419,12 @@ class _CardScreenState extends State<CardScreen> {
       );
 
       if (documentRef != null) {
+        //Update users balance
+        _updated = await userModel.updateUserBalance(
+          documentRef.id,
+          _userID,
+          _newWalletBalance,
+        );
         if (_updated) {
           //To Success Screen
           Navigator.pushAndRemoveUntil(

@@ -44,6 +44,7 @@ class TopUpScreen extends StatefulWidget {
 class _TopUpScreenState extends State<TopUpScreen> {
   final _formKey = GlobalKey<FormState>();
   int _selectedFundSource = 0;
+  int _selectedFundDestination = 0;
   int _selectedPurpose = 3;
   int _transactionType = 0;
   String fullPhoneNumber = '';
@@ -264,7 +265,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                 child: ConfirmationScreen(
                   from: fullPhoneNumber,
                   to: getKeyValues.getCurrentUserLoginID(),
-                  destinationType: getKeyValues.getTransferFundSourceValue(2),
+                  destinationType: _selectedFundDestination,
                   sourceType:
                       getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
                   purpose: getKeyValues.getPurposeValue(_selectedPurpose),
@@ -285,7 +286,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   from:
                       getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
                   to: getKeyValues.getCurrentUserLoginID(),
-                  destinationType: getKeyValues.getTransferFundSourceValue(2),
+                  destinationType: _selectedFundDestination,
                   sourceType:
                       getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
                   purpose: getKeyValues.getPurposeValue(_selectedPurpose),

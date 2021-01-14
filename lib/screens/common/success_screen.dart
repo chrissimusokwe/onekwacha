@@ -141,7 +141,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             //decoration: TextDecoration.underline,
-                            fontSize: 18.0,
+                            fontSize: 25.0,
                             fontFamily: 'BaiJamJuree',
                             fontWeight: FontWeight.bold,
                             color: kDarkPrimaryColor,
@@ -301,7 +301,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Receipt Number:',
+                      'Receipt:',
                       textAlign: TextAlign.right,
                     ),
                   ),

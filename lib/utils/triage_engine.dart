@@ -1,52 +1,138 @@
 // import 'package:flutter/material.dart';
 // import 'package:page_transition/page_transition.dart';
 // import 'package:onekwacha/utils/get_key_values.dart';
-// import 'package:onekwacha/utils/global_strings.dart';
+// import 'package:onekwacha/screens/common/confirmation_screen.dart';
+// import 'package:intl/intl.dart';
 
-class TriageEngine {
-  final int incomingData;
-  final String from;
-  final String to;
-  final String destinationPlatform;
-  final String purpose;
-  final double amount;
-  final double currentBalance;
-  final String transactionType;
-  final String accountName;
-  final int accountNumber;
-  final int brankCode;
-  final String bankName;
+// class TriageEngine {
+//   //Triage
+//   void triage() {}
 
-  TriageEngine({
-    this.incomingData,
-    this.from,
-    this.to,
-    this.destinationPlatform,
-    this.purpose,
-    this.amount,
-    this.currentBalance,
-    this.transactionType,
-    this.accountName,
-    this.accountNumber,
-    this.brankCode,
-    this.bankName,
-  });
+//   //Top up method
+//   void topUp(int _transactionType) {
+//     GetKeyValues getKeyValues = new GetKeyValues();
+//     BuildContext context;
+//     double _currentBalance;
+//     int _transactionType,
+//         _selectedFundSource,
+//         _selectedFundDestination,
+//         _selectedPurpose;
+//     String _date,
+//         _destination,
+//         _purpose,
+//         _source,
+//         _time,
+//         _userID,
+//         fullPhoneNumber,
+//         _decimalValueNoCommas;
+//     switch (_selectedFundSource) {
+//       case 0:
+//         //Top up from Mobile Money
+//         Navigator.push(
+//           context,
+//           PageTransition(
+//             type: PageTransitionType.rightToLeft,
+//             child: ConfirmationScreen(
+//               from: fullPhoneNumber,
+//               to: getKeyValues.getCurrentUserLoginID(),
+//               destinationType: _selectedFundDestination,
+//               sourceType:
+//                   getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
+//               purpose: getKeyValues.getPurposeValue(_selectedPurpose),
+//               amount: double.parse(_decimalValueNoCommas),
+//               currentBalance: _currentBalance,
+//               transactionType: _transactionType,
+//             ),
+//           ),
+//         );
+//         break;
+//       case 1:
+//         //Top up from Card
+//         Navigator.push(
+//           context,
+//           PageTransition(
+//             type: PageTransitionType.rightToLeft,
+//             child: ConfirmationScreen(
+//               from: getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
+//               to: getKeyValues.getCurrentUserLoginID(),
+//               destinationType: _selectedFundDestination,
+//               sourceType:
+//                   getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
+//               purpose: getKeyValues.getPurposeValue(_selectedPurpose),
+//               amount: double.parse(_decimalValueNoCommas),
+//               currentBalance: _currentBalance,
+//               transactionType: _transactionType,
+//             ),
+//           ),
+//         );
+//         break;
+//     }
+//   }
 
-  void triage(int _transaction) {
-    switch (_transaction) {
-      //Top up
-      case 0:
+//   //Transfer method
+//   void transfer(int _transactionType) {
+//     BuildContext context;
+//     final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
+//     GetKeyValues getKeyValues = new GetKeyValues();
+//     double _currentBalance, _fee, _oldBalance, _transactionAmount;
+//     int _transactionType,
+//         _destinationType,
+//         _sourceType,
+//         _selectedFundSource,
+//         _selectedFundDestination,
+//         _selectedPurpose;
+//     String _date,
+//         _destination,
+//         _purpose,
+//         _source,
+//         _time,
+//         _userID,
+//         fullPhoneNumber,
+//         _invoiceID,
+//         _decimalValueNoCommas;
+//     switch (_selectedFundSource) {
+//       case 0:
+//         //Top up from Mobile Money
+//         Navigator.push(
+//           context,
+//           PageTransition(
+//             type: PageTransitionType.rightToLeft,
+//             child: ConfirmationScreen(
+//               from: fullPhoneNumber,
+//               to: getKeyValues.getCurrentUserLoginID(),
+//               destinationType: _selectedFundDestination,
+//               sourceType:
+//                   getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
+//               purpose: getKeyValues.getPurposeValue(_selectedPurpose),
+//               amount: double.parse(_decimalValueNoCommas),
+//               currentBalance: _currentBalance,
+//               transactionType: _transactionType,
+//             ),
+//           ),
+//         );
+//         break;
+//       case 1:
+//         //Top up from Card
+//         Navigator.push(
+//           context,
+//           PageTransition(
+//             type: PageTransitionType.rightToLeft,
+//             child: ConfirmationScreen(
+//               from: getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
+//               to: getKeyValues.getCurrentUserLoginID(),
+//               destinationType: _selectedFundDestination,
+//               sourceType:
+//                   getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
+//               purpose: getKeyValues.getPurposeValue(_selectedPurpose),
+//               amount: double.parse(_decimalValueNoCommas),
+//               currentBalance: _currentBalance,
+//               transactionType: _transactionType,
+//             ),
+//           ),
+//         );
+//         break;
+//     }
+//   }
 
-      //Transfer
-      case 1:
-
-      //Invoicing
-      case 2:
-
-      //Marketplace
-      case 3:
-    }
-  }
-
-  void gotoConfirmationScreen() {}
-}
+//   void gotoConfirmationScreen() {}
+// }

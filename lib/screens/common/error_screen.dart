@@ -116,7 +116,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             //decoration: TextDecoration.underline,
-                            fontSize: 18.0,
+                            fontSize: 25.0,
                             fontFamily: 'BaiJamJuree',
                             fontWeight: FontWeight.bold,
                             color: Colors.red,

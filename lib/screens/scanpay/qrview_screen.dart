@@ -174,7 +174,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
                                 width: 10,
                               ),
                               Text(
-                                'QR Scan Successful!',
+                                'Scan Successful!',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   //decoration: TextDecoration.underline,
@@ -190,6 +190,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
                             height: 20,
                           ),
                           Card(
+                            elevation: 5,
                             child: ListTile(
                               // leading: Icon(
                               //   Icons.check_circle_outlined,
@@ -200,13 +201,13 @@ class _QRViewScreenState extends State<QRViewScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Send To: ' +
+                                    'Pay: ' +
                                         getKeyValues
                                             .formatPhoneNumberWithSpaces(
                                                 _getDestinationNumber(
                                                     result.code)),
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 16,
                                       //fontFamily: 'BaiJamJuree',
                                     ),
                                   ),
@@ -218,7 +219,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
                                         getKeyValues
                                             .getPurposeValue(_selectedPurpose),
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 16,
                                       //fontFamily: 'BaiJamJuree',
                                     ),
                                   ),
@@ -232,7 +233,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
                                           _getAmountNumber(result.code),
                                         ),
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 16,
                                       //fontFamily: 'BaiJamJuree',
                                     ),
                                   ),
@@ -242,15 +243,22 @@ class _QRViewScreenState extends State<QRViewScreen> {
                                 ],
                               ),
                               trailing: new RaisedButton(
-                                color: kDefaultPrimaryColor,
+                                color: Colors.grey.shade100,
                                 textColor: kTextPrimaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                  side: BorderSide(
+                                    color: kDefaultPrimaryColor,
+                                    width: 3,
+                                  ),
+                                ),
                                 // padding:
                                 //     const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
                                 child: new Text(
                                   'Pay',
                                   style: TextStyle(
                                     fontSize: 25,
-                                    fontWeight: FontWeight.bold,
+                                    //fontWeight: FontWeight.bold,
                                     //fontFamily: 'BaiJamJuree',
                                   ),
                                 ),
@@ -268,9 +276,8 @@ class _QRViewScreenState extends State<QRViewScreen> {
                                               from: getKeyValues
                                                   .getCurrentUserLoginID(),
                                               to: _destinationPhoneNumber,
-                                              destinationType: getKeyValues
-                                                  .getFundDestinationValue(
-                                                      _selectedFundDestination),
+                                              destinationType:
+                                                  _selectedFundDestination,
                                               sourceType: getKeyValues
                                                   .getTransferFundSourceValue(
                                                       _sourceType),
@@ -293,115 +300,121 @@ class _QRViewScreenState extends State<QRViewScreen> {
                           ),
                         ],
                       )
-                    : Text(
-                        'Position QR inside square',
-                        style: TextStyle(
-                          fontSize: 18,
-                          //fontFamily: 'BaiJamJuree',
-                        ),
-                      ),
-
-                //Flash and Front/Back Camera
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.all(8),
-                      child: RaisedButton(
-                        color: Colors.grey.shade100,
-                        textColor: kTextPrimaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                          side: BorderSide(
-                            color: kDefaultPrimaryColor,
-                            width: 3,
+                    : Column(
+                        children: [
+                          Text(
+                            'Position QR inside square',
+                            style: TextStyle(
+                              fontSize: 18,
+                              //fontFamily: 'BaiJamJuree',
+                            ),
                           ),
-                        ),
-                        onPressed: () {
-                          if (controller != null) {
-                            controller.toggleFlash();
-                            if (_isFlashOn(flashState)) {
-                              setState(() {
-                                flashState = flashOff;
-                              });
-                            } else {
-                              setState(() {
-                                flashState = flashOn;
-                              });
-                            }
-                          }
-                        },
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.flash_on_outlined,
-                              color: kDefaultPrimaryColor,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              flashState,
-                              style: TextStyle(
-                                fontSize: kSubmitButtonFontSize,
-                                fontWeight: FontWeight.bold,
-                                //fontFamily: 'BaiJamJuree',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.all(8),
-                      child: RaisedButton(
-                        color: Colors.grey.shade100,
-                        textColor: kTextPrimaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                          side: BorderSide(
-                            color: kDefaultPrimaryColor,
-                            width: 3,
+                          SizedBox(
+                            height: 30,
                           ),
-                        ),
-                        onPressed: () {
-                          if (controller != null) {
-                            controller.flipCamera();
-                            if (_isBackCamera(cameraState)) {
-                              setState(() {
-                                cameraState = frontCamera;
-                              });
-                            } else {
-                              setState(() {
-                                cameraState = backCamera;
-                              });
-                            }
-                          }
-                        },
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.camera_enhance_outlined,
-                              color: kDefaultPrimaryColor,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              cameraState,
-                              style: TextStyle(
-                                fontSize: kSubmitButtonFontSize,
-                                fontWeight: FontWeight.bold,
-                                //fontFamily: 'BaiJamJuree',
+                          //Flash and Front/Back Camera
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                margin: EdgeInsets.all(8),
+                                child: RaisedButton(
+                                  color: Colors.grey.shade100,
+                                  textColor: kTextPrimaryColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16.0),
+                                    side: BorderSide(
+                                      color: kDefaultPrimaryColor,
+                                      width: 3,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    if (controller != null) {
+                                      controller.toggleFlash();
+                                      if (_isFlashOn(flashState)) {
+                                        setState(() {
+                                          flashState = flashOff;
+                                        });
+                                      } else {
+                                        setState(() {
+                                          flashState = flashOn;
+                                        });
+                                      }
+                                    }
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.flash_on_outlined,
+                                        color: kDefaultPrimaryColor,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        flashState,
+                                        style: TextStyle(
+                                          fontSize: kSubmitButtonFontSize,
+                                          fontWeight: FontWeight.bold,
+                                          //fontFamily: 'BaiJamJuree',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                              Container(
+                                margin: EdgeInsets.all(8),
+                                child: RaisedButton(
+                                  color: Colors.grey.shade100,
+                                  textColor: kTextPrimaryColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16.0),
+                                    side: BorderSide(
+                                      color: kDefaultPrimaryColor,
+                                      width: 3,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    if (controller != null) {
+                                      controller.flipCamera();
+                                      if (_isBackCamera(cameraState)) {
+                                        setState(() {
+                                          cameraState = frontCamera;
+                                        });
+                                      } else {
+                                        setState(() {
+                                          cameraState = backCamera;
+                                        });
+                                      }
+                                    }
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.camera_enhance_outlined,
+                                        color: kDefaultPrimaryColor,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        cameraState,
+                                        style: TextStyle(
+                                          fontSize: kSubmitButtonFontSize,
+                                          fontWeight: FontWeight.bold,
+                                          //fontFamily: 'BaiJamJuree',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
                       ),
-                    )
-                  ],
-                ),
               ],
             ),
           )

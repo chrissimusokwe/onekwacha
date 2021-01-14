@@ -19,7 +19,7 @@ class ConfirmationScreen extends StatefulWidget {
   final String from;
   final String sourceType;
   final String to;
-  final String destinationType;
+  final int destinationType;
   final String purpose;
   final double amount;
   final double currentBalance;
@@ -90,7 +90,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     _totalAmount =
         getKeyValues.calculateTotalAmount(_amount, _transactionTypeString);
     _userID = getKeyValues.getCurrentUserLoginID();
-    _destinationType = widget.destinationType;
+    _destinationType =
+        getKeyValues.getFundDestinationValue(widget.destinationType);
     _destination = widget.to;
     _source = widget.from;
     _sourceType = widget.sourceType;
@@ -638,12 +639,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
             am,
           ]));
 
-          //Pay off invoice and remove it from the Payables tab by setting Status to paid
-          _updated = await userModel.updateUserBalance(
-            _userID,
-            _newWalletBalance,
-          );
-
+          print('Now creating transaction');
           //Create transaction
           documentRef = await transactionModel.createTransaction(
             _newWalletBalance,
@@ -666,28 +662,69 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
           );
 
           if (documentRef != null) {
-            if (_updated) {
-              //To Success Screen
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: TransactionSuccessScreen(
-                      source: _source,
-                      sourceType: _sourceType,
-                      destination: _destination,
-                      destinationType: _destinationType,
-                      purpose: _purpose,
-                      amount: _totalAmount,
-                      fee: _fee,
-                      currentBalance: _currentBalance,
-                      transactionType: _transactionTypeString,
-                      documentID: documentRef.id,
+            //Update users balance
+            _updated = await userModel.updateUserBalance(
+              documentRef.id,
+              _userID,
+              _newWalletBalance,
+            );
+
+            bool _credited = false;
+
+            if (_updated &&
+                _transactionTypeString == 'Transfer' &&
+                _destinationType == 'OneKwacha Wallet') {
+              //Credit destination user's OneKwacha wallet
+              _credited = await userModel.creditDestinationUserBalance(
+                  documentRef.id, _destination, _amount);
+              if (_credited) {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      child: TransactionSuccessScreen(
+                        source: _source,
+                        sourceType: _sourceType,
+                        destination: _destination,
+                        destinationType: _destinationType,
+                        purpose: _purpose,
+                        amount: _totalAmount,
+                        fee: _fee,
+                        currentBalance: _currentBalance,
+                        transactionType: _transactionTypeString,
+                        documentID: documentRef.id,
+                      ),
                     ),
-                  ),
-                  (route) => false);
+                    (route) => false);
+              } else {
+                _notPaidDialog(context);
+              }
             } else {
-              _notPaidDialog(context);
+              //Transaction is not Transfer and not OneKwacha as destination
+              if (_updated) {
+                print('Now going to success screen');
+                //To Success Screen
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      child: TransactionSuccessScreen(
+                        source: _source,
+                        sourceType: _sourceType,
+                        destination: _destination,
+                        destinationType: _destinationType,
+                        purpose: _purpose,
+                        amount: _totalAmount,
+                        fee: _fee,
+                        currentBalance: _currentBalance,
+                        transactionType: _transactionTypeString,
+                        documentID: documentRef.id,
+                      ),
+                    ),
+                    (route) => false);
+              } else {
+                _notPaidDialog(context);
+              }
             }
           } else {
             _connectionErrorDialog(context);

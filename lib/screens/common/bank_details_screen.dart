@@ -15,7 +15,7 @@ class BankDetailsScreen extends StatefulWidget {
   final int incomingData;
   final String from;
   final String to;
-  final String destinationType;
+  final int destinationType;
   final int sourceType;
   final String purpose;
   final double amount;

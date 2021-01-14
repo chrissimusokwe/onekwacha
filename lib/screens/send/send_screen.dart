@@ -268,8 +268,7 @@ class _SendScreenState extends State<SendScreen> {
                   child: ConfirmationScreen(
                     from: getKeyValues.getCurrentUserLoginID(),
                     to: fullPhoneNumber,
-                    destinationType: getKeyValues
-                        .getFundDestinationValue(_selectedFundDestination),
+                    destinationType: _selectedFundDestination,
                     sourceType:
                         getKeyValues.getTransferFundSourceValue(_sourceType),
                     purpose: getKeyValues.getPurposeValue(_selectedPurpose),
@@ -313,8 +312,7 @@ class _SendScreenState extends State<SendScreen> {
                   child: ConfirmationScreen(
                     from: getKeyValues.getCurrentUserLoginID(),
                     to: fullPhoneNumber,
-                    destinationType: getKeyValues
-                        .getFundDestinationValue(_selectedFundDestination),
+                    destinationType: _selectedFundDestination,
                     sourceType:
                         getKeyValues.getTransferFundSourceValue(_sourceType),
                     purpose: getKeyValues.getPurposeValue(_selectedPurpose),
@@ -360,8 +358,7 @@ class _SendScreenState extends State<SendScreen> {
                     from: getKeyValues.getCurrentUserLoginID(),
                     to: getKeyValues
                         .getFundDestinationValue(_selectedFundDestination),
-                    destinationType: getKeyValues
-                        .getFundDestinationValue(_selectedFundDestination),
+                    destinationType: _selectedFundDestination,
                     sourceType: _sourceType,
                     purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                     amount: double.parse(_decimalValueNoCommas),

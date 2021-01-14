@@ -1,39 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TransactionModel {
-  // final double availableBalance;
-  // final double fee;
-  // final double oldBalance;
-  // final double transactionAmount;
-  // final int day;
-  // final int month;
-  // final int year;
-  // final String date;
-  // final String destination;
-  // final String destinationType;
-  // final String purpose;
-  // final String source;
-  // final String sourceType;
-  // final String time;
-  // final String userID;
-  // TransactionModel({
-  //   this.availableBalance,
-  //   this.fee,
-  //   this.oldBalance,
-  //   this.transactionAmount,
-  //   this.day,
-  //   this.month,
-  //   this.year,
-  //   this.date,
-  //   this.destination,
-  //   this.destinationType,
-  //   this.purpose,
-  //   this.source,
-  //   this.sourceType,
-  //   this.time,
-  //   this.userID,
-  // });
-
+  //Transaction creation
   Future createTransaction(
     double _currentBalance,
     _fee,

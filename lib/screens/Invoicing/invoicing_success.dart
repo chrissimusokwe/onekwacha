@@ -240,7 +240,7 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Total Amt:',
+                      'Total Amount:',
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -288,7 +288,7 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                   Expanded(
                     flex: 1,
                     child: new Text(
-                      'Receipt Number:',
+                      'Receipt:',
                       textAlign: TextAlign.right,
                     ),
                   ),
