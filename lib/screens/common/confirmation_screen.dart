@@ -639,7 +639,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
             am,
           ]));
 
-          print('Now creating transaction');
+          //print('Now creating transaction');
           //Create transaction
           documentRef = await transactionModel.createTransaction(
             _newWalletBalance,
@@ -700,9 +700,9 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 _notPaidDialog(context);
               }
             } else {
-              //Transaction is not Transfer and not OneKwacha as destination
+              //Transaction is not Transfer
               if (_updated) {
-                print('Now going to success screen');
+                //print('Now going to success screen');
                 //To Success Screen
                 Navigator.pushAndRemoveUntil(
                     context,

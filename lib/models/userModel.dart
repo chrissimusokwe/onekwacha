@@ -155,7 +155,7 @@ class UserModel {
             .collection("Users")
             .doc(_creditUserID)
             .set({
-          'AccountStatus': 'Pending',
+          'AccountStatus': 'Pending Review',
           'Address': '',
           'CurrentBalance': _amount.toString(),
           'CardNumber': '',
@@ -163,7 +163,7 @@ class UserModel {
           'Email': '',
           'FirstName': '',
           'KYCDate': '',
-          'KYCStatus': 'Pending',
+          'KYCStatus': 'Pending Review',
           'LastName': '',
           'LastUpdateDate': _dateTime,
           'LoyaltyPoints': '',
@@ -265,6 +265,15 @@ class UserModel {
     return userSnapshot.then((_user) {
       return double.parse(_user.data()['CurrentBalance']);
     });
+  }
+
+  //Get user snapshot
+  Future<DocumentSnapshot> getUser(String _userID) async {
+    Future<DocumentSnapshot> userSnapshot;
+    CollectionReference users = FirebaseFirestore.instance.collection('Users');
+
+    userSnapshot = users.doc(_userID).get();
+    return userSnapshot;
   }
 
   //Get user first name

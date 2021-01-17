@@ -451,28 +451,6 @@ class _CardScreenState extends State<CardScreen> {
       } else {
         _connectionErrorDialog(context);
       }
-
-      // Navigator.pushAndRemoveUntil(
-      //     context,
-      //     PageTransition(
-      //       type: PageTransitionType.rightToLeft,
-      //       child: TransactionSuccessScreen(
-      //           source: widget.from,
-      //           sourceType: 'Card',
-      //           destination: widget.to,
-      //           destinationType: widget.destinationType,
-      //           purpose: widget.purpose,
-      //           amount: widget.amount,
-      //           currentBalance: widget.currentBalance,
-      //           transactionType: _transactionTypeString,
-      //           fee: _fee,
-      //           cardName: _card.name,
-      //           cardNumber: _paymentCard.number,
-      //           cardCvv: _paymentCard.cvv,
-      //           cardMonth: _paymentCard.month,
-      //           cardYear: _paymentCard.year),
-      //     ),
-      //     (route) => false);
     }
   }
 
@@ -490,10 +468,6 @@ class _CardScreenState extends State<CardScreen> {
       return new RaisedButton(
         onPressed: _validateInputs,
         color: kDefaultPrimaryColor,
-        //splashColor: Colors.deepPurple,
-        // shape: RoundedRectangleBorder(
-        //   borderRadius: const BorderRadius.all(const Radius.circular(100.0)),
-        // ),
         padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 60.0),
         textColor: kTextPrimaryColor,
         child: new Text(

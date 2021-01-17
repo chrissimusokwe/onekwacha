@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 import 'package:onekwacha/utils/route_generator.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 //import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       // Initially display FirstPage
       initialRoute: '/',
       onGenerateRoute: RouteGenerator.generateRoute,
-      //home: HomeScreen(title: 'OneKwacha'),
+      // home: SplashScreen(),
     );
   }
 }

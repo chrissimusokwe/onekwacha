@@ -44,6 +44,15 @@ class GetKeyValues {
     1: 'Card',
   };
 
+  Map<int, String> _gender = {
+    0: 'Male',
+    1: 'Female',
+  };
+  Map<String, int> _genderNumber = {
+    'Male': 0,
+    'Female': 1,
+  };
+
   Map<int, String> _transferFundSource = {
     0: 'Mobile Money',
     1: 'Card',
@@ -132,6 +141,11 @@ class GetKeyValues {
     return value;
   }
 
+  String getBankListValue(int index) {
+    String value = _bank[index];
+    return value;
+  }
+
   String getPurposeValue(int index) {
     String value = _purpose[index];
     return value;
@@ -142,9 +156,14 @@ class GetKeyValues {
     return value;
   }
 
-  String getBankListValue(int index) {
-    String value = _bank[index];
+  String getGender(int index) {
+    String value = _gender[index];
     return value;
+  }
+
+  int getGenderString(String value) {
+    int index = _genderNumber[value];
+    return index;
   }
 
   String getTransferFundSourceValue(int index) {
@@ -278,6 +297,30 @@ class GetKeyValues {
   }
 
   List<DropdownMenuItem<int>> fundDestinationList = [];
+
+  List<DropdownMenuItem<int>> genderList = [];
+
+  void loadGenderList() {
+    genderList = [];
+    genderList.add(DropdownMenuItem(
+      child: Text(
+        'Male',
+        style: TextStyle(
+          fontSize: 20,
+        ),
+      ),
+      value: 0,
+    ));
+    genderList.add(DropdownMenuItem(
+      child: Text(
+        'Female',
+        style: TextStyle(
+          fontSize: 20,
+        ),
+      ),
+      value: 1,
+    ));
+  }
 
   void loadFundDestinationList() {
     fundDestinationList = [];

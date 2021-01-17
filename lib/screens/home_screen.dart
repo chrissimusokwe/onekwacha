@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'Wallet Balance',
+                    'Your Wallet Balance',
                     style: TextStyle(
                       fontSize: 18.0,
                     ),

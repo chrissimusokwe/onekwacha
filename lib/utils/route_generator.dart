@@ -3,6 +3,7 @@ import 'package:onekwacha/screens/history/history_screen.dart';
 import 'package:onekwacha/screens/home_screen.dart';
 import 'package:onekwacha/screens/profile/profile_screen.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:onekwacha/screens/splash_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -12,7 +13,7 @@ class RouteGenerator {
     switch (settings.name) {
       case '/':
         return PageTransition(
-            child: HomeScreen(), type: PageTransitionType.fade);
+            child: SplashScreen(), type: PageTransitionType.fade);
         break;
 
       case '/History':
@@ -26,10 +27,10 @@ class RouteGenerator {
             child: ProfileScreen(incomingData: 2),
             type: PageTransitionType.fade);
         break;
-      // case '/CardScreen':
-      //   return PageTransition(
-      //       child: CardScreen(incomingData: 2), type: PageTransitionType.fade);
-      //   break;
+      case '/Home':
+        return PageTransition(
+            child: HomeScreen(), type: PageTransitionType.fade);
+        break;
       default:
         // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();

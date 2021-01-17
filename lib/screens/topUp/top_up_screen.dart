@@ -45,9 +45,10 @@ class _TopUpScreenState extends State<TopUpScreen> {
   final _formKey = GlobalKey<FormState>();
   int _selectedFundSource = 0;
   int _selectedFundDestination = 0;
-  int _selectedPurpose = 3;
+  //int _selectedPurpose = 3;
   int _transactionType = 0;
   String fullPhoneNumber = '';
+  String _purpose = 'Top up';
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
   GetKeyValues getKeyValues = new GetKeyValues();
 
@@ -155,31 +156,31 @@ class _TopUpScreenState extends State<TopUpScreen> {
     );
 
     //Transaction Purpose field widget
-    formWidget.add(
-      SizedBox(
-        height: 20,
-      ),
-    );
-    formWidget.add(
-      new Text(
-        'Purpose:',
-        style: TextStyle(
-          fontSize: 14,
-          //fontFamily: 'BaiJamJuree',
-        ),
-      ),
-    );
-    formWidget.add(new DropdownButton(
-      hint: Text('Select Purpose'),
-      value: _selectedPurpose,
-      items: getKeyValues.purposeList,
-      onChanged: (value) {
-        setState(() {
-          _selectedPurpose = value;
-        });
-      },
-      isExpanded: true,
-    ));
+    // formWidget.add(
+    //   SizedBox(
+    //     height: 20,
+    //   ),
+    // );
+    // formWidget.add(
+    //   new Text(
+    //     'Purpose:',
+    //     style: TextStyle(
+    //       fontSize: 14,
+    //       //fontFamily: 'BaiJamJuree',
+    //     ),
+    //   ),
+    // );
+    // formWidget.add(new DropdownButton(
+    //   hint: Text('Select Purpose'),
+    //   value: _selectedPurpose,
+    //   items: getKeyValues.purposeList,
+    //   onChanged: (value) {
+    //     setState(() {
+    //       _selectedPurpose = value;
+    //     });
+    //   },
+    //   isExpanded: true,
+    // ));
     formWidget.add(
       SizedBox(
         height: 20,
@@ -268,7 +269,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   destinationType: _selectedFundDestination,
                   sourceType:
                       getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
-                  purpose: getKeyValues.getPurposeValue(_selectedPurpose),
+                  purpose: _purpose,
                   amount: double.parse(_decimalValueNoCommas),
                   currentBalance: widget.currentBalance,
                   transactionType: _transactionType,
@@ -289,7 +290,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   destinationType: _selectedFundDestination,
                   sourceType:
                       getKeyValues.getTopUpFundSourceValue(_selectedFundSource),
-                  purpose: getKeyValues.getPurposeValue(_selectedPurpose),
+                  purpose: _purpose,
                   amount: double.parse(_decimalValueNoCommas),
                   currentBalance: widget.currentBalance,
                   transactionType: _transactionType,

@@ -11,7 +11,7 @@ class BottomNavigation extends StatelessWidget {
     this.incomingData,
   }) : super(key: key);
 
-  final List<String> _selectedOption = ["/", "/History", "/Profile"];
+  final List<String> _selectedOption = ["/Home", "/History", "/Profile"];
 
   @override
   Widget build(BuildContext context) {
