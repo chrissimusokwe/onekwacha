@@ -9,6 +9,8 @@ import 'package:onekwacha/models/userModel.dart';
 import 'package:onekwacha/models/transactionModel.dart';
 import 'package:onekwacha/utils/get_key_values.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
+import 'package:date_format/date_format.dart';
+import 'package:flutter_dialogs/flutter_dialogs.dart';
 
 class ProfileScreen extends StatefulWidget {
   final int incomingData;
@@ -24,67 +26,153 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
-  final _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _formKey = new GlobalKey<FormState>();
-  TextEditingController numberController = new TextEditingController();
-  //TextEditingController firtName = new TextEditingController();
-  GetKeyValues getKeyValues = new GetKeyValues();
+  final FocusNode myFocusNode = FocusNode();
 
+  TextEditingController numberController = new TextEditingController();
+  TextEditingController _ctrlFirstName = new TextEditingController();
+  TextEditingController _ctrlMiddleName = new TextEditingController();
+  TextEditingController _ctrlLastName = new TextEditingController();
+  TextEditingController _ctrlAddress = new TextEditingController();
+  TextEditingController _ctrlNRCPassport = new TextEditingController();
+  TextEditingController _ctrlEmail = new TextEditingController();
+
+  GetKeyValues getKeyValues = new GetKeyValues();
   UserModel userModel = new UserModel();
   TransactionModel transactionModel = new TransactionModel();
-  bool _updated = false;
-  bool _status = true;
-  String _name;
-  final FocusNode myFocusNode = FocusNode();
+
+  bool _updated;
+  bool _enableFields = true;
+
   int _selectedIndex = 2;
   String _currentUserLoginID,
-      _accountStatus,
       _createdDate,
-      _currentBalance,
-      _kycDate,
       _kycStatus,
-      _firstName,
-      _middleName,
-      _lastName,
-      _address,
-      _email,
       _phoneNumber,
-      _nrcPassport,
-      _selectedGender,
-      _dateOfBirth;
+      _selectedGenderString,
+      _updateReason,
+      _previousUpdateDate,
+      _lastUpdateDate,
+      _loyaltyPoints,
+      _cardNumber;
   int _selectedGenderValue = 0;
+  DateTime _selectedDoBInternal;
+  String _selectedDoBDisplay;
 
   DocumentSnapshot _user;
 
+  //Get user profile details from the database
   void getUser() async {
     _currentUserLoginID = getKeyValues.getCurrentUserLoginID();
 
     _user = await userModel.getUser(_currentUserLoginID);
     setState(() {
-      _firstName = _user['FirstName'];
-      _middleName = _user['MiddleName'];
-      _lastName = _user['LastName'];
-      _selectedGenderValue = getKeyValues.getGenderString(_user['Gender']);
-      _selectedGender = _user['Gender'];
-      _dateOfBirth = _user['DateOfBirth'];
-      _nrcPassport = _user['NRCPassport'];
-      _address = _user['Address'];
-      _email = _user['Email'];
+      _ctrlFirstName.text = _user['FirstName'];
+      _ctrlMiddleName.text = _user['MiddleName'];
+      _ctrlLastName.text = _user['LastName'];
+      _selectedGenderValue = getKeyValues.getGenderValue(_user['Gender']);
+      _selectedGenderString = _user['Gender'];
+      _selectedDoBInternal = DateTime.parse(_user['DateOfBirth']);
+      _selectedDoBDisplay = (formatDate(
+          DateTime.parse(_user['DateOfBirth'] ?? '2021-01-01 00:00:00.000000'),
+          [
+            dd,
+            '/',
+            mm,
+            '/',
+            yyyy,
+          ]));
+      _ctrlNRCPassport.text = _user['NRCPassport'];
+      _ctrlAddress.text = _user['Address'];
+      _ctrlEmail.text = _user['Email'];
       _phoneNumber = _user['PhoneNumber'];
-      _accountStatus = _user['AccountStatus'];
       _createdDate = _user['CreatedDate'];
-      _currentBalance = _user['CurrentBalance'];
-      _kycDate = _user['KYCDate'];
       _kycStatus = _user['KYCStatus'];
+      _lastUpdateDate = _user['LastUpdateDate'];
     });
-
-    print(_selectedGender + ' And ' + _selectedGenderValue.toString());
   }
 
   @override
   void initState() {
     super.initState();
+
+    //Get user details only on first run of the page
     getUser();
+  }
+
+  /// This builds material date picker in Android
+  buildMaterialDatePicker(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDoBInternal, // Refer step 1
+      helpText: 'Select Date of Birth',
+      confirmText: 'SELECT',
+      firstDate: DateTime(1920),
+      lastDate: DateTime(2010),
+      errorFormatText: 'Enter valid date',
+      errorInvalidText: 'Enter date in valid range',
+      fieldLabelText: 'Date of Birth',
+      fieldHintText: 'MM/DD/YYYY',
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData(
+            primarySwatch: Colors.amber,
+          ),
+          child: child,
+        );
+      },
+    );
+    if (picked != null && picked != _selectedDoBInternal)
+      setState(() {
+        _selectedDoBInternal = picked;
+        _selectedDoBDisplay = (formatDate(_selectedDoBInternal, [
+          dd,
+          '/',
+          mm,
+          '/',
+          yyyy,
+        ]));
+      });
+  }
+
+  /// This builds cupertion date picker in iOS
+  buildCupertinoDatePicker(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext builder) {
+          return Container(
+            height: MediaQuery.of(context).copyWith().size.height / 3,
+            color: Colors.white,
+            child: CupertinoDatePicker(
+              mode: CupertinoDatePickerMode.date,
+              onDateTimeChanged: (picked) {
+                if (picked != null && picked != _selectedDoBInternal)
+                  setState(() {
+                    _selectedDoBInternal = picked;
+                  });
+              },
+              initialDateTime: _selectedDoBInternal,
+              minimumYear: 1921,
+              maximumYear: 1010,
+              //use24hFormat: true,
+            ),
+          );
+        });
+  }
+
+  _selectDate(BuildContext context) async {
+    final ThemeData theme = Theme.of(context);
+    assert(theme.platform != null);
+    switch (theme.platform) {
+      case TargetPlatform.android:
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.linux:
+      case TargetPlatform.windows:
+        return buildMaterialDatePicker(context);
+      case TargetPlatform.iOS:
+      case TargetPlatform.macOS:
+        return buildCupertinoDatePicker(context);
+    }
   }
 
   @override
@@ -110,7 +198,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  _status ? _getEditIcon() : new Container(),
+                  _enableFields && _kycStatus == 'Unsubmitted'
+                      ? _getEditIcon()
+                      : new Container(),
                 ],
               ))
             ],
@@ -138,24 +228,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   List<Widget> getFormWidget() {
     List<Widget> formWidget = new List();
+
     formWidget.add(
       SizedBox(
         height: 10.0,
       ),
     );
+
+    //Profile Status
+    formWidget.add(Row(
+      children: [
+        Text(
+          'KYC Status: ',
+          style: TextStyle(
+            color: Colors.grey.shade500,
+          ),
+        ),
+        (_kycStatus == 'Approved')
+            ? Text(
+                _kycStatus,
+                style: TextStyle(
+                  color: Colors.green,
+                ),
+              )
+            : Text(
+                _kycStatus ?? 'Loading...',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+      ],
+    ));
+    formWidget.add(
+      SizedBox(
+        height: 10.0,
+      ),
+    );
+
+    //First Name
     formWidget.add(
       TextFormField(
-        //controller: firtName,
-        initialValue: _firstName,
+        controller: _ctrlFirstName,
+        //initialValue: _firstName,
         decoration: const InputDecoration(
           border: const UnderlineInputBorder(),
           hintText: 'Enter your first name',
           labelText: 'First Name',
         ),
         onSaved: (String value) {
-          _firstName = value;
+          //_firstName = value;
         },
-        enabled: !_status,
+        enabled: !_enableFields,
         textCapitalization: TextCapitalization.sentences,
         style: TextStyle(fontSize: 20),
         keyboardType: TextInputType.text,
@@ -168,18 +291,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         height: 20.0,
       ),
     );
+
+    //Last Name
     formWidget.add(
       TextFormField(
-        initialValue: _lastName,
+        controller: _ctrlLastName,
+        //initialValue: _lastName,
         decoration: const InputDecoration(
           border: const UnderlineInputBorder(),
           hintText: 'Enter your last name',
           labelText: 'Last Name',
         ),
         onSaved: (String value) {
-          _lastName = value;
+          //_lastName = value;
         },
-        enabled: !_status,
+        enabled: !_enableFields,
         textCapitalization: TextCapitalization.sentences,
         style: TextStyle(fontSize: 20),
         keyboardType: TextInputType.text,
@@ -192,18 +318,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         height: 20.0,
       ),
     );
+
+    //Middle Name
     formWidget.add(
       TextFormField(
-        initialValue: _middleName,
+        controller: _ctrlMiddleName,
+        //initialValue: _middleName,
         decoration: const InputDecoration(
           border: const UnderlineInputBorder(),
           hintText: 'Enter your middle name',
           labelText: 'Middle Name',
         ),
         onSaved: (String value) {
-          _middleName = value;
+          //_middleName = value;
         },
-        enabled: !_status,
+        enabled: !_enableFields,
         textCapitalization: TextCapitalization.sentences,
         style: TextStyle(fontSize: 20),
         keyboardType: TextInputType.text,
@@ -216,7 +345,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         height: 40.0,
       ),
     );
-    //formWidget.add(
+
+    //Gender
     formWidget.add(DropdownButton(
       hint: Text(
         'Select Gender',
@@ -224,77 +354,146 @@ class _ProfileScreenState extends State<ProfileScreen> {
           fontSize: 20,
         ),
       ),
-      disabledHint: Text(
-        _selectedGender,
-        style: TextStyle(
-          fontSize: 20,
-          color: kTextPrimaryColor,
-        ),
-      ),
-      onChanged: !_status
-          ? (value) => setState(() => _selectedGenderValue = value)
+      disabledHint:
+          (_selectedGenderString == null || _selectedGenderString == '')
+              ? Text(
+                  'Female',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: kTextPrimaryColor,
+                  ),
+                )
+              : Text(
+                  _selectedGenderString,
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: kTextPrimaryColor,
+                  ),
+                ),
+      onChanged: !_enableFields
+          ? (value) {
+              setState(() {
+                _selectedGenderValue = value;
+                _selectedGenderString =
+                    getKeyValues.getGenderString(_selectedGenderValue);
+              });
+            }
           : null,
       items: getKeyValues.genderList,
       value: _selectedGenderValue,
       isExpanded: true,
     ));
+    formWidget.add(
+      SizedBox(
+        height: 20.0,
+      ),
+    );
 
-    //   TextFormField(
-    //     decoration: const InputDecoration(
-    //       border: const UnderlineInputBorder(),
-    //       hintText: 'Enter your gender',
-    //       labelText: 'Gender',
-    //     ),
-    //     onSaved: (String value) {
-    //       _name = value;
-    //     },
-    //     enabled: !_status,
-    //     style: TextStyle(fontSize: 20),
-    //     keyboardType: TextInputType.text,
-    //     validator: (String value) =>
-    //         value.isEmpty ? MyGlobalVariables.fieldReq : null,
-    //   ),
-    // );
+    //Date of birth
+    formWidget.add(
+      (!_enableFields)
+          ? Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: Colors.grey.shade600),
+                ),
+              ),
+              child: ListTile(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 0),
+                  leading: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Date of Birth',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      (_selectedDoBDisplay == null ||
+                              _selectedDoBDisplay.isEmpty)
+                          ? Text(
+                              'Select Date of Birth',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontSize: 20, color: Colors.grey.shade500),
+                            )
+                          : Text(
+                              _selectedDoBDisplay,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(fontSize: 20),
+                            ),
+                    ],
+                  ),
+                  trailing: Icon(Icons.arrow_drop_down),
+                  onTap: () {
+                    if (!_enableFields) {
+                      _selectDate(context);
+                    }
+                  }),
+            )
+          : Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: Colors.grey.shade300),
+                ),
+              ),
+              child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 0),
+                leading: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Date of Birth',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    (_selectedDoBDisplay == null || _selectedDoBDisplay.isEmpty)
+                        ? Text(
+                            'Select Date of Birth',
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                fontSize: 20, color: Colors.grey.shade500),
+                          )
+                        : Text(
+                            _selectedDoBDisplay,
+                            textAlign: TextAlign.left,
+                            style: TextStyle(fontSize: 20),
+                          ),
+                  ],
+                ),
+                trailing: Icon(Icons.arrow_drop_down),
+              ),
+            ),
+    );
     formWidget.add(
       SizedBox(
         height: 20.0,
       ),
     );
+
+    //Address
     formWidget.add(
       TextFormField(
-        decoration: const InputDecoration(
-          border: const UnderlineInputBorder(),
-          hintText: 'Enter your date of birth',
-          labelText: 'Date of Birth',
-        ),
-        onSaved: (String value) {
-          _dateOfBirth = value;
-        },
-        enabled: !_status,
-        initialValue: _dateOfBirth,
-        style: TextStyle(fontSize: 20),
-        keyboardType: TextInputType.text,
-        validator: (String value) =>
-            value.isEmpty ? MyGlobalVariables.fieldReq : null,
-      ),
-    );
-    formWidget.add(
-      SizedBox(
-        height: 20.0,
-      ),
-    );
-    formWidget.add(
-      TextFormField(
-        initialValue: _address,
+        controller: _ctrlAddress,
+        //initialValue: _address,
         decoration: const InputDecoration(
           border: const UnderlineInputBorder(),
           hintText: 'Enter your address',
           labelText: 'Address',
         ),
         onSaved: (String value) {
-          _name = value;
+          //_address = value;
         },
-        enabled: !_status,
+        enabled: !_enableFields,
         style: TextStyle(fontSize: 20),
         keyboardType: TextInputType.text,
         validator: (String value) =>
@@ -306,18 +505,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         height: 20.0,
       ),
     );
+
+    //NRC or Passport Number
     formWidget.add(
       TextFormField(
-        initialValue: _nrcPassport,
+        controller: _ctrlNRCPassport,
+        //initialValue: _nrcPassport,
         decoration: const InputDecoration(
           border: const UnderlineInputBorder(),
           hintText: 'Enter your NRC/Passport No.',
           labelText: 'NRC/Passport No.',
         ),
         onSaved: (String value) {
-          _name = value;
+          //_nrcPassport = value;
         },
-        enabled: !_status,
+        enabled: !_enableFields,
         style: TextStyle(fontSize: 20),
         keyboardType: TextInputType.text,
         validator: (String value) =>
@@ -329,18 +531,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         height: 20.0,
       ),
     );
+
+    //Email address
     formWidget.add(
       TextFormField(
-        initialValue: _email,
+        controller: _ctrlEmail,
+        //initialValue: _email,
         decoration: const InputDecoration(
           border: const UnderlineInputBorder(),
           hintText: 'Enter your email',
           labelText: 'Email',
         ),
         onSaved: (String value) {
-          _name = value;
+          //_email = value;
         },
-        enabled: !_status,
+        enabled: !_enableFields,
         style: TextStyle(fontSize: 20),
         keyboardType: TextInputType.text,
         // validator: (String value) =>
@@ -348,65 +553,238 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
     formWidget.add(
-      Visibility(
-        visible: !_status,
-        child: _getActionButtons(),
+      SizedBox(
+        height: 10.0,
       ),
     );
 
-    return formWidget;
-  }
+    void updateUser() async {
+      _updateReason = 'User submitted for KYC Review';
+      _kycStatus = 'Pending Review';
+      _previousUpdateDate = _lastUpdateDate;
+      _cardNumber = '';
+      _loyaltyPoints = '';
+      Navigator.pop(context);
+      FocusScope.of(context).requestFocus(new FocusNode());
+      _enableFields = true;
+      _updated = false;
 
-  Widget _getActionButtons() {
-    return Padding(
-      padding: EdgeInsets.only(left: 25.0, right: 25.0, top: 10.0),
-      child: new Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(right: 10.0),
-              child: Container(
-                  child: new RaisedButton(
-                child: new Text("Save"),
-                textColor: kTextPrimaryColor,
-                color: kDefaultPrimaryColor,
-                onPressed: () {
-                  setState(() {
-                    _status = true;
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                  });
-                },
-                shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(20.0)),
-              )),
+      _updated = await userModel.updateUser(
+        _phoneNumber,
+        _ctrlAddress.text,
+        _cardNumber,
+        _ctrlEmail.text,
+        _ctrlFirstName.text,
+        _selectedGenderString,
+        _selectedDoBInternal.toString(),
+        _ctrlMiddleName.text,
+        _kycStatus,
+        _ctrlLastName.text,
+        _loyaltyPoints,
+        _ctrlNRCPassport.text,
+        _phoneNumber,
+        _previousUpdateDate,
+        _updateReason,
+      );
+      if (_updated) {
+        getUser();
+
+        FocusScope.of(context).requestFocus(new FocusNode());
+      }
+    }
+
+    //Profile submission confirmation
+    void confirmSubmittion() async {
+      return showPlatformDialog(
+        context: context,
+        builder: (_) => BasicDialogAlert(
+            title: Center(
+                child: Column(
+              children: [
+                Icon(
+                  Icons.info_outlined,
+                  color: kDarkPrimaryColor,
+                  size: 50,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'Confirm Submission',
+                  style: TextStyle(color: kDarkPrimaryColor, fontSize: 25),
+                ),
+              ],
+            )),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  Center(
+                    child: Text(
+                      'Are you sure you would like to submit your profile details? You will not be able to edit your details until they have been KYC reviewed',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                ],
+              ),
             ),
-            flex: 2,
+            actions: <Widget>[
+              BasicDialogAction(
+                title: Text(
+                  "SUBMIT",
+                  style: TextStyle(color: kDarkPrimaryColor),
+                ),
+                onPressed: updateUser,
+              ),
+              BasicDialogAction(
+                title: Text(
+                  "CANCEL",
+                  style: TextStyle(color: kDarkPrimaryColor),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ]),
+      );
+    }
+
+    //Save buttons
+    formWidget.add(
+      Column(
+        children: [
+          Visibility(
+            visible: !_enableFields,
+            child: Padding(
+              padding: EdgeInsets.only(left: 25.0, right: 25.0, top: 10.0),
+              child: new Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  //Save button
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 10.0),
+                      child: Container(
+                          child: new RaisedButton(
+                        child: new Text("Submit"),
+                        textColor: kTextPrimaryColor,
+                        color: kDefaultPrimaryColor,
+                        onPressed: () {
+                          setState(() {
+                            confirmSubmittion();
+                          });
+                        },
+                        shape: new RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(20.0)),
+                      )),
+                    ),
+                    flex: 2,
+                  ),
+
+                  //Cancel Button
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 10.0),
+                      child: Container(
+                          child: new RaisedButton(
+                        child: new Text("Cancel"),
+                        textColor: kTextPrimaryColor,
+                        color: Colors.grey.shade400,
+                        onPressed: () {
+                          setState(() {
+                            _enableFields = true;
+                            getUser();
+                            FocusScope.of(context)
+                                .requestFocus(new FocusNode());
+                          });
+                        },
+                        shape: new RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(20.0)),
+                      )),
+                    ),
+                    flex: 2,
+                  ),
+                ],
+              ),
+            ),
+            //_getActionButtons(),
           ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(left: 10.0),
-              child: Container(
-                  child: new RaisedButton(
-                child: new Text("Cancel"),
-                textColor: kTextPrimaryColor,
-                color: Colors.red,
-                onPressed: () {
-                  setState(() {
-                    _status = true;
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                  });
-                },
-                shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(20.0)),
-              )),
-            ),
-            flex: 2,
+          SizedBox(
+            height: 10.0,
           ),
         ],
       ),
     );
+
+    //Phone number
+    formWidget.add(Row(
+      children: [
+        Text(
+          'Phone Number: ',
+          style: TextStyle(
+            color: Colors.grey.shade500,
+          ),
+        ),
+        Text(
+          getKeyValues.formatPhoneNumberWithSpaces(_phoneNumber) ??
+              'Loading...',
+          style: TextStyle(
+            color: Colors.grey.shade500,
+          ),
+        ),
+      ],
+    ));
+
+    //Created date
+    formWidget.add(Column(
+      children: [
+        SizedBox(
+          height: 10.0,
+        ),
+        Row(
+          children: [
+            Text(
+              'Created: ',
+              style: TextStyle(
+                color: Colors.grey.shade500,
+              ),
+            ),
+            Text(
+              (formatDate(
+                  DateTime.parse(_createdDate ?? '2021-01-01 00:00:00.000000'),
+                  [
+                    d,
+                    ' ',
+                    MM,
+                    ' ',
+                    yyyy,
+                    ' at ',
+                    hh,
+                    ':',
+                    nn,
+                    ' ',
+                    am,
+                  ])),
+              style: TextStyle(
+                color: Colors.grey.shade500,
+              ),
+            ),
+          ],
+        ),
+      ],
+    ));
+    formWidget.add(
+      SizedBox(
+        height: 20.0,
+      ),
+    );
+
+    return formWidget;
   }
 
   Widget _getEditIcon() {
@@ -422,7 +800,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       onTap: () {
         setState(() {
-          _status = false;
+          _enableFields = false;
         });
       },
     );

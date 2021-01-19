@@ -86,6 +86,11 @@ class GetKeyValues {
     return value;
   }
 
+  // String getGenderString(int _selectedGenderValue) {
+  //   String value = _gender[_selectedGenderValue];
+  //   return value;
+  // }
+
   double calculateNewWalletBalance(
     int transactionType,
     double fee,
@@ -156,12 +161,12 @@ class GetKeyValues {
     return value;
   }
 
-  String getGender(int index) {
-    String value = _gender[index];
+  String getGenderString(int _selectedGenderValue) {
+    String value = _gender[_selectedGenderValue];
     return value;
   }
 
-  int getGenderString(String value) {
+  int getGenderValue(String value) {
     int index = _genderNumber[value];
     return index;
   }

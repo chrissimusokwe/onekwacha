@@ -34,7 +34,7 @@ class UserModel {
       'LastName': _lastName.toString(),
       'LastUpdateDate': _lastUpdateDate.toString(),
       'LoyaltyPoints': _loyaltyPoints.toString(),
-      'NRCNumber': _nrcNumber.toString(),
+      'NRCPassort': _nrcNumber.toString(),
       'PreviousBalance': '0.0',
       'PhoneNumber': _userID.toString(),
       'LastTransactionID': _transactionID.toString(),
@@ -45,41 +45,38 @@ class UserModel {
 
   Future<bool> updateUser(
     String _userID,
-    _accountStatus,
     _address,
     _cardNumber,
-    _createdDate,
-    _currentBalance,
     _email,
     _firstName,
-    _kycDate,
+    _gender,
+    _dateOfBirth,
+    _middleName,
     _kycStatus,
     _lastName,
-    _lastUpdateDate,
     _loyaltyPoints,
     _nrcNumber,
-    _oldBalance,
     _phoneNumber,
     _previousUpdateDate,
+    _updateReason,
   ) async {
     bool _updated = true;
     await FirebaseFirestore.instance.collection("Users").doc(_userID).update({
-      'AccountStatus': _accountStatus,
-      'Address': _address,
-      'CurrentBalance': _currentBalance,
-      'CardNumber': _cardNumber,
-      'CreatedDate': _createdDate,
-      'Email': _email,
-      'FirstName': _firstName,
-      'KYCDate': _kycDate,
-      'KYCStatus': _kycStatus,
-      'LastName': _lastName,
-      'LastUpdateDate': _lastUpdateDate,
-      'LoyaltyPoints': _loyaltyPoints,
-      'NRCNumber': _nrcNumber,
-      'PreviousBalance': _oldBalance,
-      'PhoneNumber': _phoneNumber,
-      'PreviousUpdateDate': _previousUpdateDate,
+      'Address': _address.toString(),
+      'CardNumber': _cardNumber.toString(),
+      'Email': _email.toString(),
+      'FirstName': _firstName.toString(),
+      'MiddleName': _middleName.toString(),
+      'Gender': _gender.toString(),
+      'DateOfBirth': _dateOfBirth.toString(),
+      'KYCStatus': _kycStatus.toString(),
+      'LastName': _lastName.toString(),
+      'LastUpdateDate': DateTime.now().toString(),
+      'LoyaltyPoints': _loyaltyPoints.toString(),
+      'NRCPassort': _nrcNumber.toString(),
+      'PhoneNumber': _phoneNumber.toString(),
+      'PreviousUpdateDate': _previousUpdateDate.toString(),
+      'UpdateReason': _updateReason.toString(),
     }).catchError((e) {
       _updated = false;
     });
@@ -155,7 +152,6 @@ class UserModel {
             .collection("Users")
             .doc(_creditUserID)
             .set({
-          'AccountStatus': 'Pending Review',
           'Address': '',
           'CurrentBalance': _amount.toString(),
           'CardNumber': '',
@@ -208,28 +204,6 @@ class UserModel {
     });
 
     return _updated;
-  }
-
-  //Acivate user
-  Future<bool> activateUser(
-    String _userID,
-  ) async {
-    bool _activated = true;
-
-    //Get document reference to user document
-    DocumentReference documentRef =
-        FirebaseFirestore.instance.collection("Users").doc(_userID);
-
-    //Perform the update on the user if the user exisits
-    documentRef.get().then((document) async {
-      await FirebaseFirestore.instance.collection("Users").doc(_userID).update({
-        'AccountStatus': 'Active',
-      }).catchError((e) {
-        _activated = false;
-      });
-    });
-
-    return _activated;
   }
 
   //KYC approve user

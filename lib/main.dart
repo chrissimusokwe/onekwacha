@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       title: 'OneKwacha',
       theme: ThemeData(
         primaryColor: kDefaultPrimaryColor,
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.amber,
       ),
       // Initially display FirstPage
       initialRoute: '/',

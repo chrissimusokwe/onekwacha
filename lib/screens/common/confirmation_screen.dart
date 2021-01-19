@@ -493,9 +493,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
       _newWalletBalance = getKeyValues.calculateNewWalletBalance(
           widget.transactionType, _fee, _totalAmount, _currentBalance);
 
-      //Check that balance does not go into negative
-      if (_newWalletBalance < 0) {
-        //Insufficient wallet balance
+      //Check that OneKwacha destination wallet is not the same as source
+      if (_source == _destination || _sourceType == _destinationType) {
         return showPlatformDialog(
           context: context,
           builder: (_) => BasicDialogAlert(
@@ -521,13 +520,117 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   children: [
                     Center(
                       child: Text(
-                        'Insufficient wallet balance. Please top up before conducting this transaction.',
+                        'Destination wallet is the same as source',
                         style: TextStyle(
                             fontSize: MyGlobalVariables.dialogFontSize),
                       ),
                     ),
                     SizedBox(
                       height: 30,
+                    ),
+                    Row(
+                      children: [
+                        new Text(
+                          'Source:',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                              fontSize: MyGlobalVariables.dialogFontSize),
+                        ),
+                        SizedBox(
+                          width: MyGlobalVariables.sizedBoxWidth,
+                        ),
+                        Row(
+                          children: [
+                            new Text(
+                              _sourceType,
+                              style: TextStyle(
+                                fontSize: MyGlobalVariables.dialogFontSize,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MyGlobalVariables.sizedBoxHeight,
+                    ),
+                    Row(
+                      children: [
+                        new Text(
+                          'Source #:',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                              fontSize: MyGlobalVariables.dialogFontSize),
+                        ),
+                        SizedBox(
+                          width: MyGlobalVariables.sizedBoxWidth,
+                        ),
+                        Row(
+                          children: [
+                            new Text(
+                              _source,
+                              style: TextStyle(
+                                  fontSize: MyGlobalVariables.dialogFontSize,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MyGlobalVariables.sizedBoxHeight,
+                    ),
+                    Row(
+                      children: [
+                        new Text(
+                          'Destination:',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                              fontSize: MyGlobalVariables.dialogFontSize),
+                        ),
+                        SizedBox(
+                          width: MyGlobalVariables.sizedBoxWidth,
+                        ),
+                        Row(
+                          children: [
+                            new Text(
+                              _destinationType,
+                              style: TextStyle(
+                                fontSize: MyGlobalVariables.dialogFontSize,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MyGlobalVariables.sizedBoxHeight,
+                    ),
+                    Row(
+                      children: [
+                        new Text(
+                          'Destination #:',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                              fontSize: MyGlobalVariables.dialogFontSize),
+                        ),
+                        SizedBox(
+                          width: MyGlobalVariables.sizedBoxWidth,
+                        ),
+                        Row(
+                          children: [
+                            new Text(
+                              _destination,
+                              style: TextStyle(
+                                  fontSize: MyGlobalVariables.dialogFontSize,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MyGlobalVariables.sizedBoxHeight,
                     ),
                     Row(
                       children: [
@@ -544,35 +647,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                           MyGlobalVariables.zmcurrencySymbol +
                               currencyConvertor.format(_totalAmount),
                           style: TextStyle(
-                              fontSize: MyGlobalVariables.dialogFontSize,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: MyGlobalVariables.sizedBoxHeight,
-                    ),
-                    Row(
-                      children: [
-                        new Text(
-                          'Available Wallet Balance:',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                              fontSize: MyGlobalVariables.dialogFontSize),
-                        ),
-                        SizedBox(
-                          width: MyGlobalVariables.sizedBoxWidth,
-                        ),
-                        Row(
-                          children: [
-                            new Text(
-                              MyGlobalVariables.zmcurrencySymbol +
-                                  currencyConvertor.format(_currentBalance),
-                              style: TextStyle(
-                                  fontSize: MyGlobalVariables.dialogFontSize,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
+                            fontSize: MyGlobalVariables.dialogFontSize,
+                          ),
                         ),
                       ],
                     ),
@@ -592,142 +668,242 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               ]),
         );
       } else {
-        //Enough amount in wallet for transaction to proceed
-
-        //Check if fund source is Card
-        if (widget.from.toLowerCase() == _cardFundSource.toLowerCase()) {
-          //To Card Screen
-          Navigator.push(
-            context,
-            PageTransition(
-              type: PageTransitionType.rightToLeft,
-              child: CardScreen(
-                from: widget.from,
-                to: widget.to,
-                sourceType: _sourceType,
-                destinationType: widget.destinationType,
-                purpose: widget.purpose,
-                amount: _amount,
-                totalAmount: _totalAmount,
-                fee: _fee,
-                currentBalance: widget.currentBalance,
-                transactionType: widget.transactionType,
-              ),
-            ),
+        //Check that balance does not go into negative
+        if (_newWalletBalance < 0) {
+          //Insufficient wallet balance
+          return showPlatformDialog(
+            context: context,
+            builder: (_) => BasicDialogAlert(
+                title: Center(
+                    child: Column(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 50,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      'Unsuccessful',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ],
+                )),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: [
+                      Center(
+                        child: Text(
+                          'Insufficient wallet balance. Please top up before conducting this transaction.',
+                          style: TextStyle(
+                              fontSize: MyGlobalVariables.dialogFontSize),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        children: [
+                          new Text(
+                            'Transaction Amount:',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                                fontSize: MyGlobalVariables.dialogFontSize),
+                          ),
+                          SizedBox(
+                            width: MyGlobalVariables.sizedBoxWidth,
+                          ),
+                          new Text(
+                            MyGlobalVariables.zmcurrencySymbol +
+                                currencyConvertor.format(_totalAmount),
+                            style: TextStyle(
+                                fontSize: MyGlobalVariables.dialogFontSize,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: MyGlobalVariables.sizedBoxHeight,
+                      ),
+                      Row(
+                        children: [
+                          new Text(
+                            'Available Wallet Balance:',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                                fontSize: MyGlobalVariables.dialogFontSize),
+                          ),
+                          SizedBox(
+                            width: MyGlobalVariables.sizedBoxWidth,
+                          ),
+                          Row(
+                            children: [
+                              new Text(
+                                MyGlobalVariables.zmcurrencySymbol +
+                                    currencyConvertor.format(_currentBalance),
+                                style: TextStyle(
+                                    fontSize: MyGlobalVariables.dialogFontSize,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  BasicDialogAction(
+                    title: Text(
+                      "Cancel",
+                      style: TextStyle(color: kDarkPrimaryColor),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ]),
           );
         } else {
-          DocumentReference documentRef;
-          _transactionDate = DateTime.now().toString();
+          //Enough amount in wallet for transaction to proceed
 
-          _transactionDay =
-              int.parse(formatDate(DateTime.parse(_transactionDate), [
-            dd,
-          ]));
-          _transactionMonth =
-              int.parse(formatDate(DateTime.parse(_transactionDate), [
-            mm,
-          ]));
-          _transactionYear =
-              int.parse(formatDate(DateTime.parse(_transactionDate), [
-            yy,
-          ]));
-          _transactionTime = (formatDate(DateTime.parse(_transactionDate), [
-            hh,
-            ':',
-            nn,
-            ' ',
-            am,
-          ]));
+          //Check if fund source is Card
+          if (widget.from.toLowerCase() == _cardFundSource.toLowerCase()) {
+            //To Card Screen
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.rightToLeft,
+                child: CardScreen(
+                  from: widget.from,
+                  to: widget.to,
+                  sourceType: _sourceType,
+                  destinationType: widget.destinationType,
+                  purpose: widget.purpose,
+                  amount: _amount,
+                  totalAmount: _totalAmount,
+                  fee: _fee,
+                  currentBalance: widget.currentBalance,
+                  transactionType: widget.transactionType,
+                ),
+              ),
+            );
+          } else {
+            DocumentReference documentRef;
+            _transactionDate = DateTime.now().toString();
 
-          //print('Now creating transaction');
-          //Create transaction
-          documentRef = await transactionModel.createTransaction(
-            _newWalletBalance,
-            _fee,
-            _currentBalance,
-            _totalAmount,
-            _transactionDay,
-            _transactionMonth,
-            _transactionYear,
-            _transactionTypeName,
-            _destinationType,
-            _sourceType,
-            _transactionDate,
-            _destination,
-            _purpose,
-            _source,
-            _transactionTime,
-            _userID,
-            _invoiceID,
-          );
+            _transactionDay =
+                int.parse(formatDate(DateTime.parse(_transactionDate), [
+              dd,
+            ]));
+            _transactionMonth =
+                int.parse(formatDate(DateTime.parse(_transactionDate), [
+              mm,
+            ]));
+            _transactionYear =
+                int.parse(formatDate(DateTime.parse(_transactionDate), [
+              yy,
+            ]));
+            _transactionTime = (formatDate(DateTime.parse(_transactionDate), [
+              hh,
+              ':',
+              nn,
+              ' ',
+              am,
+            ]));
 
-          if (documentRef != null) {
-            //Update users balance
-            _updated = await userModel.updateUserBalance(
-              documentRef.id,
-              _userID,
+            //print('Now creating transaction');
+            //Create transaction
+            documentRef = await transactionModel.createTransaction(
               _newWalletBalance,
+              _fee,
+              _currentBalance,
+              _totalAmount,
+              _transactionDay,
+              _transactionMonth,
+              _transactionYear,
+              _transactionTypeName,
+              _destinationType,
+              _sourceType,
+              _transactionDate,
+              _destination,
+              _purpose,
+              _source,
+              _transactionTime,
+              _userID,
+              _invoiceID,
             );
 
-            bool _credited = false;
+            if (documentRef != null) {
+              //Update users balance
+              _updated = await userModel.updateUserBalance(
+                documentRef.id,
+                _userID,
+                _newWalletBalance,
+              );
 
-            if (_updated &&
-                _transactionTypeString == 'Transfer' &&
-                _destinationType == 'OneKwacha Wallet') {
-              //Credit destination user's OneKwacha wallet
-              _credited = await userModel.creditDestinationUserBalance(
-                  documentRef.id, _destination, _amount);
-              if (_credited) {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    PageTransition(
-                      type: PageTransitionType.rightToLeft,
-                      child: TransactionSuccessScreen(
-                        source: _source,
-                        sourceType: _sourceType,
-                        destination: _destination,
-                        destinationType: _destinationType,
-                        purpose: _purpose,
-                        amount: _totalAmount,
-                        fee: _fee,
-                        currentBalance: _currentBalance,
-                        transactionType: _transactionTypeString,
-                        documentID: documentRef.id,
+              bool _credited = false;
+
+              if (_updated &&
+                  _transactionTypeString == 'Transfer' &&
+                  _destinationType == 'OneKwacha Wallet') {
+                //Credit destination user's OneKwacha wallet
+                _credited = await userModel.creditDestinationUserBalance(
+                    documentRef.id, _destination, _amount);
+                if (_credited) {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: TransactionSuccessScreen(
+                          source: _source,
+                          sourceType: _sourceType,
+                          destination: _destination,
+                          destinationType: _destinationType,
+                          purpose: _purpose,
+                          amount: _totalAmount,
+                          fee: _fee,
+                          currentBalance: _currentBalance,
+                          transactionType: _transactionTypeString,
+                          documentID: documentRef.id,
+                        ),
                       ),
-                    ),
-                    (route) => false);
+                      (route) => false);
+                } else {
+                  _notPaidDialog(context);
+                }
               } else {
-                _notPaidDialog(context);
+                //Transaction is not Transfer
+                if (_updated) {
+                  //print('Now going to success screen');
+                  //To Success Screen
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: TransactionSuccessScreen(
+                          source: _source,
+                          sourceType: _sourceType,
+                          destination: _destination,
+                          destinationType: _destinationType,
+                          purpose: _purpose,
+                          amount: _totalAmount,
+                          fee: _fee,
+                          currentBalance: _currentBalance,
+                          transactionType: _transactionTypeString,
+                          documentID: documentRef.id,
+                        ),
+                      ),
+                      (route) => false);
+                } else {
+                  _notPaidDialog(context);
+                }
               }
             } else {
-              //Transaction is not Transfer
-              if (_updated) {
-                //print('Now going to success screen');
-                //To Success Screen
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    PageTransition(
-                      type: PageTransitionType.rightToLeft,
-                      child: TransactionSuccessScreen(
-                        source: _source,
-                        sourceType: _sourceType,
-                        destination: _destination,
-                        destinationType: _destinationType,
-                        purpose: _purpose,
-                        amount: _totalAmount,
-                        fee: _fee,
-                        currentBalance: _currentBalance,
-                        transactionType: _transactionTypeString,
-                        documentID: documentRef.id,
-                      ),
-                    ),
-                    (route) => false);
-              } else {
-                _notPaidDialog(context);
-              }
+              _connectionErrorDialog(context);
             }
-          } else {
-            _connectionErrorDialog(context);
           }
         }
       }

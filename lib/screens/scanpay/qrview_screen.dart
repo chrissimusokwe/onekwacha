@@ -500,7 +500,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
                             _selectedPurpose.toString() +
                             '|' +
                             _decimalValueNoCommas.toString();
-                        print(qrDataString);
+                        //print(qrDataString);
                         return null;
                       }
                     } catch (identifier) {
