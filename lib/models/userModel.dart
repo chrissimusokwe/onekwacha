@@ -206,6 +206,53 @@ class UserModel {
     return _updated;
   }
 
+  //Update user balance
+  Future<bool> updateUserImageUrl(
+    String _userID,
+    _url,
+    bool isfront,
+  ) async {
+    bool _updated = true;
+
+    //Get document reference to user document
+    DocumentReference documentRef =
+        FirebaseFirestore.instance.collection("Users").doc(_userID);
+
+    if (isfront) {
+      //Uplaod front or page 1 of ID document
+      documentRef.get().then((document) async {
+        await FirebaseFirestore.instance
+            .collection("Users")
+            .doc(_userID)
+            .update({
+          'IDFrontImage': _url.toString(),
+          'PreviousUpdateDate': document['LastUpdateDate'].toString(),
+          'LastUpdateDate': DateTime.now().toString(),
+          'UpdateReason': 'Image ID Update',
+        }).catchError((e) {
+          _updated = false;
+        });
+      });
+    } else {
+      //Uplaod back or page 2 of ID document
+      documentRef.get().then((document) async {
+        await FirebaseFirestore.instance
+            .collection("Users")
+            .doc(_userID)
+            .update({
+          'IDBackImage': _url.toString(),
+          'PreviousUpdateDate': document['LastUpdateDate'].toString(),
+          'LastUpdateDate': DateTime.now().toString(),
+          'UpdateReason': 'Image ID Update',
+        }).catchError((e) {
+          _updated = false;
+        });
+      });
+    }
+
+    return _updated;
+  }
+
   //KYC approve user
   Future<bool> approveKYC(
     String _userID,

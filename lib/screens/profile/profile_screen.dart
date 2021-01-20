@@ -11,6 +11,8 @@ import 'package:onekwacha/utils/get_key_values.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:onekwacha/widgets/image_upload.dart';
 
 class ProfileScreen extends StatefulWidget {
   final int incomingData;
@@ -41,7 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   UserModel userModel = new UserModel();
   TransactionModel transactionModel = new TransactionModel();
 
-  bool _updated;
+  //bool _updated;
   bool _enableFields = true;
 
   int _selectedIndex = 2;
@@ -50,11 +52,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _kycStatus,
       _phoneNumber,
       _selectedGenderString,
-      _updateReason,
-      _previousUpdateDate,
-      _lastUpdateDate,
-      _loyaltyPoints,
-      _cardNumber;
+      // _updateReason,
+      // _previousUpdateDate,
+      _lastUpdateDate;
+  // _loyaltyPoints,
+  // _cardNumber;
   int _selectedGenderValue = 0;
   DateTime _selectedDoBInternal;
   String _selectedDoBDisplay;
@@ -198,7 +200,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  _enableFields && _kycStatus == 'Unsubmitted'
+                  _enableFields && (_kycStatus == 'Unsubmitted')
                       ? _getEditIcon()
                       : new Container(),
                 ],
@@ -208,10 +210,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         body: Container(
           padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
-          child: ListView(
-            children: getFormWidget(),
-          ),
+          child: (_phoneNumber != null || _phoneNumber == '')
+              ? ListView(
+                  children: getFormWidget(),
+                )
+              : Center(child: CircularProgressIndicator()),
         ),
+
+        // Container(
+        //   padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
+        //   child: (_phoneNumber != null || _phoneNumber.isEmpty)
+        //       ? RefreshIndicator(
+        //           child: ListView(
+        //             children: getFormWidget(),
+        //           ),
+        //           onRefresh: getUser,
+        //         )
+        //       : Center(child: CircularProgressIndicator()),
+        // ),
         bottomNavigationBar: BottomNavigation(
           incomingData: _selectedIndex,
         ),
@@ -558,101 +574,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
 
-    void updateUser() async {
-      _updateReason = 'User submitted for KYC Review';
-      _kycStatus = 'Pending Review';
-      _previousUpdateDate = _lastUpdateDate;
-      _cardNumber = '';
-      _loyaltyPoints = '';
-      Navigator.pop(context);
-      FocusScope.of(context).requestFocus(new FocusNode());
-      _enableFields = true;
-      _updated = false;
-
-      _updated = await userModel.updateUser(
-        _phoneNumber,
-        _ctrlAddress.text,
-        _cardNumber,
-        _ctrlEmail.text,
-        _ctrlFirstName.text,
-        _selectedGenderString,
-        _selectedDoBInternal.toString(),
-        _ctrlMiddleName.text,
-        _kycStatus,
-        _ctrlLastName.text,
-        _loyaltyPoints,
-        _ctrlNRCPassport.text,
-        _phoneNumber,
-        _previousUpdateDate,
-        _updateReason,
-      );
-      if (_updated) {
-        getUser();
-
-        FocusScope.of(context).requestFocus(new FocusNode());
-      }
-    }
-
-    //Profile submission confirmation
-    void confirmSubmittion() async {
-      return showPlatformDialog(
-        context: context,
-        builder: (_) => BasicDialogAlert(
-            title: Center(
-                child: Column(
-              children: [
-                Icon(
-                  Icons.info_outlined,
-                  color: kDarkPrimaryColor,
-                  size: 50,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  'Confirm Submission',
-                  style: TextStyle(color: kDarkPrimaryColor, fontSize: 25),
-                ),
-              ],
-            )),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: [
-                  Center(
-                    child: Text(
-                      'Are you sure you would like to submit your profile details? You will not be able to edit your details until they have been KYC reviewed',
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              BasicDialogAction(
-                title: Text(
-                  "SUBMIT",
-                  style: TextStyle(color: kDarkPrimaryColor),
-                ),
-                onPressed: updateUser,
-              ),
-              BasicDialogAction(
-                title: Text(
-                  "CANCEL",
-                  style: TextStyle(color: kDarkPrimaryColor),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ]),
-      );
-    }
-
     //Save buttons
     formWidget.add(
       Column(
@@ -671,13 +592,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: EdgeInsets.only(right: 10.0),
                       child: Container(
                           child: new RaisedButton(
-                        child: new Text("Submit"),
+                        child: new Text("Scan and Upload ID"),
                         textColor: kTextPrimaryColor,
                         color: kDefaultPrimaryColor,
                         onPressed: () {
-                          setState(() {
-                            confirmSubmittion();
-                          });
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              child: ImageUpload(
+                                userID: _phoneNumber,
+                                firstName: _ctrlFirstName.text,
+                                lastName: _ctrlLastName.text,
+                                middleName: _ctrlMiddleName.text,
+                                address: _ctrlAddress.text,
+                                email: _ctrlEmail.text,
+                                lastUpdateDate: _lastUpdateDate,
+                                nrcPassport: _ctrlNRCPassport.text,
+                                phoneNumber: _phoneNumber,
+                                selectedDoB: _selectedDoBInternal.toString(),
+                                selectedGender: _selectedGenderString,
+                              ),
+                            ),
+                          );
                         },
                         shape: new RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(20.0)),
