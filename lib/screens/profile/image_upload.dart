@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -62,7 +61,7 @@ class _ImageUploadState extends State<ImageUpload> {
   bool _updatedBack = false;
   bool _userUpdated = false;
   bool _showUploadButton = true;
-  bool _enableFields;
+  //bool _enableFields;
 
   final Color yellow = Color(0xfffbc31b);
   final Color amber = Colors.amber;
@@ -131,9 +130,10 @@ class _ImageUploadState extends State<ImageUpload> {
 
   //Save the image before uploading it to the user's storage folder
   Future saveImage(BuildContext context) async {
-    DocumentReference imageRef =
-        FirebaseFirestore.instance.collection(userID).doc();
+    // DocumentReference imageRef =
+    //     FirebaseFirestore.instance.collection(userID).doc();
 
+    // TODO: Will need to switch to authenticated user at some point.
     UserCredential userCredential =
         await FirebaseAuth.instance.signInAnonymously();
 
@@ -163,20 +163,20 @@ class _ImageUploadState extends State<ImageUpload> {
         .ref()
         .child(userID + '/BackPageIDDocument.jpg');
 
+    //Check if image is a front or page 1 image
     if (isFront) {
       await frontStorageReference.putFile(_image);
 
       await frontStorageReference.getDownloadURL().then((fileURL) {
-        print('File url is: ' + fileURL);
         setState(() {
           returnURL = fileURL.toString();
         });
       });
-    } else {
+    } //else image is a back or page 2
+    else {
       await backStorageReference.putFile(_image);
 
       await backStorageReference.getDownloadURL().then((fileURL) {
-        print('File url is: ' + fileURL);
         setState(() {
           returnURL = fileURL.toString();
         });
@@ -188,7 +188,6 @@ class _ImageUploadState extends State<ImageUpload> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _uploaded = false;
   }
@@ -201,7 +200,7 @@ class _ImageUploadState extends State<ImageUpload> {
     _previousUpdateDate = widget.lastUpdateDate;
     _cardNumber = '';
     _loyaltyPoints = '';
-    _enableFields = true;
+    //_enableFields = true;
     _userUpdated = false;
     _userUpdated = await userModel.updateUser(
       userID,

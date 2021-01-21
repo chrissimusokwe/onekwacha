@@ -338,7 +338,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   List<Widget> _getHistoryWidget() {
     List<Widget> formWidget = new List();
 
-//Incoming
+    //Incoming
     formWidget.add(
       new Column(
         children: [

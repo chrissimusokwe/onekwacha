@@ -77,7 +77,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   int _transactionType, _transactionDay, _transactionMonth, _transactionYear;
   UserModel userModel = new UserModel();
   TransactionModel transactionModel = new TransactionModel();
-  bool _updated = false;
+  bool _isUserUpdated = false;
 
   @override
   Widget build(BuildContext context) {
@@ -495,6 +495,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
       //Check that OneKwacha destination wallet is not the same as source
       if (_source == _destination || _sourceType == _destinationType) {
+        //Destination wallet is the same as source OneKwacha wallet
         return showPlatformDialog(
           context: context,
           builder: (_) => BasicDialogAlert(
@@ -814,8 +815,13 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               am,
             ]));
 
-            //print('Now creating transaction');
+            if (_sourceType == 'Mobile Money' ||
+                _transactionTypeString == 'Top up') {
+              //TODO: Integrate with mobile money and process
+            }
+
             //Create transaction
+            //TODO: Check that top from mobile money was successful
             documentRef = await transactionModel.createTransaction(
               _newWalletBalance,
               _fee,
@@ -838,21 +844,22 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
             if (documentRef != null) {
               //Update users balance
-              _updated = await userModel.updateUserBalance(
+              _isUserUpdated = await userModel.updateUserBalance(
                 documentRef.id,
                 _userID,
                 _newWalletBalance,
               );
 
-              bool _credited = false;
+              bool _isDestinationUserCredited = false;
 
-              if (_updated &&
+              if (_isUserUpdated &&
                   _transactionTypeString == 'Transfer' &&
                   _destinationType == 'OneKwacha Wallet') {
                 //Credit destination user's OneKwacha wallet
-                _credited = await userModel.creditDestinationUserBalance(
-                    documentRef.id, _destination, _amount);
-                if (_credited) {
+                _isDestinationUserCredited =
+                    await userModel.creditDestinationUserBalance(
+                        documentRef.id, _destination, _amount);
+                if (_isDestinationUserCredited) {
                   Navigator.pushAndRemoveUntil(
                       context,
                       PageTransition(
@@ -876,7 +883,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 }
               } else {
                 //Transaction is not Transfer
-                if (_updated) {
+                if (_isUserUpdated) {
                   //print('Now going to success screen');
                   //To Success Screen
                   Navigator.pushAndRemoveUntil(

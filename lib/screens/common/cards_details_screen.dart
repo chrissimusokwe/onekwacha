@@ -360,7 +360,8 @@ class _CardScreenState extends State<CardScreen> {
       //_showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      // Encrypt and send send payment details to payment gateway
+      // TODO: Integrate with payment gateway to process cards
+      //Encrypt and send send payment details to payment gateway
       //Check for card detail success, otherwise redirect to error screen
       //Once payment card details to payment gateway are confirmed,
       //record the transaction in the database and on

@@ -333,9 +333,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => MarketplaceScreen(
-                                  incomingData: _selectedIndex)),
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: MarketplaceScreen(
+                              incomingData: _selectedIndex,
+                            ),
+                          ),
                         );
                       },
                       elevation: 5.0,

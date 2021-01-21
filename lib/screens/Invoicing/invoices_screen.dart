@@ -197,304 +197,6 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
       );
     }
 
-    Future<void> _confirmDeletionDialog(QueryDocumentSnapshot document) async {
-      _amount = double.parse(document['Amount']);
-      _availableBalance = _currentBalance - _amount;
-      _fee = double.parse(document['Fee']);
-
-      return showPlatformDialog(
-        context: context,
-        builder: (_) => BasicDialogAlert(
-          title: Row(
-            children: [
-              Icon(
-                Icons.info_outline_rounded,
-                color: kDarkPrimaryColor,
-              ),
-              SizedBox(
-                width: 5,
-              ),
-              Text(
-                "Invoice Details",
-                style: TextStyle(color: kDarkPrimaryColor),
-              ),
-            ],
-          ),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'Status:',
-                      textAlign: TextAlign.right,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                    SizedBox(
-                      width: MyGlobalVariables.sizedBoxWidth,
-                    ),
-                    (document['Status'] == 'Active')
-                        ? Text(
-                            document['Status'],
-                            style: TextStyle(
-                              fontSize: MyGlobalVariables.dialogFontSize,
-                              color: Colors.green,
-                              //fontFamily: 'BaiJamJuree',
-                            ),
-                          )
-                        : Text(
-                            document['Status'],
-                            style: TextStyle(
-                              fontSize: MyGlobalVariables.dialogFontSize,
-                              color: Colors.red,
-                              //fontFamily: 'BaiJamJuree',
-                            ),
-                          ),
-                  ],
-                ),
-                SizedBox(
-                  height: MyGlobalVariables.sizedBoxHeight,
-                ),
-                Row(
-                  children: [
-                    new Text(
-                      'Source:',
-                      textAlign: TextAlign.right,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                    SizedBox(
-                      width: MyGlobalVariables.sizedBoxWidth,
-                    ),
-                    new Text(
-                      getKeyValues
-                          .getFundDestinationValue(_selectedFundDestination),
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: MyGlobalVariables.sizedBoxHeight,
-                ),
-                Row(
-                  children: [
-                    new Text(
-                      'Source #:',
-                      textAlign: TextAlign.right,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                    SizedBox(
-                      width: MyGlobalVariables.sizedBoxWidth,
-                    ),
-                    new Text(
-                      _source,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: MyGlobalVariables.sizedBoxHeight,
-                ),
-                Row(
-                  children: [
-                    new Text(
-                      'Destination:',
-                      textAlign: TextAlign.right,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                    SizedBox(
-                      width: MyGlobalVariables.sizedBoxWidth,
-                    ),
-                    new Text(
-                      getKeyValues
-                          .getFundDestinationValue(_selectedFundDestination),
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: MyGlobalVariables.sizedBoxHeight,
-                ),
-                Row(
-                  children: [
-                    new Text(
-                      'Destination #:',
-                      textAlign: TextAlign.right,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                    SizedBox(
-                      width: MyGlobalVariables.sizedBoxWidth,
-                    ),
-                    new Text(
-                      document['ReceivableUserID'],
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: MyGlobalVariables.sizedBoxHeight,
-                ),
-                Row(
-                  children: [
-                    new Text(
-                      'Purpose:',
-                      textAlign: TextAlign.right,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                    SizedBox(
-                      width: MyGlobalVariables.sizedBoxWidth,
-                    ),
-                    new Text(
-                      document['Purpose'],
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: MyGlobalVariables.sizedBoxHeight,
-                ),
-                Row(
-                  children: [
-                    new Text(
-                      'Transaction Amt:',
-                      textAlign: TextAlign.right,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                    SizedBox(
-                      width: MyGlobalVariables.sizedBoxWidth,
-                    ),
-                    new Text(
-                      MyGlobalVariables.zmcurrencySymbol +
-                          currencyConvertor
-                              .format(double.parse(document['Amount'])) +
-                          '*',
-                      style: TextStyle(
-                          fontSize: MyGlobalVariables.dialogFontSize,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: MyGlobalVariables.sizedBoxHeight,
-                ),
-                Row(
-                  children: [
-                    new Text(
-                      'Fees:',
-                      textAlign: TextAlign.right,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Row(
-                      children: [
-                        new Text(
-                          MyGlobalVariables.zmcurrencySymbol +
-                              currencyConvertor.format(_fee),
-                          style: TextStyle(
-                              fontSize: MyGlobalVariables.dialogFontSize,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: MyGlobalVariables.sizedBoxHeight,
-                ),
-                Row(
-                  children: [
-                    new Text(
-                      'Transaction:',
-                      textAlign: TextAlign.right,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    new Text(
-                      getKeyValues.getTransactionType(_transactionType),
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: MyGlobalVariables.sizedBoxHeight,
-                ),
-                Row(
-                  children: [
-                    new Text(
-                      'Invoice ID:',
-                      textAlign: TextAlign.right,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    new Text(
-                      document.id,
-                      style:
-                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Row(children: [
-                  Text(
-                    ' *Includes transaction fees.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 10),
-                  )
-                ]),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            BasicDialogAction(
-              title: Text(
-                "Cancel",
-                style: TextStyle(color: Colors.grey.shade600),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            //Confirm Payment Dialog
-            BasicDialogAction(
-              title: Text(
-                "Delete",
-                style: TextStyle(
-                  color: kDarkPrimaryColor,
-                ),
-              ),
-              onPressed: () async {
-                InvoicingModel.deactivateInvoice(document.id);
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      );
-    }
-
     Future<void> _confirmPaymentDialog(QueryDocumentSnapshot document) async {
       _amount = double.parse(document['Amount']);
       _availableBalance = _currentBalance - _amount;
@@ -987,6 +689,308 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
       }
     }
 
+    Future<void> _confirmDeletionDialog(QueryDocumentSnapshot document) async {
+      _amount = double.parse(document['Amount']);
+      _availableBalance = _currentBalance - _amount;
+      _fee = double.parse(document['Fee']);
+      _destination = document['ReceivableUserID'];
+      _purpose = document['Purpose'];
+      _source = document['PayableUserID'];
+      _userID = document['PayableUserID'];
+      _status = document['Status'];
+
+      return showPlatformDialog(
+        context: context,
+        builder: (_) => BasicDialogAlert(
+          title: Row(
+            children: [
+              Icon(
+                Icons.info_outline_rounded,
+                color: kDarkPrimaryColor,
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              Text(
+                "Invoice Details",
+                style: TextStyle(color: kDarkPrimaryColor),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Status:',
+                      textAlign: TextAlign.right,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                    SizedBox(
+                      width: MyGlobalVariables.sizedBoxWidth,
+                    ),
+                    (_status == 'Active')
+                        ? Text(
+                            _status,
+                            style: TextStyle(
+                              fontSize: MyGlobalVariables.dialogFontSize,
+                              color: Colors.green,
+                              //fontFamily: 'BaiJamJuree',
+                            ),
+                          )
+                        : Text(
+                            _status,
+                            style: TextStyle(
+                              fontSize: MyGlobalVariables.dialogFontSize,
+                              color: Colors.red,
+                              //fontFamily: 'BaiJamJuree',
+                            ),
+                          ),
+                  ],
+                ),
+                SizedBox(
+                  height: MyGlobalVariables.sizedBoxHeight,
+                ),
+                Row(
+                  children: [
+                    new Text(
+                      'Source:',
+                      textAlign: TextAlign.right,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                    SizedBox(
+                      width: MyGlobalVariables.sizedBoxWidth,
+                    ),
+                    new Text(
+                      getKeyValues
+                          .getFundDestinationValue(_selectedFundDestination),
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: MyGlobalVariables.sizedBoxHeight,
+                ),
+                Row(
+                  children: [
+                    new Text(
+                      'Source #:',
+                      textAlign: TextAlign.right,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                    SizedBox(
+                      width: MyGlobalVariables.sizedBoxWidth,
+                    ),
+                    new Text(
+                      _source,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: MyGlobalVariables.sizedBoxHeight,
+                ),
+                Row(
+                  children: [
+                    new Text(
+                      'Destination:',
+                      textAlign: TextAlign.right,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                    SizedBox(
+                      width: MyGlobalVariables.sizedBoxWidth,
+                    ),
+                    new Text(
+                      getKeyValues
+                          .getFundDestinationValue(_selectedFundDestination),
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: MyGlobalVariables.sizedBoxHeight,
+                ),
+                Row(
+                  children: [
+                    new Text(
+                      'Destination #:',
+                      textAlign: TextAlign.right,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                    SizedBox(
+                      width: MyGlobalVariables.sizedBoxWidth,
+                    ),
+                    new Text(
+                      _destination,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: MyGlobalVariables.sizedBoxHeight,
+                ),
+                Row(
+                  children: [
+                    new Text(
+                      'Purpose:',
+                      textAlign: TextAlign.right,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                    SizedBox(
+                      width: MyGlobalVariables.sizedBoxWidth,
+                    ),
+                    new Text(
+                      _purpose,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: MyGlobalVariables.sizedBoxHeight,
+                ),
+                Row(
+                  children: [
+                    new Text(
+                      'Transaction Amt:',
+                      textAlign: TextAlign.right,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                    SizedBox(
+                      width: MyGlobalVariables.sizedBoxWidth,
+                    ),
+                    new Text(
+                      MyGlobalVariables.zmcurrencySymbol +
+                          currencyConvertor.format(_amount) +
+                          '*',
+                      style: TextStyle(
+                          fontSize: MyGlobalVariables.dialogFontSize,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: MyGlobalVariables.sizedBoxHeight,
+                ),
+                Row(
+                  children: [
+                    new Text(
+                      'Fees:',
+                      textAlign: TextAlign.right,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Row(
+                      children: [
+                        new Text(
+                          MyGlobalVariables.zmcurrencySymbol +
+                              currencyConvertor.format(_fee),
+                          style: TextStyle(
+                              fontSize: MyGlobalVariables.dialogFontSize,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: MyGlobalVariables.sizedBoxHeight,
+                ),
+                Row(
+                  children: [
+                    new Text(
+                      'Transaction:',
+                      textAlign: TextAlign.right,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    new Text(
+                      getKeyValues.getTransactionType(_transactionType),
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: MyGlobalVariables.sizedBoxHeight,
+                ),
+                Row(
+                  children: [
+                    new Text(
+                      'Invoice ID:',
+                      textAlign: TextAlign.right,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    new Text(
+                      document.id,
+                      style:
+                          TextStyle(fontSize: MyGlobalVariables.dialogFontSize),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(children: [
+                  Text(
+                    ' *Includes transaction fees.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 10),
+                  )
+                ]),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            BasicDialogAction(
+              title: Text(
+                "Cancel",
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            //Confirm Payment Dialog
+            BasicDialogAction(
+              title: Text(
+                "Delete",
+                style: TextStyle(
+                  color: kDarkPrimaryColor,
+                ),
+              ),
+              onPressed: () async {
+                InvoicingModel.deactivateInvoice(document.id);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      );
+    }
+
     //Payables Tab
     formWidget.add(
       Column(
@@ -1003,7 +1007,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) return Text('Errored');
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 } else {
                   return ListView.builder(
                       scrollDirection: Axis.vertical,
@@ -1186,7 +1190,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) return Text('Errored');
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 } else {
                   return ListView.builder(
                       scrollDirection: Axis.vertical,

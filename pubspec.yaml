@@ -38,6 +38,7 @@ dependencies:
 
   qr_flutter: ^3.2.0
   qr_code_scanner: ^0.2.1
+  http: ^0.12.2
 
   date_format: ^1.0.9
   currency_text_input_formatter: ^1.0.3
@@ -99,6 +100,11 @@ flutter:
    - assets/images/password_icon.png
    - assets/images/user_icon.png
    - assets/images/as.png
+   - assets/marketplace/dstv.png
+   - assets/marketplace/zesco.png
+   - assets/marketplace/gotv.png
+   - assets/marketplace/litespeed.png
+   - assets/marketplace/tokidz.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

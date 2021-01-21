@@ -10,9 +10,8 @@ import 'package:onekwacha/models/transactionModel.dart';
 import 'package:onekwacha/utils/get_key_values.dart';
 import 'package:onekwacha/widgets/bottom_nav.dart';
 import 'package:date_format/date_format.dart';
-import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:onekwacha/widgets/image_upload.dart';
+import 'package:onekwacha/screens/profile/image_upload.dart';
 
 class ProfileScreen extends StatefulWidget {
   final int incomingData;
