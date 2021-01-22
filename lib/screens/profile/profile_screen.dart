@@ -595,25 +595,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         textColor: kTextPrimaryColor,
                         color: kDefaultPrimaryColor,
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: ImageUpload(
-                                userID: _phoneNumber,
-                                firstName: _ctrlFirstName.text,
-                                lastName: _ctrlLastName.text,
-                                middleName: _ctrlMiddleName.text,
-                                address: _ctrlAddress.text,
-                                email: _ctrlEmail.text,
-                                lastUpdateDate: _lastUpdateDate,
-                                nrcPassport: _ctrlNRCPassport.text,
-                                phoneNumber: _phoneNumber,
-                                selectedDoB: _selectedDoBInternal.toString(),
-                                selectedGender: _selectedGenderString,
+                          if (_formKey.currentState.validate()) {
+                            _formKey.currentState.save();
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: ImageUpload(
+                                  userID: _phoneNumber,
+                                  firstName: _ctrlFirstName.text,
+                                  lastName: _ctrlLastName.text,
+                                  middleName: _ctrlMiddleName.text,
+                                  address: _ctrlAddress.text,
+                                  email: _ctrlEmail.text,
+                                  lastUpdateDate: _lastUpdateDate,
+                                  nrcPassport: _ctrlNRCPassport.text,
+                                  phoneNumber: _phoneNumber,
+                                  selectedDoB: _selectedDoBInternal.toString(),
+                                  selectedGender: _selectedGenderString,
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          }
                         },
                         shape: new RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(20.0)),

@@ -30,7 +30,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
   GetKeyValues getKeyValues = new GetKeyValues();
   UserModel userModel = new UserModel();
-  String _transactionMonthYear, _transactionTime, _currencyAmount;
+  String _transactionMonthYear,
+      _transactionTime,
+      _currencyAmount,
+      _destination,
+      _purchasedProductCode;
   int _transactionDay = 0;
 
   double _transactionAmount = 0;
@@ -81,6 +85,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<void> _transactionDetailsDialog(QueryDocumentSnapshot document) async {
+    //Format product code
+    try {
+      _purchasedProductCode =
+          document['PurchasedProductCode'].replaceAll('_', ' ');
+    } catch (e) {
+      _purchasedProductCode = 'None';
+    }
     return showPlatformDialog(
       context: context,
       builder: (_) => BasicDialogAlert(
@@ -188,6 +199,33 @@ class _HistoryScreenState extends State<HistoryScreen> {
               SizedBox(
                 height: MyGlobalVariables.sizedBoxHeight,
               ),
+              (_purchasedProductCode != 'None')
+                  ? Column(
+                      children: [
+                        Row(
+                          children: [
+                            new Text(
+                              'Product:',
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                  fontSize: MyGlobalVariables.dialogFontSize),
+                            ),
+                            SizedBox(
+                              width: MyGlobalVariables.sizedBoxWidth,
+                            ),
+                            new Text(
+                              _purchasedProductCode.replaceAll('_', ' '),
+                              style: TextStyle(
+                                  fontSize: MyGlobalVariables.dialogFontSize),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: MyGlobalVariables.sizedBoxHeight,
+                        ),
+                      ],
+                    )
+                  : Container(),
               Row(
                 children: [
                   new Text(
@@ -384,6 +422,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           am,
                         ]));
 
+                        //Format destination
+                        try {
+                          _destination =
+                              getKeyValues.formatPhoneNumberWithSpaces(
+                                  document['Destination']);
+                        } catch (e) {
+                          _destination = document['Destination'];
+                        }
+
+                        //Format product code
+                        try {
+                          _purchasedProductCode =
+                              document['PurchasedProductCode']
+                                  .replaceAll('_', ' ');
+                        } catch (e) {
+                          _purchasedProductCode = 'None';
+                        }
+
                         return Container(
                           decoration: BoxDecoration(
                             border: Border(
@@ -462,15 +518,34 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               //fontFamily: 'Metrophobic',
                                             ),
                                           )
-                                        : Text(
-                                            getKeyValues
-                                                .formatPhoneNumberWithSpaces(
-                                                    document['Destination']),
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              //fontFamily: 'Metrophobic',
-                                            ),
-                                          ),
+                                        : (_purchasedProductCode != 'None' ||
+                                                _purchasedProductCode == null)
+                                            ? Row(
+                                                children: [
+                                                  Text(
+                                                    _destination,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      //fontFamily: 'Metrophobic',
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    ' (${_purchasedProductCode})',
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      color:
+                                                          Colors.grey.shade700,
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            : Text(
+                                                _destination,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  //fontFamily: 'Metrophobic',
+                                                ),
+                                              ),
                                   ],
                                 ),
                               ],
@@ -649,6 +724,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           am,
                         ]));
 
+                        //Format destination value
+                        try {
+                          _destination =
+                              getKeyValues.formatPhoneNumberWithSpaces(
+                                  document['Destination']);
+                        } catch (e) {
+                          _destination = document['Destination'];
+                        }
+
+                        //Format product code
+                        try {
+                          _purchasedProductCode =
+                              document['PurchasedProductCode']
+                                  .replaceAll('_', ' ');
+                        } catch (e) {
+                          _purchasedProductCode = 'None';
+                        }
+
                         return Container(
                           decoration: BoxDecoration(
                             border: Border(
@@ -727,15 +820,34 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               //fontFamily: 'Metrophobic',
                                             ),
                                           )
-                                        : Text(
-                                            getKeyValues
-                                                .formatPhoneNumberWithSpaces(
-                                                    document['Destination']),
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              //fontFamily: 'Metrophobic',
-                                            ),
-                                          ),
+                                        : (_purchasedProductCode != 'None' ||
+                                                _purchasedProductCode == null)
+                                            ? Row(
+                                                children: [
+                                                  Text(
+                                                    _destination,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      //fontFamily: 'Metrophobic',
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    ' (${_purchasedProductCode})',
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      color:
+                                                          Colors.grey.shade700,
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            : Text(
+                                                _destination,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  //fontFamily: 'Metrophobic',
+                                                ),
+                                              ),
                                   ],
                                 ),
                               ],

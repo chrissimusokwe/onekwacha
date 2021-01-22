@@ -417,6 +417,7 @@ class _CardScreenState extends State<CardScreen> {
         _transactionTime,
         _userID,
         _invoiceID,
+        'None',
       );
 
       if (documentRef != null) {

@@ -30,28 +30,34 @@ dependencies:
   #firebase: ^8.0.0
   cloud_firestore: ^0.14.0
   
-  image_picker: ^0.6.7+21
-  json_serializable: ^3.5.1
-
-  font_awesome_flutter: ^8.8.1
-  carousel_slider: ^2.3.1
-
+  #Device comms
   qr_flutter: ^3.2.0
   qr_code_scanner: ^0.2.1
   http: ^0.12.2
+  json_serializable: ^3.5.1
+  image_picker: ^0.6.7+21
+  flutter_launcher_icons: ^0.8.1
 
+  #formatters
   date_format: ^1.0.9
   currency_text_input_formatter: ^1.0.3
   intl_phone_number_input: ^0.5.2+2
   intl: ^0.16.1
+  strings: ^0.1.4
+  font_awesome_flutter: ^8.8.1
 
+  #navigations and dialogs
   #flutter_slidable: ^0.5.7
   flutter_dialogs: ^1.1.0
   page_transition: ^1.1.7+5
   grouped_list: ^3.7.1
   flutter_slidable: ^0.5.3
+  carousel_slider: ^2.3.1
 
-
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo.png"
 
 # dependency_overrides:
 #   intl: ^0.15.7

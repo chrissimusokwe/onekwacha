@@ -639,7 +639,7 @@ class _ImageUploadState extends State<ImageUpload> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Shouldn't be long...",
+                                  "Upload in progress...",
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: kTextPrimaryColor,

@@ -20,7 +20,11 @@ class TransactionModel {
     _time,
     _userID,
     _invoiceID,
+    _purchasedProductCode,
   ) async {
+    if (_purchasedProductCode == null || _purchasedProductCode == '') {
+      _purchasedProductCode = 'None';
+    }
     DocumentReference documentRef =
         await FirebaseFirestore.instance.collection("Transactions").add({
       'CurrentBalance': _currentBalance.toString(),
@@ -40,6 +44,7 @@ class TransactionModel {
       'TransactionType': _transactionType.toString(),
       'UserID': _userID.toString(),
       'InvoiceID': _invoiceID.toString(),
+      'PurchasedProductCode': _purchasedProductCode.toString(),
     });
     return documentRef;
   }

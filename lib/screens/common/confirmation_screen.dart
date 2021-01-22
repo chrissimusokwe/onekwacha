@@ -840,6 +840,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               _transactionTime,
               _userID,
               _invoiceID,
+              'None',
             );
 
             if (documentRef != null) {

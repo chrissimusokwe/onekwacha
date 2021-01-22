@@ -644,6 +644,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                     _settlementTime,
                     _userID,
                     document.id,
+                    'None',
                   );
 
                   if (documentRef != null) {

@@ -9,7 +9,7 @@ class GetKeyValues {
     1: 'Entertainment',
     2: 'Education',
     3: 'Family & Friends',
-    4: 'Groceries',
+    4: 'Merchant',
     5: 'Travel',
   };
 
@@ -26,7 +26,7 @@ class GetKeyValues {
     'Entertainment': CustomIcons.video,
     'Education': CustomIcons.department,
     'Family & Friends': CustomIcons.user,
-    'Groceries': CustomIcons.add_shopping_cart,
+    'Merchant': CustomIcons.add_shopping_cart,
     'Travel': CustomIcons.globe_earth,
   };
 
@@ -63,13 +63,14 @@ class GetKeyValues {
     0: 'OneKwacha Wallet',
     1: 'Mobile Money',
     2: 'Bank Account',
+    3: 'Merchant',
   };
 
   Map<String, double> _transactionTypeRate = {
     'Top up': 1.5,
     'Transfer': 1,
     'Invoicing': 2.5,
-    'Marketplace': 3,
+    'Marketplace': 0,
     'Cash out': 5,
   };
   Map<int, String> _transactionType = {

@@ -1,7 +1,6 @@
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'dart:async';
-import 'dart:io';
 
 class ProductsModel {
   final String productCode;
@@ -44,7 +43,7 @@ class ProductsModel {
         'Authorization': 'Bearer ${_token}',
       },
     );
-    print('Here is the response from Liquid: ' + response.body);
+    //print('Here is the response from Liquid: ' + response.body);
     final responseJson = parseLiteSpeed(response.body);
 
     return responseJson;
