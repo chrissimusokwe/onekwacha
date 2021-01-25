@@ -108,7 +108,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
     formWidget.add(
       Card(
         elevation: 5,
-        color: kDarkPrimaryColor,
+        color: Colors.grey.shade100,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -130,7 +130,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                       children: [
                         Icon(
                           Icons.check_circle_outline_rounded,
-                          color: kDarkPrimaryColor,
+                          color: kDefaultPrimaryColor,
                           size: 50,
                         ),
                         SizedBox(
@@ -144,7 +144,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                             fontSize: 25.0,
                             fontFamily: 'BaiJamJuree',
                             fontWeight: FontWeight.bold,
-                            color: kDarkPrimaryColor,
+                            color: kDefaultPrimaryColor,
                           ),
                         ),
                       ],
@@ -335,12 +335,14 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                 children: [
                   //Transaction Confirmation button
                   new RaisedButton(
+                    elevation: 5,
                     color: Colors.grey.shade100,
                     textColor: kTextPrimaryColor,
+                    padding: EdgeInsets.symmetric(vertical: 13, horizontal: 80),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
+                      borderRadius: BorderRadius.circular(25.0),
                       side: BorderSide(
-                        color: kDarkPrimaryColor,
+                        color: kDefaultPrimaryColor,
                         width: 3,
                       ),
                     ),
@@ -350,7 +352,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                         fontSize: kSubmitButtonFontSize,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'BaiJamJuree',
-                        color: kDarkPrimaryColor,
+                        color: kTextPrimaryColor,
                       ),
                     ),
                     onPressed: onPressedConfirm,

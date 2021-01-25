@@ -78,6 +78,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   UserModel userModel = new UserModel();
   TransactionModel transactionModel = new TransactionModel();
   bool _isUserUpdated = false;
+  bool _isProcessing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -130,13 +131,13 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     formWidget.add(
       Card(
         elevation: 5,
-        color: kDefaultPrimaryColor,
+        color: Colors.grey.shade100,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: Container(
           decoration: BoxDecoration(
-            color: kDefaultPrimaryColor,
+            color: Colors.grey.shade100,
             //borderRadius: BorderRadius.circular(10),
           ),
           padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
@@ -153,7 +154,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         //decoration: TextDecoration.underline,
-                        fontSize: 18.0,
+                        fontSize: 22.0,
                         fontFamily: 'BaiJamJuree',
                         fontWeight: FontWeight.bold,
                       ),
@@ -494,7 +495,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
           widget.transactionType, _fee, _totalAmount, _currentBalance);
 
       //Check that OneKwacha destination wallet is not the same as source
-      if (_source == _destination || _sourceType == _destinationType) {
+      if (_source == _destination && _sourceType == _destinationType) {
         //Destination wallet is the same as source OneKwacha wallet
         return showPlatformDialog(
           context: context,
@@ -849,6 +850,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 documentRef.id,
                 _userID,
                 _newWalletBalance,
+                _transactionDate,
               );
 
               bool _isDestinationUserCredited = false;
@@ -858,8 +860,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   _destinationType == 'OneKwacha Wallet') {
                 //Credit destination user's OneKwacha wallet
                 _isDestinationUserCredited =
-                    await userModel.creditDestinationUserBalance(
-                        documentRef.id, _destination, _amount);
+                    await userModel.creditDestinationUserBalance(documentRef.id,
+                        _destination, _transactionDate, _amount);
                 if (_isDestinationUserCredited) {
                   Navigator.pushAndRemoveUntil(
                       context,
@@ -935,41 +937,85 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
           SizedBox(
             height: 20,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              //Transaction Confirmation button
-              new RaisedButton(
-                color: kDefaultPrimaryColor,
-                textColor: kTextPrimaryColor,
-                child: new Text(
-                  MyGlobalVariables.processTranscation.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: kSubmitButtonFontSize,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'BaiJamJuree',
+          (!_isProcessing)
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    //Transaction Confirmation button
+                    new RaisedButton(
+                      elevation: 5,
+                      color: kDefaultPrimaryColor,
+                      textColor: kTextPrimaryColor,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 13, horizontal: 80),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                        side: BorderSide(
+                          color: kDefaultPrimaryColor,
+                          width: 3,
+                        ),
+                      ),
+                      child: new Text(
+                        MyGlobalVariables.processTranscation,
+                        style: TextStyle(
+                          fontSize: kSubmitButtonFontSize,
+                          //fontWeight: FontWeight.bold,
+                          //fontFamily: 'BaiJamJuree',
+                        ),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isProcessing = true;
+                        });
+                        onPressedConfirm();
+                      },
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+
+                    //Transaction Cancellation button
+                    new RaisedButton(
+                        elevation: 5,
+                        color: Colors.grey.shade100,
+                        textColor: kTextPrimaryColor,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 13, horizontal: 80),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          side: BorderSide(
+                            color: kDefaultPrimaryColor,
+                            width: 3,
+                          ),
+                        ),
+                        child: new Text(
+                          MyGlobalVariables.cancelTranscation,
+                          style: TextStyle(
+                            fontSize: kSubmitButtonFontSize,
+                            //fontWeight: FontWeight.bold,
+                            //fontFamily: 'BaiJamJuree',
+                          ),
+                        ),
+                        onPressed: onPressedCancel),
+                  ],
+                )
+              : Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Processing transaction...',
+                        style: TextStyle(
+                          color: Colors.amber.shade700,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      CircularProgressIndicator(),
+                    ],
                   ),
                 ),
-                onPressed: () {
-                  onPressedConfirm();
-                },
-              ),
-
-              //Transaction Cancellation button
-              new RaisedButton(
-                  color: kDefaultPrimaryColor,
-                  textColor: kTextPrimaryColor,
-                  child: new Text(
-                    MyGlobalVariables.cancelTranscation.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: kSubmitButtonFontSize,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'BaiJamJuree',
-                    ),
-                  ),
-                  onPressed: onPressedCancel),
-            ],
-          ),
         ],
       ),
     );

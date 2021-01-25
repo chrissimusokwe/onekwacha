@@ -27,11 +27,14 @@ class InvoicingModel {
     String _payableUserID,
     String _receivableUserID,
   ) async {
+    DateTime _invoiceDate = DateTime.now();
+
+    //Add to general invoices ledger
     DocumentReference document =
         await FirebaseFirestore.instance.collection("Invoices").add({
       'Amount': _amount.toString(),
       'Fee': _fee.toString(),
-      'InvoiceDate': DateTime.now().toString(),
+      'InvoiceDate': _invoiceDate.toString(),
       'Purpose': _purpose.toString(),
       'ReceivableUserID': _receivableUserID.toString(),
       'SettlementDate': '',
@@ -41,6 +44,41 @@ class InvoicingModel {
       return null;
     });
 
+    if (document != null) {
+      //Add to specific payable user's transactions
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(_payableUserID.toString())
+          .collection("Invoices")
+          .doc(document.id)
+          .set({
+        'Amount': _amount.toString(),
+        'Fee': _fee.toString(),
+        'InvoiceDate': _invoiceDate.toString(),
+        'Purpose': _purpose.toString(),
+        'ReceivableUserID': _receivableUserID.toString(),
+        'SettlementDate': '',
+        'PayableUserID': _payableUserID.toString(),
+        'Status': 'Active',
+      });
+
+      //Add to specific receivable user's transactions
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(_receivableUserID.toString())
+          .collection("Invoices")
+          .doc(document.id)
+          .set({
+        'Amount': _amount.toString(),
+        'Fee': _fee.toString(),
+        'InvoiceDate': _invoiceDate.toString(),
+        'Purpose': _purpose.toString(),
+        'ReceivableUserID': _receivableUserID.toString(),
+        'SettlementDate': '',
+        'PayableUserID': _payableUserID.toString(),
+        'Status': 'Active',
+      });
+    }
     return document;
   }
 
@@ -66,6 +104,47 @@ class InvoicingModel {
     }).catchError((e) {
       _paid = false;
     });
+
+    if (_paid) {
+      //Update specific payable user's transactions
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(_payableUserID)
+          .collection("Invoices")
+          .doc(id)
+          .update({
+        'Amount': _amount.toString(),
+        'Fee': _fee.toString(),
+        'Purpose': _purpose.toString(),
+        'PayableUserID': _payableUserID.toString(),
+        'ReceivableUserID': _receivableUserID.toString(),
+        'SettlementDate': _settlementDate.toString(),
+        'Status': _status.toString(),
+      }).catchError((e) {
+        _paid = false;
+      });
+    }
+
+    if (_paid) {
+      //Update specific receivable user's transactions
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(_receivableUserID)
+          .collection("Invoices")
+          .doc(id)
+          .update({
+        'Amount': _amount.toString(),
+        'Fee': _fee.toString(),
+        'Purpose': _purpose.toString(),
+        'PayableUserID': _payableUserID.toString(),
+        'ReceivableUserID': _receivableUserID.toString(),
+        'SettlementDate': _settlementDate.toString(),
+        'Status': _status.toString(),
+      }).catchError((e) {
+        _paid = false;
+      });
+    }
+
     return _paid;
   }
 

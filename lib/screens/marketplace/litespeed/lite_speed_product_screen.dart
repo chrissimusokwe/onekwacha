@@ -387,6 +387,7 @@ class _LiteSpeedProductScreenState extends State<LiteSpeedProductScreen> {
             _transactionDocumentRef.id,
             _userID,
             _newWalletBalance,
+            _transactionDate,
           );
 
           DocumentReference _isMerchantTransactionCreated;
@@ -728,12 +729,15 @@ class _LiteSpeedProductScreenState extends State<LiteSpeedProductScreen> {
                   children: [
                     //Purchase button
                     new RaisedButton(
+                        elevation: 5,
                         color: Colors.grey.shade100,
                         textColor: kTextPrimaryColor,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 13, horizontal: 80),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
+                          borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(
-                            color: kDarkPrimaryColor,
+                            color: kDefaultPrimaryColor,
                             width: 3,
                           ),
                         ),
@@ -743,7 +747,7 @@ class _LiteSpeedProductScreenState extends State<LiteSpeedProductScreen> {
                             fontSize: kSubmitButtonFontSize,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'BaiJamJuree',
-                            color: kDarkPrimaryColor,
+                            color: kTextPrimaryColor,
                           ),
                         ),
                         onPressed: () {

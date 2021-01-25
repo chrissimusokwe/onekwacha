@@ -1,17 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:onekwacha/utils/global_strings.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:onekwacha/utils/custom_colors_fonts.dart';
-import 'package:onekwacha/models/userModel.dart';
 import 'package:onekwacha/models/transactionModel.dart';
-import 'package:onekwacha/utils/get_key_values.dart';
-import 'package:onekwacha/widgets/bottom_nav.dart';
-import 'package:date_format/date_format.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:onekwacha/models/userModel.dart';
 import 'package:onekwacha/screens/profile/image_upload.dart';
+import 'package:onekwacha/utils/custom_colors_fonts.dart';
+import 'package:onekwacha/utils/get_key_values.dart';
+import 'package:onekwacha/utils/global_strings.dart';
+import 'package:onekwacha/widgets/bottom_nav.dart';
+import 'package:page_transition/page_transition.dart';
 
 class ProfileScreen extends StatefulWidget {
   final int incomingData;
@@ -246,30 +246,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     formWidget.add(
       SizedBox(
-        height: 10.0,
+        height: 0.0,
       ),
     );
 
     //Profile Status
     formWidget.add(Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Text(
-          'KYC Status: ',
+          'KYC ',
           style: TextStyle(
             color: Colors.grey.shade500,
+            fontSize: 18,
           ),
         ),
-        (_kycStatus == 'Approved')
-            ? Text(
-                _kycStatus,
-                style: TextStyle(
+        (_kycStatus == 'Verified')
+            ? Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
+                decoration: BoxDecoration(
                   color: Colors.green,
+                  border: Border.all(color: Colors.green),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle_sharp,
+                      color: Colors.white,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      _kycStatus ?? 'Loading...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
                 ),
               )
-            : Text(
-                _kycStatus ?? 'Loading...',
-                style: TextStyle(
+            : Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
+                decoration: BoxDecoration(
                   color: Colors.red,
+                  border: Border.all(color: Colors.red),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.close_sharp,
+                      color: Colors.white,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      _kycStatus ?? 'Loading...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
                 ),
               ),
       ],
@@ -569,94 +613,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
     formWidget.add(
       SizedBox(
-        height: 10.0,
-      ),
-    );
-
-    //Save buttons
-    formWidget.add(
-      Column(
-        children: [
-          Visibility(
-            visible: !_enableFields,
-            child: Padding(
-              padding: EdgeInsets.only(left: 25.0, right: 25.0, top: 10.0),
-              child: new Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  //Save button
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 10.0),
-                      child: Container(
-                          child: new RaisedButton(
-                        child: new Text("Scan and Upload ID"),
-                        textColor: kTextPrimaryColor,
-                        color: kDefaultPrimaryColor,
-                        onPressed: () {
-                          if (_formKey.currentState.validate()) {
-                            _formKey.currentState.save();
-                            Navigator.push(
-                              context,
-                              PageTransition(
-                                type: PageTransitionType.rightToLeft,
-                                child: ImageUpload(
-                                  userID: _phoneNumber,
-                                  firstName: _ctrlFirstName.text,
-                                  lastName: _ctrlLastName.text,
-                                  middleName: _ctrlMiddleName.text,
-                                  address: _ctrlAddress.text,
-                                  email: _ctrlEmail.text,
-                                  lastUpdateDate: _lastUpdateDate,
-                                  nrcPassport: _ctrlNRCPassport.text,
-                                  phoneNumber: _phoneNumber,
-                                  selectedDoB: _selectedDoBInternal.toString(),
-                                  selectedGender: _selectedGenderString,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        shape: new RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(20.0)),
-                      )),
-                    ),
-                    flex: 2,
-                  ),
-
-                  //Cancel Button
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 10.0),
-                      child: Container(
-                          child: new RaisedButton(
-                        child: new Text("Cancel"),
-                        textColor: kTextPrimaryColor,
-                        color: Colors.grey.shade400,
-                        onPressed: () {
-                          setState(() {
-                            _enableFields = true;
-                            getUser();
-                            FocusScope.of(context)
-                                .requestFocus(new FocusNode());
-                          });
-                        },
-                        shape: new RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(20.0)),
-                      )),
-                    ),
-                    flex: 2,
-                  ),
-                ],
-              ),
-            ),
-            //_getActionButtons(),
-          ),
-          SizedBox(
-            height: 10.0,
-          ),
-        ],
+        height: 5.0,
       ),
     );
 
@@ -667,6 +624,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'Phone Number: ',
           style: TextStyle(
             color: Colors.grey.shade500,
+            fontSize: 12,
           ),
         ),
         Text(
@@ -674,6 +632,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               'Loading...',
           style: TextStyle(
             color: Colors.grey.shade500,
+            fontSize: 12,
           ),
         ),
       ],
@@ -683,7 +642,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     formWidget.add(Column(
       children: [
         SizedBox(
-          height: 10.0,
+          height: 5.0,
         ),
         Row(
           children: [
@@ -691,6 +650,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               'Created: ',
               style: TextStyle(
                 color: Colors.grey.shade500,
+                fontSize: 12,
               ),
             ),
             Text(
@@ -711,12 +671,118 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ])),
               style: TextStyle(
                 color: Colors.grey.shade500,
+                fontSize: 12,
               ),
             ),
           ],
         ),
       ],
     ));
+
+    //Save buttons
+    formWidget.add(
+      Visibility(
+        visible: !_enableFields,
+        child: Padding(
+          padding:
+              EdgeInsets.only(left: 60.0, right: 60.0, top: 10.0, bottom: 10),
+          child: Column(
+            //mainAxisSize: MainAxisSize.max,
+            //mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              //Save button
+              Row(
+                children: [
+                  Expanded(
+                      child: new RaisedButton(
+                    elevation: 5,
+                    color: kDefaultPrimaryColor,
+                    textColor: kTextPrimaryColor,
+                    padding: EdgeInsets.symmetric(vertical: 13),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                      side: BorderSide(
+                        color: kDefaultPrimaryColor,
+                        width: 3,
+                      ),
+                    ),
+                    child: new Text(
+                      "Scan & Upload ID",
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        _formKey.currentState.save();
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: ImageUpload(
+                              userID: _phoneNumber,
+                              firstName: _ctrlFirstName.text,
+                              lastName: _ctrlLastName.text,
+                              middleName: _ctrlMiddleName.text,
+                              address: _ctrlAddress.text,
+                              email: _ctrlEmail.text,
+                              lastUpdateDate: _lastUpdateDate,
+                              nrcPassport: _ctrlNRCPassport.text,
+                              phoneNumber: _phoneNumber,
+                              selectedDoB: _selectedDoBInternal.toString(),
+                              selectedGender: _selectedGenderString,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  )),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+
+              //Cancel Button
+              Row(
+                children: [
+                  Expanded(
+                    child: new RaisedButton(
+                      elevation: 5,
+                      color: Colors.grey.shade100,
+                      textColor: kTextPrimaryColor,
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                        side: BorderSide(
+                          color: kDefaultPrimaryColor,
+                          width: 3,
+                        ),
+                      ),
+                      child: new Text(
+                        "Cancel",
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _enableFields = true;
+                          getUser();
+                          FocusScope.of(context).requestFocus(new FocusNode());
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        //_getActionButtons(),
+      ),
+    );
+
     formWidget.add(
       SizedBox(
         height: 20.0,

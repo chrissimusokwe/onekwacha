@@ -256,7 +256,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
     if (Platform.isIOS) {
       return new CupertinoButton(
         onPressed: _validateInputs,
-        color: CupertinoColors.activeBlue,
+        color: CupertinoColors.activeOrange,
         child: const Text(
           MyGlobalVariables.cardDetailsSubmit,
           style: const TextStyle(fontSize: 17.0),
@@ -265,9 +265,16 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
     } else {
       return new RaisedButton(
         onPressed: _validateInputs,
-        color: kDefaultPrimaryColor,
-        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 60.0),
+        color: Colors.grey.shade100,
         textColor: kTextPrimaryColor,
+        padding: EdgeInsets.symmetric(vertical: 13, horizontal: 80),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25.0),
+          side: BorderSide(
+            color: kDefaultPrimaryColor,
+            width: 3,
+          ),
+        ),
         child: new Text(
           MyGlobalVariables.cardDetailsSubmit.toUpperCase(),
           style: const TextStyle(

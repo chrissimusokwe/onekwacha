@@ -604,7 +604,18 @@ class _ImageUploadState extends State<ImageUpload> {
                             colors: [yellow, amber],
                           ),
                           borderRadius: BorderRadius.circular(30.0)),
-                      child: FlatButton(
+                      child: RaisedButton(
+                        elevation: 5,
+                        color: Colors.grey.shade100,
+                        textColor: kTextPrimaryColor,
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          side: BorderSide(
+                            color: kDefaultPrimaryColor,
+                            width: 3,
+                          ),
+                        ),
                         onPressed: () {
                           setState(() {
                             _showUploadButton = false;
@@ -671,7 +682,18 @@ class _ImageUploadState extends State<ImageUpload> {
                                     colors: [yellow, amber],
                                   ),
                                   borderRadius: BorderRadius.circular(30.0)),
-                              child: FlatButton(
+                              child: RaisedButton(
+                                elevation: 5,
+                                color: Colors.grey.shade100,
+                                textColor: kTextPrimaryColor,
+                                padding: EdgeInsets.symmetric(vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25.0),
+                                  side: BorderSide(
+                                    color: kDefaultPrimaryColor,
+                                    width: 3,
+                                  ),
+                                ),
                                 onPressed: () {
                                   confirmSubmittion();
                                 },

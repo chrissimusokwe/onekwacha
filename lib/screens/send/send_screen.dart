@@ -381,16 +381,30 @@ class _SendScreenState extends State<SendScreen> {
     );
     formWidget.add(
       new RaisedButton(
-          color: kDefaultPrimaryColor,
+          elevation: 5,
+          color: Colors.grey.shade100,
           textColor: kTextPrimaryColor,
-          padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
-          child: new Text(
-            MyGlobalVariables.nextButton.toUpperCase(),
-            style: TextStyle(
-              fontSize: kSubmitButtonFontSize,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'BaiJamJuree',
+          padding: EdgeInsets.symmetric(vertical: 13, horizontal: 80),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25.0),
+            side: BorderSide(
+              color: kDefaultPrimaryColor,
+              width: 3,
             ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              new Text(
+                MyGlobalVariables.nextButton.toUpperCase(),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'BaiJamJuree',
+                ),
+              ),
+              //Icon(Icons.navigate_next_sharp)
+            ],
           ),
           onPressed: onPressedSubmit),
     );

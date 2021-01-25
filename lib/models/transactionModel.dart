@@ -25,6 +25,7 @@ class TransactionModel {
     if (_purchasedProductCode == null || _purchasedProductCode == '') {
       _purchasedProductCode = 'None';
     }
+    //Add to General Ledger transactions
     DocumentReference documentRef =
         await FirebaseFirestore.instance.collection("Transactions").add({
       'CurrentBalance': _currentBalance.toString(),
@@ -45,7 +46,96 @@ class TransactionModel {
       'UserID': _userID.toString(),
       'InvoiceID': _invoiceID.toString(),
       'PurchasedProductCode': _purchasedProductCode.toString(),
+    }).catchError((e) {
+      return null;
     });
+
+    if (documentRef != null) {
+      if (_transactionType == 'Transfer' ||
+          _transactionType == 'Cash out' ||
+          _transactionType == 'Marketplace') {
+        //Add to specific source user transactions
+        await FirebaseFirestore.instance
+            .collection("Users")
+            .doc(_source.toString())
+            .collection("Transactions")
+            .doc(documentRef.id)
+            .set({
+          'CurrentBalance': _currentBalance.toString(),
+          'Date': _date.toString(),
+          'Day': _day.toString(),
+          'Destination': _destination.toString(),
+          'DestinationType': _destinationType.toString(),
+          'Fee': _fee.toString(),
+          'Month': _month.toString(),
+          'Year': _year.toString(),
+          'PreviousBalance': _oldBalance.toString(),
+          'Purpose': _purpose.toString(),
+          'Source': _source.toString(),
+          'SourceType': _sourceType.toString(),
+          'Time': _time.toString(),
+          'TransactionAmount': _transactionAmount.toString(),
+          'TransactionType': _transactionType.toString(),
+          'UserID': _userID.toString(),
+          'InvoiceID': _invoiceID.toString(),
+          'PurchasedProductCode': _purchasedProductCode.toString(),
+        });
+      }
+
+      if (_transactionType == 'Transfer' || _transactionType == 'Top up') {
+        //Add to specific destination user's transactions
+        await FirebaseFirestore.instance
+            .collection("Users")
+            .doc(_destination.toString())
+            .collection("Transactions")
+            .doc(documentRef.id)
+            .set({
+          'CurrentBalance': _currentBalance.toString(),
+          'Date': _date.toString(),
+          'Day': _day.toString(),
+          'Destination': _destination.toString(),
+          'DestinationType': _destinationType.toString(),
+          'Fee': _fee.toString(),
+          'Month': _month.toString(),
+          'Year': _year.toString(),
+          'PreviousBalance': _oldBalance.toString(),
+          'Purpose': _purpose.toString(),
+          'Source': _source.toString(),
+          'SourceType': _sourceType.toString(),
+          'Time': _time.toString(),
+          'TransactionAmount': _transactionAmount.toString(),
+          'TransactionType': _transactionType.toString(),
+          'UserID': _userID.toString(),
+          'InvoiceID': _invoiceID.toString(),
+          'PurchasedProductCode': _purchasedProductCode.toString(),
+        });
+      }
+
+      //Add to accounts ledger by transaction type
+      await FirebaseFirestore.instance
+          .collection("Accounts")
+          .doc(_transactionType.toString())
+          .collection("Transactions")
+          .doc(documentRef.id)
+          .set({
+        'Date': _date.toString(),
+        'Day': _day.toString(),
+        'Destination': _destination.toString(),
+        'DestinationType': _destinationType.toString(),
+        'Fee': _fee.toString(),
+        'Month': _month.toString(),
+        'Year': _year.toString(),
+        'Purpose': _purpose.toString(),
+        'Source': _source.toString(),
+        'SourceType': _sourceType.toString(),
+        'Time': _time.toString(),
+        'TransactionAmount': _transactionAmount.toString(),
+        'TransactionType': _transactionType.toString(),
+        'UserID': _userID.toString(),
+        'InvoiceID': _invoiceID.toString(),
+        'PurchasedProductCode': _purchasedProductCode.toString(),
+      });
+    }
     return documentRef;
   }
 }

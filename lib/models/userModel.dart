@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
-  static Future createUser(
+  static Future<bool> createUser(
     String _userID,
     _address,
     _cardNumber,
@@ -20,9 +20,10 @@ class UserModel {
     _previousUpdateDate,
     _transactionID,
   ) async {
+    bool _userCreated = true;
+
     print('Current balance is :' + _currentBalance.toString());
     await FirebaseFirestore.instance.collection("Users").doc(_userID).set({
-      'AccountStatus': 'Pending',
       'Address': _address.toString(),
       'CurrentBalance': _currentBalance.toString(),
       'CardNumber': _cardNumber.toString(),
@@ -30,17 +31,19 @@ class UserModel {
       'Email': _email.toString(),
       'FirstName': _firstName.toString(),
       'KYCDate': _kycDate.toString(),
-      'KYCStatus': 'Pending',
+      'KYCStatus': 'Unsubmitted',
       'LastName': _lastName.toString(),
       'LastUpdateDate': _lastUpdateDate.toString(),
       'LoyaltyPoints': _loyaltyPoints.toString(),
-      'NRCPassort': _nrcNumber.toString(),
+      'NRCPassport': _nrcNumber.toString(),
       'PreviousBalance': '0.0',
       'PhoneNumber': _userID.toString(),
       'LastTransactionID': _transactionID.toString(),
       'PreviousUdpateDate': _previousUpdateDate.toString(),
+    }).catchError((e) {
+      _userCreated = false;
     });
-    //return documentRef;
+    return _userCreated;
   }
 
   Future<bool> updateUser(
@@ -87,93 +90,79 @@ class UserModel {
   Future<bool> creditDestinationUserBalance(
     String _transactionID,
     _creditUserID,
+    _transactionDate,
     double _amount,
   ) async {
     bool _destinationCredited = true;
     double _currentBalance = 0;
     double _newBalance = 0;
-    //UserModel userModel = new UserModel();
     String _dateTime;
 
-    try {
-      // user exists, so get current balance
-      _currentBalance = await getUserBalance(_creditUserID);
+    await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(_creditUserID)
+        .get()
+        .then((_user) async {
+      if (_user.exists) {
+        // user exists, so get current balance
+        _currentBalance = await getUserBalance(_creditUserID);
 
-      //Add current balance and transaction amount (excludes fees)
-      //to get the new wallet balance to apply on destination user.
-      _newBalance = _currentBalance + _amount;
+        //Add current balance and transaction amount (excludes fees)
+        //to get the new wallet balance to apply on destination user.
+        _newBalance = _currentBalance + _amount;
 
-      //Get document reference to user document
-      DocumentReference documentRef =
-          FirebaseFirestore.instance.collection("Users").doc(_creditUserID);
+        //Get document reference to user document
+        DocumentReference documentRef =
+            FirebaseFirestore.instance.collection("Users").doc(_creditUserID);
 
-      //Perform the update on the user if the user exisits
-      documentRef.get().then((document) async {
-        await FirebaseFirestore.instance
-            .collection("Users")
-            .doc(_creditUserID)
-            .update({
-          'CurrentBalance': _newBalance.toString(),
-          'PreviousBalance': document['CurrentBalance'].toString(),
-          'PreviousUpdateDate': document['LastUpdateDate'].toString(),
-          'LastUpdateDate': DateTime.now().toString(),
-          'LastTransactionID': _transactionID.toString(),
-          'UpdateReason': 'Balance Update',
-        }).catchError((e) {
-          _destinationCredited = false;
+        //Perform the update on the user if the user exisits
+        documentRef.get().then((document) async {
+          await FirebaseFirestore.instance
+              .collection("Users")
+              .doc(_creditUserID)
+              .update({
+            'CurrentBalance': _newBalance.toString(),
+            'PreviousBalance': document['CurrentBalance'].toString(),
+            'PreviousUpdateDate': document['LastUpdateDate'].toString(),
+            'LastUpdateDate': _transactionDate.toString(),
+            'LastTransactionID': _transactionID.toString(),
+            'UpdateReason': 'Balance Update',
+          }).catchError((e) {
+            _destinationCredited = false;
+          });
         });
-      });
-    } catch (e) {
-      if (_currentBalance == 0 || _currentBalance == null) {
-        _dateTime = DateTime.now().toString();
-
-        createUser(
-          _creditUserID,
-          '',
-          '',
-          _dateTime,
-          _amount,
-          '',
-          '',
-          '',
-          'Pending',
-          '',
-          _dateTime,
-          '',
-          '',
-          '0.0',
-          _creditUserID,
-          _dateTime,
-          _transactionID,
-        );
-
+      } else {
         //user does not exist, then create new user and set the fields
-        await FirebaseFirestore.instance
-            .collection("Users")
-            .doc(_creditUserID)
-            .set({
-          'Address': '',
-          'CurrentBalance': _amount.toString(),
-          'CardNumber': '',
-          'CreatedDate': _dateTime,
-          'Email': '',
-          'FirstName': '',
-          'KYCDate': '',
-          'KYCStatus': 'Pending Review',
-          'LastName': '',
-          'LastUpdateDate': _dateTime,
-          'LoyaltyPoints': '',
-          'NRCNumber': '',
-          'PreviousBalance': '0.0',
-          'PhoneNumber': _creditUserID,
-          'PreviousUpdateDate': _dateTime,
-          'LastTransactionID': _transactionID.toString(),
-          'UpdateReason': 'Account Created'
-        }).catchError((e) {
-          _destinationCredited = false;
-        });
+        if (_currentBalance == 0 || _currentBalance == null) {
+          _dateTime = _transactionDate;
+
+          await FirebaseFirestore.instance
+              .collection("Users")
+              .doc(_creditUserID)
+              .set({
+            'Address': '',
+            'CurrentBalance': _amount.toString(),
+            'CardNumber': '',
+            'CreatedDate': _dateTime.toString(),
+            'Email': '',
+            'FirstName': '',
+            'KYCDate': '',
+            'KYCStatus': 'Unsubmitted',
+            'LastName': '',
+            'LastUpdateDate': _dateTime.toString(),
+            'LoyaltyPoints': '',
+            'NRCPassport': '',
+            'PreviousBalance': '0.0',
+            'PhoneNumber': _creditUserID.toString(),
+            'PreviousUpdateDate': _dateTime.toString(),
+            'LastTransactionID': _transactionID.toString(),
+            'UpdateReason': 'Account Created'
+          }).catchError((e) {
+            _destinationCredited = false;
+          });
+        }
       }
-    }
+    });
     return _destinationCredited;
   }
 
@@ -182,6 +171,7 @@ class UserModel {
     String _transactionID,
     _userID,
     _currentBalance,
+    _transactionDate,
   ) async {
     bool _updated = true;
 
@@ -195,7 +185,7 @@ class UserModel {
         'CurrentBalance': _currentBalance.toString(),
         'PreviousBalance': document['CurrentBalance'].toString(),
         'PreviousUpdateDate': document['LastUpdateDate'].toString(),
-        'LastUpdateDate': DateTime.now().toString(),
+        'LastUpdateDate': _transactionDate.toString(),
         'LastTransactionID': _transactionID.toString(),
         'UpdateReason': 'Balance Update',
       }).catchError((e) {

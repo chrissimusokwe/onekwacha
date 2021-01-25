@@ -2,8 +2,8 @@ class MyGlobalVariables {
   //static const String appName = 'Payment Card Demo';
   static const String fieldReq = 'This field is required';
   static const String numberIsInvalid = 'Card is invalid';
-  static const String cardDetailsSubmit = 'Submit >';
-  static const String nextButton = 'Next >';
+  static const String cardDetailsSubmit = 'Submit';
+  static const String nextButton = 'Next';
   static const String processTranscation = 'Confirm';
   static const String successTranscation = 'Home';
   static const String cancelTranscation = 'Cancel';

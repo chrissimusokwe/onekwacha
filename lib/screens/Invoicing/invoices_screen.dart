@@ -1006,167 +1006,227 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                   .where("Status", isEqualTo: 'Active')
                   .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError) return Text('Errored');
+                if (snapshot.hasError)
+                  return Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline_rounded,
+                        size: 40,
+                        color: Colors.red,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        'Connection errored. Please try again later.',
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ));
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Loading Invoice List...',
+                        style: TextStyle(
+                          color: Colors.amber.shade700,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      CircularProgressIndicator(),
+                    ],
+                  ));
                 } else {
-                  return ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: snapshot.data.docs.length,
-                      itemBuilder: (context, index) {
-                        QueryDocumentSnapshot document =
-                            snapshot.data.docs[index];
-
-                        _transactionTotal = double.parse(document['Amount']);
-                        _fee = double.parse(document['Fee']);
-
-                        _currencyAmount =
-                            currencyConvertor.format(_transactionTotal);
-                        _invoiceDay = int.parse(formatDate(
-                            DateTime.parse(document['InvoiceDate']), [
-                          dd,
-                        ]));
-                        _invoiceMonthYear = formatDate(
-                            DateTime.parse(document['InvoiceDate']),
-                            [M, ' ', yy]);
-
-                        _invoiceTime = (formatDate(
-                            DateTime.parse(document['InvoiceDate']), [
-                          hh,
-                          ':',
-                          nn,
-                          ' ',
-                          am,
-                        ]));
-
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(color: Colors.grey.shade300),
+                  if (snapshot.data.docs.length == 0) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline_rounded,
+                            size: 40,
+                            color: Colors.amber.shade700,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Text(
+                            'No invoices available for payment',
+                            style: TextStyle(
+                              color: Colors.amber.shade700,
                             ),
                           ),
-                          child: ListTile(
-                            leading: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  _invoiceDay.toString(),
-                                  style: TextStyle(
-                                    fontSize: 23,
-                                    color: Colors.grey.shade700,
-                                    fontFamily: 'Metrophobic',
+                        ],
+                      ),
+                    );
+                  } else {
+                    return ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: snapshot.data.docs.length,
+                        itemBuilder: (context, index) {
+                          QueryDocumentSnapshot document =
+                              snapshot.data.docs[index];
+
+                          _transactionTotal = double.parse(document['Amount']);
+                          _fee = double.parse(document['Fee']);
+
+                          _currencyAmount =
+                              currencyConvertor.format(_transactionTotal);
+                          _invoiceDay = int.parse(formatDate(
+                              DateTime.parse(document['InvoiceDate']), [
+                            dd,
+                          ]));
+                          _invoiceMonthYear = formatDate(
+                              DateTime.parse(document['InvoiceDate']),
+                              [M, ' ', yy]);
+
+                          _invoiceTime = (formatDate(
+                              DateTime.parse(document['InvoiceDate']), [
+                            hh,
+                            ':',
+                            nn,
+                            ' ',
+                            am,
+                          ]));
+
+                          return Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(color: Colors.grey.shade300),
+                              ),
+                            ),
+                            child: ListTile(
+                              leading: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    _invoiceDay.toString(),
+                                    style: TextStyle(
+                                      fontSize: 23,
+                                      color: Colors.grey.shade700,
+                                      fontFamily: 'Metrophobic',
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  _invoiceMonthYear.toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey.shade700,
-                                    fontFamily: 'Metrophobic',
+                                  Text(
+                                    _invoiceMonthYear.toUpperCase(),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade700,
+                                      fontFamily: 'Metrophobic',
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'To: ',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey.shade700,
-                                        //fontFamily: 'BaiJamJuree',
-                                      ),
-                                    ),
-                                    Text(
-                                      getKeyValues.formatPhoneNumberWithSpaces(
-                                          document['ReceivableUserID']),
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        //fontFamily: 'BaiJamJuree',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      getKeyValues
-                                          .getPurposeIcons(document['Purpose']),
-                                      size: 15,
-                                      color: kDarkPrimaryColor,
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      document['Purpose'],
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey.shade700,
-                                        //fontFamily: 'BaiJamJuree',
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text('|'),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      _invoiceTime,
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey.shade700,
-                                        //fontFamily: 'BaiJamJuree',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  MyGlobalVariables.zmcurrencySymbol +
-                                      _currencyAmount,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'BaiJamJuree',
+                                ],
+                              ),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: 10,
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Icon(
-                                  Icons.info_outline_rounded,
-                                  size: 15,
-                                ),
-                              ],
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'To: ',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey.shade700,
+                                          //fontFamily: 'BaiJamJuree',
+                                        ),
+                                      ),
+                                      Text(
+                                        getKeyValues
+                                            .formatPhoneNumberWithSpaces(
+                                                document['ReceivableUserID']),
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          //fontFamily: 'BaiJamJuree',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        getKeyValues.getPurposeIcons(
+                                            document['Purpose']),
+                                        size: 15,
+                                        color: kDarkPrimaryColor,
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        document['Purpose'],
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey.shade700,
+                                          //fontFamily: 'BaiJamJuree',
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text('|'),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        _invoiceTime,
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey.shade700,
+                                          //fontFamily: 'BaiJamJuree',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    MyGlobalVariables.zmcurrencySymbol +
+                                        _currencyAmount,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'BaiJamJuree',
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Icon(
+                                    Icons.info_outline_rounded,
+                                    size: 15,
+                                  ),
+                                ],
+                              ),
+                              //dense: true,
+                              onTap: () {
+                                _confirmPaymentDialog(document);
+                              },
                             ),
-                            //dense: true,
-                            onTap: () {
-                              _confirmPaymentDialog(document);
-                            },
-                          ),
-                        );
-                      });
+                          );
+                        });
+                  }
                 }
               },
             ),
@@ -1189,206 +1249,273 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                       isEqualTo: getKeyValues.getCurrentUserLoginID())
                   .where("Status", whereIn: ['Active', 'Declined']).snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError) return Text('Errored');
+                if (snapshot.hasError)
+                  return Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline_rounded,
+                        size: 40,
+                        color: Colors.red,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        'Connection errored. Please try again later.',
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ));
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Loading Invoice List...',
+                        style: TextStyle(
+                          color: Colors.amber.shade700,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      CircularProgressIndicator(),
+                    ],
+                  ));
                 } else {
-                  return ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: snapshot.data.docs.length,
-                      itemBuilder: (context, index) {
-                        QueryDocumentSnapshot document =
-                            snapshot.data.docs[index];
-
-                        _transactionTotal = double.parse(document['Amount']);
-                        _fee = double.parse(document['Fee']);
-
-                        _currencyAmount =
-                            currencyConvertor.format(_transactionTotal);
-                        _invoiceDay = int.parse(formatDate(
-                            DateTime.parse(document['InvoiceDate']), [
-                          dd,
-                        ]));
-                        _invoiceMonthYear = formatDate(
-                            DateTime.parse(document['InvoiceDate']),
-                            [M, ' ', yy]);
-                        _invoiceTime = (formatDate(
-                            DateTime.parse(document['InvoiceDate']), [
-                          hh,
-                          ':',
-                          nn,
-                          ' ',
-                          am,
-                        ]));
-
-                        bool statusIsActive;
-
-                        (document['Status'] == 'Active')
-                            ? statusIsActive = true
-                            : statusIsActive = false;
-
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(color: Colors.grey.shade300),
+                  if (snapshot.data.docs.length == 0) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline_rounded,
+                            size: 40,
+                            color: Colors.amber.shade700,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Text(
+                            'No invoices created',
+                            style: TextStyle(
+                              color: Colors.amber.shade700,
                             ),
                           ),
-                          child: ListTile(
-                            leading: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  _invoiceDay.toString(),
-                                  style: TextStyle(
-                                    fontSize: 23,
-                                    color: Colors.grey.shade700,
-                                    fontFamily: 'Metrophobic',
-                                  ),
-                                ),
-                                Text(
-                                  _invoiceMonthYear.toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey.shade700,
-                                    fontFamily: 'Metrophobic',
-                                  ),
-                                ),
-                              ],
+                        ],
+                      ),
+                    );
+                  } else {
+                    return ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: snapshot.data.docs.length,
+                        itemBuilder: (context, index) {
+                          QueryDocumentSnapshot document =
+                              snapshot.data.docs[index];
+
+                          _transactionTotal = double.parse(document['Amount']);
+                          _fee = double.parse(document['Fee']);
+
+                          _currencyAmount =
+                              currencyConvertor.format(_transactionTotal);
+                          _invoiceDay = int.parse(formatDate(
+                              DateTime.parse(document['InvoiceDate']), [
+                            dd,
+                          ]));
+                          _invoiceMonthYear = formatDate(
+                              DateTime.parse(document['InvoiceDate']),
+                              [M, ' ', yy]);
+                          _invoiceTime = (formatDate(
+                              DateTime.parse(document['InvoiceDate']), [
+                            hh,
+                            ':',
+                            nn,
+                            ' ',
+                            am,
+                          ]));
+
+                          bool statusIsActive;
+
+                          (document['Status'] == 'Active')
+                              ? statusIsActive = true
+                              : statusIsActive = false;
+
+                          return Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(color: Colors.grey.shade300),
+                              ),
                             ),
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                (statusIsActive)
-                                    ? Text(
-                                        document['Status'],
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.green,
-                                          //fontFamily: 'BaiJamJuree',
-                                        ),
-                                      )
-                                    : Text(
-                                        document['Status'],
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.red,
-                                          //fontFamily: 'BaiJamJuree',
-                                        ),
-                                      ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'To: ',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey.shade700,
-                                        //fontFamily: 'BaiJamJuree',
-                                      ),
-                                    ),
-                                    Text(
-                                      getKeyValues.formatPhoneNumberWithSpaces(
-                                          document['PayableUserID']),
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        //fontFamily: 'BaiJamJuree',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      getKeyValues
-                                          .getPurposeIcons(document['Purpose']),
-                                      size: 15,
-                                      color: kDarkPrimaryColor,
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      document['Purpose'],
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey.shade700,
-                                        //fontFamily: 'BaiJamJuree',
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text('|'),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      _invoiceTime,
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey.shade700,
-                                        //fontFamily: 'BaiJamJuree',
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            trailing: GestureDetector(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
+                            child: ListTile(
+                              leading: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(
-                                    height: 47,
+                                  Text(
+                                    _invoiceDay.toString(),
+                                    style: TextStyle(
+                                      fontSize: 23,
+                                      color: Colors.grey.shade700,
+                                      fontFamily: 'Metrophobic',
+                                    ),
                                   ),
                                   Text(
-                                    MyGlobalVariables.zmcurrencySymbol +
-                                        _currencyAmount,
+                                    _invoiceMonthYear.toUpperCase(),
                                     style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'BaiJamJuree',
+                                      fontSize: 12,
+                                      color: Colors.grey.shade700,
+                                      fontFamily: 'Metrophobic',
                                     ),
-                                  ),
-                                  Icon(
-                                    Icons.info_outline_rounded,
-                                    size: 15,
                                   ),
                                 ],
                               ),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  (statusIsActive)
+                                      ? Text(
+                                          document['Status'],
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.green,
+                                            //fontFamily: 'BaiJamJuree',
+                                          ),
+                                        )
+                                      : Text(
+                                          document['Status'],
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.red,
+                                            //fontFamily: 'BaiJamJuree',
+                                          ),
+                                        ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'To: ',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey.shade700,
+                                          //fontFamily: 'BaiJamJuree',
+                                        ),
+                                      ),
+                                      Text(
+                                        getKeyValues
+                                            .formatPhoneNumberWithSpaces(
+                                                document['PayableUserID']),
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          //fontFamily: 'BaiJamJuree',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        getKeyValues.getPurposeIcons(
+                                            document['Purpose']),
+                                        size: 15,
+                                        color: kDarkPrimaryColor,
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        document['Purpose'],
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey.shade700,
+                                          //fontFamily: 'BaiJamJuree',
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text('|'),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        _invoiceTime,
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey.shade700,
+                                          //fontFamily: 'BaiJamJuree',
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              trailing: GestureDetector(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(
+                                      height: 47,
+                                    ),
+                                    Text(
+                                      MyGlobalVariables.zmcurrencySymbol +
+                                          _currencyAmount,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'BaiJamJuree',
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.info_outline_rounded,
+                                      size: 15,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              //dense: true,
+                              onTap: () {
+                                _confirmDeletionDialog(document);
+                              },
                             ),
-                            //dense: true,
-                            onTap: () {
-                              _confirmDeletionDialog(document);
-                            },
-                          ),
-                        );
-                      });
+                          );
+                        });
+                  }
                 }
               },
             ),
           ),
           RaisedButton(
-              color: kDefaultPrimaryColor,
+              elevation: 5,
+              color: Colors.grey.shade100,
               textColor: kTextPrimaryColor,
-              padding:
-                  const EdgeInsets.symmetric(vertical: 15.0, horizontal: 50.0),
+              padding: EdgeInsets.symmetric(vertical: 13, horizontal: 80),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25.0),
+                side: BorderSide(
+                  color: kDefaultPrimaryColor,
+                  width: 3,
+                ),
+              ),
               child: new Text(
                 'Create Invoice',
                 style: TextStyle(

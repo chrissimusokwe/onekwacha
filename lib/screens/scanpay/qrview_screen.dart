@@ -356,7 +356,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
                                         flashState,
                                         style: TextStyle(
                                           fontSize: kSubmitButtonFontSize,
-                                          fontWeight: FontWeight.bold,
+                                          //fontWeight: FontWeight.bold,
                                           //fontFamily: 'BaiJamJuree',
                                         ),
                                       ),
@@ -403,7 +403,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
                                         cameraState,
                                         style: TextStyle(
                                           fontSize: kSubmitButtonFontSize,
-                                          fontWeight: FontWeight.bold,
+                                          //fontWeight: FontWeight.bold,
                                           //fontFamily: 'BaiJamJuree',
                                         ),
                                       ),
@@ -547,7 +547,7 @@ class _QRViewScreenState extends State<QRViewScreen> {
                   'Generate',
                   style: TextStyle(
                     fontSize: kSubmitButtonFontSize,
-                    fontWeight: FontWeight.bold,
+                    //fontWeight: FontWeight.bold,
                     //fontFamily: 'BaiJamJuree',
                   ),
                 ),

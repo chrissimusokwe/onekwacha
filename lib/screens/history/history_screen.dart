@@ -47,39 +47,37 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      initialIndex: 0,
-      child: Scaffold(
-        backgroundColor: kBackgroundShade,
-        appBar: AppBar(
-          bottom: TabBar(
-            tabs: [
-              Tab(
-                text: 'Incoming',
-              ),
-              Tab(
-                text: 'Outgoing',
+    return Scaffold(
+      backgroundColor: kBackgroundShade,
+      appBar: AppBar(
+        // bottom: TabBar(
+        //   tabs: [
+        //     Tab(
+        //       text: 'Incoming',
+        //     ),
+        //     Tab(
+        //       text: 'Outgoing',
+        //     ),
+        //   ],
+        // ),
+        title: Center(
+          child: Column(
+            children: <Widget>[
+              Text(
+                'Transaction History',
+                style: TextStyle(
+                  fontSize: 23.0,
+                ),
               ),
             ],
           ),
-          title: Center(
-            child: Column(
-              children: <Widget>[
-                Text(
-                  'Transaction History',
-                  style: TextStyle(
-                    fontSize: 23.0,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
-        body: TabBarView(children: _getHistoryWidget()),
-        bottomNavigationBar: BottomNavigation(
-          incomingData: widget.incomingData,
-        ),
+      ),
+      body: Column(
+        children: _getHistoryWidget(),
+      ),
+      bottomNavigationBar: BottomNavigation(
+        incomingData: widget.incomingData,
       ),
     );
   }
@@ -378,607 +376,658 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
     //Incoming
     formWidget.add(
-      new Column(
-        children: [
-          Expanded(
-            //flex: 5,
-            child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection("Transactions")
-                  .orderBy('Date', descending: true)
-                  .where("Destination",
-                      isEqualTo: getKeyValues.getCurrentUserLoginID())
-                  .snapshots(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError) return Text('Errored');
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                } else {
-                  return ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: snapshot.data.docs.length,
-                      itemBuilder: (context, index) {
-                        QueryDocumentSnapshot document =
-                            snapshot.data.docs[index];
+      Expanded(
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection("Users")
+              .doc(getKeyValues.getCurrentUserLoginID())
+              .collection('Transactions')
+              .orderBy('Date', descending: true)
+              .snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 40,
+                    color: Colors.red,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Connection errored. Please try again later.',
+                    style: TextStyle(
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ));
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Loading Transaction List...',
+                    style: TextStyle(
+                      color: Colors.amber.shade700,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  CircularProgressIndicator(),
+                ],
+              ));
+            } else {
+              if (snapshot.data.docs.length == 0) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline_rounded,
+                        size: 40,
+                        color: Colors.amber.shade700,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        'No transactions available yet',
+                        style: TextStyle(
+                          color: Colors.amber.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                return ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: snapshot.data.docs.length,
+                    itemBuilder: (context, index) {
+                      QueryDocumentSnapshot document =
+                          snapshot.data.docs[index];
 
-                        _transactionAmount =
-                            double.parse(document['TransactionAmount']);
+                      _transactionAmount =
+                          double.parse(document['TransactionAmount']);
 
-                        _currencyAmount =
-                            currencyConvertor.format(_transactionAmount);
-                        _transactionDay = int.parse(
-                            formatDate(DateTime.parse(document['Date']), [
-                          dd,
-                        ]));
-                        _transactionMonthYear = formatDate(
-                            DateTime.parse(document['Date']), [M, ' ', yy]);
+                      _currencyAmount =
+                          currencyConvertor.format(_transactionAmount);
+                      _transactionDay = int.parse(
+                          formatDate(DateTime.parse(document['Date']), [
+                        dd,
+                      ]));
+                      _transactionMonthYear = formatDate(
+                          DateTime.parse(document['Date']), [M, ' ', yy]);
 
-                        _transactionTime =
-                            (formatDate(DateTime.parse(document['Date']), [
-                          hh,
-                          ':',
-                          nn,
-                          ' ',
-                          am,
-                        ]));
+                      _transactionTime =
+                          (formatDate(DateTime.parse(document['Date']), [
+                        hh,
+                        ':',
+                        nn,
+                        ' ',
+                        am,
+                      ]));
 
-                        //Format destination
-                        try {
-                          _destination =
-                              getKeyValues.formatPhoneNumberWithSpaces(
-                                  document['Destination']);
-                        } catch (e) {
-                          _destination = document['Destination'];
-                        }
+                      //Format destination
+                      try {
+                        _destination = getKeyValues.formatPhoneNumberWithSpaces(
+                            document['Destination']);
+                      } catch (e) {
+                        _destination = document['Destination'];
+                      }
 
-                        //Format product code
-                        try {
-                          _purchasedProductCode =
-                              document['PurchasedProductCode']
-                                  .replaceAll('_', ' ');
-                        } catch (e) {
-                          _purchasedProductCode = 'None';
-                        }
+                      //Format product code
+                      try {
+                        _purchasedProductCode = document['PurchasedProductCode']
+                            .replaceAll('_', ' ');
+                      } catch (e) {
+                        _purchasedProductCode = 'None';
+                      }
 
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(color: Colors.grey.shade300),
-                            ),
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: Colors.grey.shade300),
                           ),
-                          child: ListTile(
-                            leading: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  _transactionDay.toString(),
-                                  style: TextStyle(
-                                    fontSize: 23,
-                                    color: Colors.grey.shade700,
-                                    fontFamily: 'Metrophobic',
+                        ),
+                        child: ListTile(
+                          leading: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                _transactionDay.toString(),
+                                style: TextStyle(
+                                  fontSize: 23,
+                                  color: Colors.grey.shade700,
+                                  fontFamily: 'Metrophobic',
+                                ),
+                              ),
+                              Text(
+                                _transactionMonthYear.toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade700,
+                                  fontFamily: 'Metrophobic',
+                                ),
+                              ),
+                            ],
+                          ),
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    getKeyValues.getTransactionTypeIcons(
+                                        document['TransactionType']),
+                                    size: 20,
+                                    color: kDarkPrimaryColor,
                                   ),
-                                ),
-                                Text(
-                                  _transactionMonthYear.toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey.shade700,
-                                    fontFamily: 'Metrophobic',
+                                  SizedBox(
+                                    width: 5,
                                   ),
-                                ),
-                              ],
-                            ),
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      getKeyValues.getTransactionTypeIcons(
-                                          document['TransactionType']),
-                                      size: 20,
-                                      color: kDarkPrimaryColor,
+                                  Text(
+                                    document['TransactionType'],
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey.shade800,
+                                      //fontFamily: 'Metrophobic',
                                     ),
-                                    SizedBox(
-                                      width: 5,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    'To: ',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey.shade700,
+                                      //fontFamily: 'BaiJamJuree',
                                     ),
-                                    Text(
-                                      document['TransactionType'],
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.grey.shade800,
-                                        //fontFamily: 'Metrophobic',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'To: ',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey.shade700,
-                                        //fontFamily: 'BaiJamJuree',
-                                      ),
-                                    ),
-                                    (document['DestinationType'] ==
-                                            'Bank Account')
-                                        ? Text(
-                                            'Bank Account',
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              //fontFamily: 'Metrophobic',
-                                            ),
-                                          )
-                                        : (_purchasedProductCode != 'None' ||
-                                                _purchasedProductCode == null)
-                                            ? Row(
-                                                children: [
-                                                  Text(
-                                                    _destination,
-                                                    style: TextStyle(
-                                                      fontSize: 13,
-                                                      //fontFamily: 'Metrophobic',
-                                                    ),
+                                  ),
+                                  (document['DestinationType'] ==
+                                          'Bank Account')
+                                      ? Text(
+                                          'Bank Account',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            //fontFamily: 'Metrophobic',
+                                          ),
+                                        )
+                                      : (_purchasedProductCode != 'None' ||
+                                              _purchasedProductCode == null)
+                                          ? Row(
+                                              children: [
+                                                Text(
+                                                  _destination,
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    //fontFamily: 'Metrophobic',
                                                   ),
-                                                  Text(
-                                                    ' (${_purchasedProductCode})',
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      color:
-                                                          Colors.grey.shade700,
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            : Text(
-                                                _destination,
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  //fontFamily: 'Metrophobic',
                                                 ),
+                                                Text(
+                                                  ' (${_purchasedProductCode})',
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: Colors.grey.shade700,
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : Text(
+                                              _destination,
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                //fontFamily: 'Metrophobic',
                                               ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                (document['TransactionType'] ==
-                                        getKeyValues.getTransactionType(0))
-                                    ? Row(
-                                        children: [
-                                          Text(
-                                            _transactionTime,
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.grey.shade700,
-                                              //fontFamily: 'Metrophobic',
                                             ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 5,
+                              ),
+                              (document['TransactionType'] ==
+                                      getKeyValues.getTransactionType(0))
+                                  ? Row(
+                                      children: [
+                                        Text(
+                                          _transactionTime,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.grey.shade700,
+                                            //fontFamily: 'Metrophobic',
                                           ),
-                                        ],
-                                      )
-                                    : Row(
-                                        children: [
-                                          Icon(
-                                            getKeyValues.getPurposeIcons(
-                                                document['Purpose']),
-                                            size: 15,
-                                            color: kDarkPrimaryColor,
+                                        ),
+                                      ],
+                                    )
+                                  : Row(
+                                      children: [
+                                        Icon(
+                                          getKeyValues.getPurposeIcons(
+                                              document['Purpose']),
+                                          size: 15,
+                                          color: kDarkPrimaryColor,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          document['Purpose'],
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.grey.shade700,
+                                            //fontFamily: 'Metrophobic',
                                           ),
-                                          SizedBox(
-                                            width: 5,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text('|'),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          _transactionTime,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.grey.shade700,
+                                            //fontFamily: 'Metrophobic',
                                           ),
-                                          Text(
-                                            document['Purpose'],
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.grey.shade700,
-                                              //fontFamily: 'Metrophobic',
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text('|'),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            _transactionTime,
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.grey.shade700,
-                                              //fontFamily: 'Metrophobic',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                              ],
-                            ),
-                            trailing: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // SizedBox(
-                                //   height: 10,
-                                // ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  //crossAxisAlignment: CrossAxisAlignment.center,
-                                  //mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    (document['Destination'] ==
-                                            getKeyValues
-                                                .getCurrentUserLoginID())
-                                        ? Text(
-                                            '+' +
-                                                MyGlobalVariables
-                                                    .zmcurrencySymbol +
-                                                _currencyAmount,
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                //fontWeight: FontWeight.bold,
-                                                fontFamily: 'BaiJamJuree',
-                                                color: Colors.green),
-                                          )
-                                        : Text(
-                                            '-' +
-                                                MyGlobalVariables
-                                                    .zmcurrencySymbol +
-                                                _currencyAmount,
-                                            style: TextStyle(
+                                        ),
+                                      ],
+                                    ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                            ],
+                          ),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // SizedBox(
+                              //   height: 10,
+                              // ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                //crossAxisAlignment: CrossAxisAlignment.center,
+                                //mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  (document['Destination'] ==
+                                          getKeyValues.getCurrentUserLoginID())
+                                      ? Text(
+                                          '+' +
+                                              MyGlobalVariables
+                                                  .zmcurrencySymbol +
+                                              _currencyAmount,
+                                          style: TextStyle(
                                               fontSize: 16,
                                               //fontWeight: FontWeight.bold,
                                               fontFamily: 'BaiJamJuree',
-                                              color: Colors.red,
-                                            ),
+                                              color: Colors.green),
+                                        )
+                                      : Text(
+                                          '-' +
+                                              MyGlobalVariables
+                                                  .zmcurrencySymbol +
+                                              _currencyAmount,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            //fontWeight: FontWeight.bold,
+                                            fontFamily: 'BaiJamJuree',
+                                            color: Colors.red,
                                           ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Icon(
-                                      Icons.info_outline_rounded,
-                                      //color: kDarkPrimaryColor,
-                                      size: 20,
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            //dense: true,
-                            onTap: () {
-                              _transactionDetailsDialog(document);
-                            },
+                                        ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Icon(
+                                    Icons.info_outline_rounded,
+                                    //color: kDarkPrimaryColor,
+                                    size: 20,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        );
-                      });
-                }
-              },
-            ),
-          ),
-        ],
+                          //dense: true,
+                          onTap: () {
+                            _transactionDetailsDialog(document);
+                          },
+                        ),
+                      );
+                    });
+              }
+            }
+          },
+        ),
       ),
     );
 
-    //Outgoing
-    formWidget.add(
-      new Column(
-        children: [
-          Expanded(
-            //flex: 5,
-            child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection("Transactions")
-                  .orderBy('Date', descending: true)
-                  .where("Source",
-                      isEqualTo: getKeyValues.getCurrentUserLoginID())
-                  .snapshots(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError) return Text('Errored');
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                } else {
-                  return ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: snapshot.data.docs.length,
-                      itemBuilder: (context, index) {
-                        QueryDocumentSnapshot document =
-                            snapshot.data.docs[index];
+    // //Outgoing
+    // formWidget.add(
+    //   new Column(
+    //     children: [
+    //       Expanded(
+    //         //flex: 5,
+    //         child: StreamBuilder(
+    //           stream: FirebaseFirestore.instance
+    //               .collection("Transactions")
+    //               .orderBy('Date', descending: true)
+    //               .where("Source",
+    //                   isEqualTo: getKeyValues.getCurrentUserLoginID())
+    //               .snapshots(),
+    //           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    //             if (snapshot.hasError) return Text('Errored');
+    //             if (snapshot.connectionState == ConnectionState.waiting) {
+    //               return CircularProgressIndicator();
+    //             } else {
+    //               return ListView.builder(
+    //                   scrollDirection: Axis.vertical,
+    //                   itemCount: snapshot.data.docs.length,
+    //                   itemBuilder: (context, index) {
+    //                     QueryDocumentSnapshot document =
+    //                         snapshot.data.docs[index];
 
-                        _transactionAmount =
-                            double.parse(document['TransactionAmount']);
+    //                     _transactionAmount =
+    //                         double.parse(document['TransactionAmount']);
 
-                        _currencyAmount =
-                            currencyConvertor.format(_transactionAmount);
-                        _transactionDay = int.parse(
-                            formatDate(DateTime.parse(document['Date']), [
-                          dd,
-                        ]));
-                        _transactionMonthYear = formatDate(
-                            DateTime.parse(document['Date']), [M, ' ', yy]);
+    //                     _currencyAmount =
+    //                         currencyConvertor.format(_transactionAmount);
+    //                     _transactionDay = int.parse(
+    //                         formatDate(DateTime.parse(document['Date']), [
+    //                       dd,
+    //                     ]));
+    //                     _transactionMonthYear = formatDate(
+    //                         DateTime.parse(document['Date']), [M, ' ', yy]);
 
-                        _transactionTime =
-                            (formatDate(DateTime.parse(document['Date']), [
-                          hh,
-                          ':',
-                          nn,
-                          ' ',
-                          am,
-                        ]));
+    //                     _transactionTime =
+    //                         (formatDate(DateTime.parse(document['Date']), [
+    //                       hh,
+    //                       ':',
+    //                       nn,
+    //                       ' ',
+    //                       am,
+    //                     ]));
 
-                        //Format destination value
-                        try {
-                          _destination =
-                              getKeyValues.formatPhoneNumberWithSpaces(
-                                  document['Destination']);
-                        } catch (e) {
-                          _destination = document['Destination'];
-                        }
+    //                     //Format destination value
+    //                     try {
+    //                       _destination =
+    //                           getKeyValues.formatPhoneNumberWithSpaces(
+    //                               document['Destination']);
+    //                     } catch (e) {
+    //                       _destination = document['Destination'];
+    //                     }
 
-                        //Format product code
-                        try {
-                          _purchasedProductCode =
-                              document['PurchasedProductCode']
-                                  .replaceAll('_', ' ');
-                        } catch (e) {
-                          _purchasedProductCode = 'None';
-                        }
+    //                     //Format product code
+    //                     try {
+    //                       _purchasedProductCode =
+    //                           document['PurchasedProductCode']
+    //                               .replaceAll('_', ' ');
+    //                     } catch (e) {
+    //                       _purchasedProductCode = 'None';
+    //                     }
 
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(color: Colors.grey.shade300),
-                            ),
-                          ),
-                          child: ListTile(
-                            leading: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  _transactionDay.toString(),
-                                  style: TextStyle(
-                                    fontSize: 23,
-                                    color: Colors.grey.shade700,
-                                    fontFamily: 'Metrophobic',
-                                  ),
-                                ),
-                                Text(
-                                  _transactionMonthYear.toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey.shade700,
-                                    fontFamily: 'Metrophobic',
-                                  ),
-                                ),
-                              ],
-                            ),
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      getKeyValues.getTransactionTypeIcons(
-                                          document['TransactionType']),
-                                      size: 20,
-                                      color: kDarkPrimaryColor,
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      document['TransactionType'],
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.grey.shade800,
-                                        //fontFamily: 'Metrophobic',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'To: ',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey.shade700,
-                                        //fontFamily: 'BaiJamJuree',
-                                      ),
-                                    ),
-                                    (document['DestinationType'] ==
-                                            'Bank Account')
-                                        ? Text(
-                                            'Bank Account',
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              //fontFamily: 'Metrophobic',
-                                            ),
-                                          )
-                                        : (_purchasedProductCode != 'None' ||
-                                                _purchasedProductCode == null)
-                                            ? Row(
-                                                children: [
-                                                  Text(
-                                                    _destination,
-                                                    style: TextStyle(
-                                                      fontSize: 13,
-                                                      //fontFamily: 'Metrophobic',
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    ' (${_purchasedProductCode})',
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      color:
-                                                          Colors.grey.shade700,
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            : Text(
-                                                _destination,
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  //fontFamily: 'Metrophobic',
-                                                ),
-                                              ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                (document['TransactionType'] ==
-                                        getKeyValues.getTransactionType(0))
-                                    ? Row(
-                                        children: [
-                                          Text(
-                                            _transactionTime,
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.grey.shade700,
-                                              //fontFamily: 'Metrophobic',
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : Row(
-                                        children: [
-                                          Icon(
-                                            getKeyValues.getPurposeIcons(
-                                                document['Purpose']),
-                                            size: 15,
-                                            color: kDarkPrimaryColor,
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            document['Purpose'],
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.grey.shade700,
-                                              //fontFamily: 'Metrophobic',
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text('|'),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            _transactionTime,
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.grey.shade700,
-                                              //fontFamily: 'Metrophobic',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                              ],
-                            ),
-                            trailing: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // SizedBox(
-                                //   height: 10,
-                                // ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  //crossAxisAlignment: CrossAxisAlignment.center,
-                                  //mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    (document['Destination'] ==
-                                            getKeyValues
-                                                .getCurrentUserLoginID())
-                                        ? Text(
-                                            '+' +
-                                                MyGlobalVariables
-                                                    .zmcurrencySymbol +
-                                                _currencyAmount,
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                //fontWeight: FontWeight.bold,
-                                                fontFamily: 'BaiJamJuree',
-                                                color: Colors.green),
-                                          )
-                                        : Text(
-                                            '-' +
-                                                MyGlobalVariables
-                                                    .zmcurrencySymbol +
-                                                _currencyAmount,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              //fontWeight: FontWeight.bold,
-                                              fontFamily: 'BaiJamJuree',
-                                              color: Colors.red,
-                                            ),
-                                          ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Icon(
-                                      Icons.info_outline_rounded,
-                                      //color: kDarkPrimaryColor,
-                                      size: 20,
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            //dense: true,
-                            onTap: () {
-                              _transactionDetailsDialog(document);
-                            },
-                          ),
-                        );
-                      });
-                }
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+    //                     return Container(
+    //                       decoration: BoxDecoration(
+    //                         border: Border(
+    //                           bottom: BorderSide(color: Colors.grey.shade300),
+    //                         ),
+    //                       ),
+    //                       child: ListTile(
+    //                         leading: Column(
+    //                           mainAxisAlignment: MainAxisAlignment.center,
+    //                           children: [
+    //                             Text(
+    //                               _transactionDay.toString(),
+    //                               style: TextStyle(
+    //                                 fontSize: 23,
+    //                                 color: Colors.grey.shade700,
+    //                                 fontFamily: 'Metrophobic',
+    //                               ),
+    //                             ),
+    //                             Text(
+    //                               _transactionMonthYear.toUpperCase(),
+    //                               style: TextStyle(
+    //                                 fontSize: 12,
+    //                                 color: Colors.grey.shade700,
+    //                                 fontFamily: 'Metrophobic',
+    //                               ),
+    //                             ),
+    //                           ],
+    //                         ),
+    //                         title: Column(
+    //                           crossAxisAlignment: CrossAxisAlignment.start,
+    //                           children: [
+    //                             SizedBox(
+    //                               height: 10,
+    //                             ),
+    //                             Row(
+    //                               children: [
+    //                                 Icon(
+    //                                   getKeyValues.getTransactionTypeIcons(
+    //                                       document['TransactionType']),
+    //                                   size: 20,
+    //                                   color: kDarkPrimaryColor,
+    //                                 ),
+    //                                 SizedBox(
+    //                                   width: 5,
+    //                                 ),
+    //                                 Text(
+    //                                   document['TransactionType'],
+    //                                   style: TextStyle(
+    //                                     fontSize: 15,
+    //                                     fontWeight: FontWeight.bold,
+    //                                     color: Colors.grey.shade800,
+    //                                     //fontFamily: 'Metrophobic',
+    //                                   ),
+    //                                 ),
+    //                               ],
+    //                             ),
+    //                             SizedBox(
+    //                               height: 5,
+    //                             ),
+    //                             Row(
+    //                               children: [
+    //                                 Text(
+    //                                   'To: ',
+    //                                   style: TextStyle(
+    //                                     fontSize: 10,
+    //                                     color: Colors.grey.shade700,
+    //                                     //fontFamily: 'BaiJamJuree',
+    //                                   ),
+    //                                 ),
+    //                                 (document['DestinationType'] ==
+    //                                         'Bank Account')
+    //                                     ? Text(
+    //                                         'Bank Account',
+    //                                         style: TextStyle(
+    //                                           fontSize: 13,
+    //                                           //fontFamily: 'Metrophobic',
+    //                                         ),
+    //                                       )
+    //                                     : (_purchasedProductCode != 'None' ||
+    //                                             _purchasedProductCode == null)
+    //                                         ? Row(
+    //                                             children: [
+    //                                               Text(
+    //                                                 _destination,
+    //                                                 style: TextStyle(
+    //                                                   fontSize: 13,
+    //                                                   //fontFamily: 'Metrophobic',
+    //                                                 ),
+    //                                               ),
+    //                                               Text(
+    //                                                 ' (${_purchasedProductCode})',
+    //                                                 style: TextStyle(
+    //                                                   fontSize: 10,
+    //                                                   color:
+    //                                                       Colors.grey.shade700,
+    //                                                 ),
+    //                                               ),
+    //                                             ],
+    //                                           )
+    //                                         : Text(
+    //                                             _destination,
+    //                                             style: TextStyle(
+    //                                               fontSize: 13,
+    //                                               //fontFamily: 'Metrophobic',
+    //                                             ),
+    //                                           ),
+    //                               ],
+    //                             ),
+    //                           ],
+    //                         ),
+    //                         subtitle: Column(
+    //                           crossAxisAlignment: CrossAxisAlignment.start,
+    //                           children: [
+    //                             SizedBox(
+    //                               height: 5,
+    //                             ),
+    //                             (document['TransactionType'] ==
+    //                                     getKeyValues.getTransactionType(0))
+    //                                 ? Row(
+    //                                     children: [
+    //                                       Text(
+    //                                         _transactionTime,
+    //                                         style: TextStyle(
+    //                                           fontSize: 10,
+    //                                           color: Colors.grey.shade700,
+    //                                           //fontFamily: 'Metrophobic',
+    //                                         ),
+    //                                       ),
+    //                                     ],
+    //                                   )
+    //                                 : Row(
+    //                                     children: [
+    //                                       Icon(
+    //                                         getKeyValues.getPurposeIcons(
+    //                                             document['Purpose']),
+    //                                         size: 15,
+    //                                         color: kDarkPrimaryColor,
+    //                                       ),
+    //                                       SizedBox(
+    //                                         width: 5,
+    //                                       ),
+    //                                       Text(
+    //                                         document['Purpose'],
+    //                                         style: TextStyle(
+    //                                           fontSize: 10,
+    //                                           color: Colors.grey.shade700,
+    //                                           //fontFamily: 'Metrophobic',
+    //                                         ),
+    //                                       ),
+    //                                       SizedBox(
+    //                                         width: 5,
+    //                                       ),
+    //                                       Text('|'),
+    //                                       SizedBox(
+    //                                         width: 5,
+    //                                       ),
+    //                                       Text(
+    //                                         _transactionTime,
+    //                                         style: TextStyle(
+    //                                           fontSize: 10,
+    //                                           color: Colors.grey.shade700,
+    //                                           //fontFamily: 'Metrophobic',
+    //                                         ),
+    //                                       ),
+    //                                     ],
+    //                                   ),
+    //                             SizedBox(
+    //                               height: 5,
+    //                             ),
+    //                           ],
+    //                         ),
+    //                         trailing: Column(
+    //                           mainAxisAlignment: MainAxisAlignment.center,
+    //                           children: [
+    //                             // SizedBox(
+    //                             //   height: 10,
+    //                             // ),
+    //                             Row(
+    //                               mainAxisSize: MainAxisSize.min,
+    //                               //crossAxisAlignment: CrossAxisAlignment.center,
+    //                               //mainAxisAlignment: MainAxisAlignment.center,
+    //                               children: [
+    //                                 (document['Destination'] ==
+    //                                         getKeyValues
+    //                                             .getCurrentUserLoginID())
+    //                                     ? Text(
+    //                                         '+' +
+    //                                             MyGlobalVariables
+    //                                                 .zmcurrencySymbol +
+    //                                             _currencyAmount,
+    //                                         style: TextStyle(
+    //                                             fontSize: 16,
+    //                                             //fontWeight: FontWeight.bold,
+    //                                             fontFamily: 'BaiJamJuree',
+    //                                             color: Colors.green),
+    //                                       )
+    //                                     : Text(
+    //                                         '-' +
+    //                                             MyGlobalVariables
+    //                                                 .zmcurrencySymbol +
+    //                                             _currencyAmount,
+    //                                         style: TextStyle(
+    //                                           fontSize: 16,
+    //                                           //fontWeight: FontWeight.bold,
+    //                                           fontFamily: 'BaiJamJuree',
+    //                                           color: Colors.red,
+    //                                         ),
+    //                                       ),
+    //                                 SizedBox(
+    //                                   width: 5,
+    //                                 ),
+    //                                 Icon(
+    //                                   Icons.info_outline_rounded,
+    //                                   //color: kDarkPrimaryColor,
+    //                                   size: 20,
+    //                                 ),
+    //                                 SizedBox(
+    //                                   width: 10,
+    //                                 ),
+    //                               ],
+    //                             ),
+    //                           ],
+    //                         ),
+    //                         //dense: true,
+    //                         onTap: () {
+    //                           _transactionDetailsDialog(document);
+    //                         },
+    //                       ),
+    //                     );
+    //                   });
+    //             }
+    //           },
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
 
     return formWidget;
   }
