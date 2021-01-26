@@ -378,6 +378,7 @@ class _LiteSpeedProductScreenState extends State<LiteSpeedProductScreen> {
           _ctrlMSISDN.text,
           _invoiceID,
           widget.selectedProductCode,
+          'None',
         );
 
         //Update user balance and last transaction id

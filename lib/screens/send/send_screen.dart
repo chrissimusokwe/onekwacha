@@ -298,8 +298,7 @@ class _SendScreenState extends State<SendScreen> {
                     errorMessage: MyGlobalVariables.errorInssufficientBalance,
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: widget.currentBalance,
-                    transactionType:
-                        getKeyValues.getTransactionType(_transactionType),
+                    transactionType: getKeyValues.getTransactionType(4),
                   ),
                 ),
               );
@@ -318,7 +317,7 @@ class _SendScreenState extends State<SendScreen> {
                     purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: _balance,
-                    transactionType: _transactionType,
+                    transactionType: 4,
                   ),
                 ),
               );
@@ -342,8 +341,7 @@ class _SendScreenState extends State<SendScreen> {
                     errorMessage: MyGlobalVariables.errorInssufficientBalance,
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: widget.currentBalance,
-                    transactionType:
-                        getKeyValues.getTransactionType(_transactionType),
+                    transactionType: getKeyValues.getTransactionType(4),
                   ),
                 ),
               );
@@ -363,7 +361,7 @@ class _SendScreenState extends State<SendScreen> {
                     purpose: getKeyValues.getPurposeValue(_selectedPurpose),
                     amount: double.parse(_decimalValueNoCommas),
                     currentBalance: _balance,
-                    transactionType: _transactionType,
+                    transactionType: 4,
                   ),
                 ),
               );

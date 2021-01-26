@@ -40,7 +40,7 @@ class ProductsModel {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer ${_token}',
+        'Authorization': 'Bearer ' + _token,
       },
     );
     //print('Here is the response from Liquid: ' + response.body);

@@ -133,6 +133,7 @@ class GetKeyValues {
   }
 
   double calculateFee(double transacationAmount, String transactionType) {
+    //TODO: Configure to get fees from database
     double value = transacationAmount * (getFeeRate(transactionType) / 100);
     return value;
   }
@@ -441,5 +442,23 @@ class GetKeyValues {
     part4 = number.substring(10, 13);
     result = part1 + ' ' + part2 + ' ' + part3 + ' ' + part4;
     return result;
+  }
+
+  String formatBankDetails(String _details, int index) {
+    String part;
+    List parts = _details.split(' - ');
+
+    switch (index) {
+      case 0:
+        part = parts[index].toString();
+        break;
+      case 1:
+        part = parts[index].toString();
+        break;
+      case 2:
+        part = parts[index].toString();
+        break;
+    }
+    return part;
   }
 }

@@ -627,25 +627,25 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
 
                   //Create transaction
                   documentRef = await transactionModel.createTransaction(
-                    _availableBalance,
-                    _fee,
-                    _previousBalance,
-                    _amount,
-                    _settlementDay,
-                    _settlementMonth,
-                    _settlementYear,
-                    _transactionTypeName,
-                    _destinationType,
-                    _sourceType,
-                    _settlementDate,
-                    _destination,
-                    _purpose,
-                    _source,
-                    _settlementTime,
-                    _userID,
-                    document.id,
-                    'None',
-                  );
+                      _availableBalance,
+                      _fee,
+                      _previousBalance,
+                      _amount,
+                      _settlementDay,
+                      _settlementMonth,
+                      _settlementYear,
+                      _transactionTypeName,
+                      _destinationType,
+                      _sourceType,
+                      _settlementDate,
+                      _destination,
+                      _purpose,
+                      _source,
+                      _settlementTime,
+                      _userID,
+                      document.id,
+                      'None',
+                      'None');
 
                   if (documentRef != null) {
                     //Pay off invoice and remove it from the Payables tab by setting Status to paid

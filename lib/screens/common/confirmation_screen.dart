@@ -114,7 +114,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         ),
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 10.0),
+        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
         child: ListView(
           children: getConfirmationFormWidget(),
         ),
@@ -141,7 +141,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
             //borderRadius: BorderRadius.circular(10),
           ),
           padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
-          margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+          margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -842,6 +842,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               _userID,
               _invoiceID,
               'None',
+              widget.accountName,
             );
 
             if (documentRef != null) {
