@@ -10,20 +10,20 @@ import 'package:onekwacha/screens/common/bank_details_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 
-class SendScreen extends StatefulWidget {
+class TransferScreen extends StatefulWidget {
   final int incomingData;
   final double currentBalance;
-  SendScreen({
+  TransferScreen({
     Key key,
     this.currentBalance,
     @required this.incomingData,
   }) : super(key: key);
 
   @override
-  _SendScreenState createState() => _SendScreenState();
+  _TransferScreenState createState() => _TransferScreenState();
 }
 
-class _SendScreenState extends State<SendScreen> {
+class _TransferScreenState extends State<TransferScreen> {
   final _formKey = GlobalKey<FormState>();
   int _selectedFundDestination = 0;
   int _selectedPurpose = 3;

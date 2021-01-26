@@ -83,6 +83,7 @@ class _CardScreenState extends State<CardScreen> {
   UserModel userModel = new UserModel();
   TransactionModel transactionModel = new TransactionModel();
   bool _updated = false;
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -246,10 +247,28 @@ class _CardScreenState extends State<CardScreen> {
                   ),
 
                   //Submit button
-                  new Container(
-                    alignment: Alignment.center,
-                    child: _getPayButton(),
-                  )
+                  (!_isProcessing)
+                      ? new Container(
+                          alignment: Alignment.center,
+                          child: _getPayButton(),
+                        )
+                      : Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Processing transaction...',
+                                style: TextStyle(
+                                  color: Colors.amber.shade700,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              CircularProgressIndicator(),
+                            ],
+                          ),
+                        ),
                 ],
               )),
         ));
@@ -309,6 +328,7 @@ class _CardScreenState extends State<CardScreen> {
             ),
           ]),
     );
+    _isProcessing = false;
   }
 
   void _notPaidDialog(BuildContext context) {
@@ -349,10 +369,12 @@ class _CardScreenState extends State<CardScreen> {
             ),
           ]),
     );
+    _isProcessing = false;
   }
 
   void _validateInputs() async {
     final FormState form = _formKey.currentState;
+
     if (!form.validate()) {
       setState(() {
         //_autoValidate = true; // Start validating on every change.
@@ -449,6 +471,7 @@ class _CardScreenState extends State<CardScreen> {
                 ),
               ),
               (route) => false);
+          _isProcessing = false;
         } else {
           _notPaidDialog(context);
         }
@@ -461,7 +484,12 @@ class _CardScreenState extends State<CardScreen> {
   Widget _getPayButton() {
     if (Platform.isIOS) {
       return new CupertinoButton(
-        onPressed: _validateInputs,
+        onPressed: () {
+          setState(() {
+            _isProcessing = true;
+          });
+          _validateInputs();
+        },
         color: CupertinoColors.activeOrange,
         child: const Text(
           MyGlobalVariables.cardDetailsSubmit,
@@ -470,7 +498,12 @@ class _CardScreenState extends State<CardScreen> {
       );
     } else {
       return new RaisedButton(
-        onPressed: _validateInputs,
+        onPressed: () {
+          setState(() {
+            _isProcessing = true;
+          });
+          _validateInputs();
+        },
         color: Colors.grey.shade100,
         textColor: kTextPrimaryColor,
         padding: EdgeInsets.symmetric(vertical: 13, horizontal: 80),

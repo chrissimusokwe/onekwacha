@@ -63,13 +63,28 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
   //int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    _destination = widget.destination;
-    _source = widget.source;
+    //_destination = widget.destination;
+    //_source = widget.source;
     _purpose = widget.purpose;
     _transactionType = widget.transactionType;
     _transactionID = widget.documentID;
     _fee = widget.fee;
     _totalAmount = widget.amount;
+
+    //Format destination
+    try {
+      _destination =
+          getKeyValues.formatPhoneNumberWithSpaces(widget.destination);
+    } catch (e) {
+      _destination = widget.destination;
+    }
+
+    //Format destination
+    try {
+      _source = getKeyValues.formatPhoneNumberWithSpaces(widget.source);
+    } catch (e) {
+      _source = widget.source;
+    }
     return Form(
         child: Scaffold(
       backgroundColor: Colors.grey.shade300,

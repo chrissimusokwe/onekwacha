@@ -11,6 +11,7 @@ import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:flutter/services.dart';
 import 'package:onekwacha/models/userModel.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:onekwacha/utils/custom_icons.dart';
 
 class HistoryScreen extends StatefulWidget {
   final int incomingData;
@@ -34,6 +35,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       _transactionTime,
       _currencyAmount,
       _destination,
+      _source,
       _grouping,
       _today,
       _yesterday,
@@ -659,6 +661,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     _destination = document['Destination'];
                   }
 
+                  //Format destination
+                  try {
+                    _source = getKeyValues
+                        .formatPhoneNumberWithSpaces(document['Source']);
+                  } catch (e) {
+                    _source = document['Source'];
+                  }
+
                   //Format product code
                   try {
                     _purchasedProductCode =
@@ -744,7 +754,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               // ),
                               (document['DestinationType'] == 'Bank Account')
                                   ? Text(
-                                      'Bank Account',
+                                      'To Bank Account',
                                       style: TextStyle(
                                         fontSize: 13,
                                         //fontFamily: 'Metrophobic',
@@ -777,13 +787,47 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             ),
                                           ],
                                         )
-                                      : Text(
-                                          _destination,
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            //fontFamily: 'Metrophobic',
-                                          ),
-                                        ),
+                                      : (document['TransactionType'] ==
+                                              'Top up')
+                                          ? (document['SourceType'] ==
+                                                  'Mobile Money')
+                                              ? Column(
+                                                  children: [
+                                                    Text(
+                                                      'From Mobile Money',
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        //fontFamily: 'Metrophobic',
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              : Row(
+                                                  children: [
+                                                    Icon(
+                                                      CustomIcons.credit_card,
+                                                      size: 15,
+                                                      color: kDarkPrimaryColor,
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    Text(
+                                                      'From Card',
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        //fontFamily: 'Metrophobic',
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                          : Text(
+                                              'To ' + _destination,
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                //fontFamily: 'Metrophobic',
+                                              ),
+                                            ),
                             ],
                           ),
                         ],
@@ -796,18 +840,28 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ),
                           (document['TransactionType'] ==
                                   getKeyValues.getTransactionType(0))
-                              ? Row(
-                                  children: [
-                                    Text(
-                                      _transactionTime,
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey.shade700,
-                                        //fontFamily: 'Metrophobic',
-                                      ),
-                                    ),
-                                  ],
-                                )
+                              ? (_source == 'Card')
+                                  ? Container()
+                                  : Row(
+                                      children: [
+                                        Icon(
+                                          CustomIcons.money,
+                                          size: 15,
+                                          color: kDarkPrimaryColor,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          _source,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.grey.shade700,
+                                            //fontFamily: 'Metrophobic',
+                                          ),
+                                        ),
+                                      ],
+                                    )
                               : Row(
                                   children: [
                                     Icon(
@@ -873,7 +927,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               _currencyAmount,
                                           style: TextStyle(
                                               fontSize: 16,
-                                              //fontWeight: FontWeight.bold,
+                                              fontWeight: FontWeight.bold,
                                               fontFamily: 'BaiJamJuree',
                                               color: Colors.green),
                                         ),
@@ -884,7 +938,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           _transactionTime,
                                           style: TextStyle(
                                             fontSize: 10,
-                                            color: Colors.grey.shade700,
+                                            color: Colors.grey.shade600,
                                             //fontFamily: 'Metrophobic',
                                           ),
                                         ),
@@ -901,9 +955,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               _currencyAmount,
                                           style: TextStyle(
                                             fontSize: 16,
-                                            //fontWeight: FontWeight.bold,
+                                            fontWeight: FontWeight.bold,
                                             fontFamily: 'BaiJamJuree',
-                                            color: Colors.red,
+                                            color: Colors.grey.shade600,
                                           ),
                                         ),
                                         SizedBox(

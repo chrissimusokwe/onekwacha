@@ -792,6 +792,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 ),
               ),
             );
+            _isProcessing = false;
           } else {
             DocumentReference documentRef;
             _transactionDate = DateTime.now().toString();
@@ -882,6 +883,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                         ),
                       ),
                       (route) => false);
+                  _isProcessing = false;
                 } else {
                   _notPaidDialog(context);
                 }
@@ -908,6 +910,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                         ),
                       ),
                       (route) => false);
+                  _isProcessing = false;
                 } else {
                   _notPaidDialog(context);
                 }

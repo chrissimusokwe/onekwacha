@@ -1,8 +1,7 @@
 import 'package:onekwacha/screens/Invoicing/invoices_screen.dart';
 import 'package:onekwacha/screens/marketplace/marketplace_screen.dart';
-//import 'package:onekwacha/screens/scanpay/scan_pay_screen.dart';
 import 'package:onekwacha/screens/scanpay/qrview_screen.dart';
-import 'package:onekwacha/screens/send/send_screen.dart';
+import 'package:onekwacha/screens/transfer/transfer_screen.dart';
 import 'package:onekwacha/screens/topUp/top_up_screen.dart';
 import 'package:onekwacha/utils/custom_icons.dart';
 import 'package:onekwacha/widgets/image_slider.dart';
@@ -236,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: SendScreen(
+                            child: TransferScreen(
                               incomingData: _selectedIndex,
                               currentBalance: _currentBalance,
                             ),
@@ -261,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: 5.0,
                             ),
                             Text(
-                              'Send',
+                              'Transfer',
                               style: TextStyle(
                                 fontSize: 12.0,
                               ),

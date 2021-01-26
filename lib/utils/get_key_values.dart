@@ -18,7 +18,7 @@ class GetKeyValues {
     'Transfer': CustomIcons.initiate_money_transfer,
     'Invoicing': CustomIcons.bill,
     'Marketplace': CustomIcons.shopping_cart,
-    'Cash out': CustomIcons.wallet_app,
+    'Cash out': CustomIcons.cash,
   };
 
   Map<String, IconData> _purposeIcons = {
