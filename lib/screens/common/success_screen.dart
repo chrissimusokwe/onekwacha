@@ -362,7 +362,7 @@ class _TransactionSuccessScreenState extends State<TransactionSuccessScreen> {
                       ),
                     ),
                     child: new Text(
-                      MyGlobalVariables.successTranscation.toUpperCase(),
+                      MyGlobalVariables.successTranscation,
                       style: TextStyle(
                         fontSize: kSubmitButtonFontSize,
                         fontWeight: FontWeight.bold,

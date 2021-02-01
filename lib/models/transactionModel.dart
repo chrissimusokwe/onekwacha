@@ -60,7 +60,8 @@ class TransactionModel {
     if (documentRef != null) {
       if (_transactionType == 'Transfer' ||
           _transactionType == 'Cash out' ||
-          _transactionType == 'Marketplace') {
+          _transactionType == 'Marketplace' ||
+          _transactionType == 'Invoicing') {
         //Add to specific source user transactions
         await FirebaseFirestore.instance
             .collection("Users")
@@ -91,7 +92,9 @@ class TransactionModel {
         });
       }
 
-      if (_transactionType == 'Transfer' || _transactionType == 'Top up') {
+      if (_transactionType == 'Transfer' ||
+          _transactionType == 'Top up' ||
+          _transactionType == 'Invoicing') {
         //Add to specific destination user's transactions
         await FirebaseFirestore.instance
             .collection("Users")

@@ -93,6 +93,7 @@ class InvoicingModel {
     String _status,
   ) async {
     bool _paid = true;
+
     await FirebaseFirestore.instance.collection("Invoices").doc(id).update({
       'Amount': _amount.toString(),
       'Fee': _fee.toString(),
@@ -148,18 +149,51 @@ class InvoicingModel {
     return _paid;
   }
 
-  static Future<void> deactivateInvoice(String id) async {
+  static Future<bool> deactivateInvoice(
+      String id, String payableUserID, String receivableUserID) async {
+    bool _deleted = true;
     await FirebaseFirestore.instance
         .collection("Invoices")
         .doc(id)
-        .update({"Status": "Deleted"});
+        .update({"Status": "Deleted"}).catchError((e) {
+      _deleted = false;
+    });
+
+    if (_deleted) {
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(payableUserID)
+          .collection("Invoices")
+          .doc(id)
+          .update({"Status": "Deleted"}).catchError((e) {
+        _deleted = false;
+      });
+
+      if (_deleted) {
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(receivableUserID)
+            .collection("Invoices")
+            .doc(id)
+            .update({"Status": "Deleted"}).catchError((e) {
+          _deleted = false;
+        });
+      }
+    }
+
+    return _deleted;
   }
 
-  static Future<void> declineInvoice(String id) async {
+  static Future<bool> declineInvoice(String id) async {
+    bool _declined = true;
     await FirebaseFirestore.instance
         .collection("Invoices")
         .doc(id)
-        .update({"Status": "Declined"});
+        .update({"Status": "Declined"}).catchError((e) {
+      _declined = false;
+    });
+
+    return _declined;
   }
 
   Future<void> deleteProduct(DocumentSnapshot doc) async {

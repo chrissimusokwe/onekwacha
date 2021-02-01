@@ -332,11 +332,11 @@ class _InvoicingSuccessScreenState extends State<InvoicingSuccessScreen> {
                       ),
                     ),
                     child: new Text(
-                      MyGlobalVariables.successTranscation.toUpperCase(),
+                      MyGlobalVariables.successTranscation,
                       style: TextStyle(
                         fontSize: kSubmitButtonFontSize,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'BaiJamJuree',
+                        // fontWeight: FontWeight.bold,
+                        // fontFamily: 'BaiJamJuree',
                         color: kDarkPrimaryColor,
                       ),
                     ),

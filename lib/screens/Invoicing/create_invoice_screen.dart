@@ -223,15 +223,23 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
     );
     formWidget.add(
       new RaisedButton(
-          color: kDefaultPrimaryColor,
+          elevation: 5,
+          color: Colors.grey.shade100,
           textColor: kTextPrimaryColor,
-          padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
+          padding: EdgeInsets.symmetric(vertical: 13, horizontal: 80),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25.0),
+            side: BorderSide(
+              color: kDefaultPrimaryColor,
+              width: 3,
+            ),
+          ),
           child: new Text(
-            MyGlobalVariables.nextButton.toUpperCase(),
+            MyGlobalVariables.nextButton,
             style: TextStyle(
               fontSize: kSubmitButtonFontSize,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'BaiJamJuree',
+              //fontWeight: FontWeight.bold,
+              //fontFamily: 'BaiJamJuree',
             ),
           ),
           onPressed: onConfirmInvoice),

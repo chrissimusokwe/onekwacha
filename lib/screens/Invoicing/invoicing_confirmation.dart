@@ -42,6 +42,7 @@ class _InvoicingConfirmationScreenState
   double _totalAmount = 0;
   int _transactionType;
   double _fee = 0;
+  bool _isProcessing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -84,13 +85,13 @@ class _InvoicingConfirmationScreenState
     formWidget.add(
       Card(
         elevation: 5,
-        color: kDefaultPrimaryColor,
+        color: Colors.grey.shade100,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: Container(
           decoration: BoxDecoration(
-            color: kDefaultPrimaryColor,
+            color: Colors.grey.shade100,
             //borderRadius: BorderRadius.circular(10),
           ),
           padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
@@ -108,7 +109,7 @@ class _InvoicingConfirmationScreenState
                       style: TextStyle(
                         //decoration: TextDecoration.underline,
                         fontSize: 18.0,
-                        fontFamily: 'BaiJamJuree',
+                        //fontFamily: 'BaiJamJuree',
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -308,65 +309,116 @@ class _InvoicingConfirmationScreenState
           SizedBox(
             height: 20,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              //Transaction Confirmation button
-              new RaisedButton(
-                  color: kDefaultPrimaryColor,
-                  textColor: kTextPrimaryColor,
-                  child: new Text(
-                    MyGlobalVariables.processTranscation.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: kSubmitButtonFontSize,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'BaiJamJuree',
-                    ),
-                  ),
-                  onPressed: () async {
-                    //Create New Invoice
-                    DocumentReference document;
-                    document = await InvoicingModel.createInvoice(
-                      _totalAmount.toString(),
-                      _fee.toString(),
-                      _purpose,
-                      _payableUserID,
-                      _receivableUserID,
-                    );
-
-                    //Navigate to the success screen once done
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.rightToLeft,
-                          child: InvoicingSuccessScreen(
-                            requestFrom: _payableUserID,
-                            sendTo: _receivableUserID,
-                            purpose: _purpose,
-                            amount: _totalAmount,
-                            fee: _fee,
-                            transactionType: _transactionType,
-                            documentID: document.id,
+          (!_isProcessing)
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    //Transaction Confirmation button
+                    new RaisedButton(
+                        elevation: 5,
+                        color: kDefaultPrimaryColor,
+                        textColor: kTextPrimaryColor,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 13, horizontal: 80),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          side: BorderSide(
+                            color: kDefaultPrimaryColor,
+                            width: 3,
                           ),
                         ),
-                        (route) => false);
-                  }),
+                        child: new Text(
+                          MyGlobalVariables.processTranscation,
+                          style: TextStyle(
+                            fontSize: kSubmitButtonFontSize,
+                            //fontWeight: FontWeight.bold,
+                            //fontFamily: 'BaiJamJuree',
+                          ),
+                        ),
+                        onPressed: () async {
+                          setState(() {
+                            _isProcessing = true;
+                          });
+                          //Create New Invoice
+                          DocumentReference document;
+                          document = await InvoicingModel.createInvoice(
+                            _totalAmount.toString(),
+                            _fee.toString(),
+                            _purpose,
+                            _payableUserID,
+                            _receivableUserID,
+                          );
 
-              //Transaction Cancellation button
-              new RaisedButton(
-                  color: kDefaultPrimaryColor,
-                  textColor: kTextPrimaryColor,
-                  child: new Text(
-                    MyGlobalVariables.cancelTranscation.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: kSubmitButtonFontSize,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'BaiJamJuree',
+                          //Navigate to the success screen once done
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: InvoicingSuccessScreen(
+                                  requestFrom: _payableUserID,
+                                  sendTo: _receivableUserID,
+                                  purpose: _purpose,
+                                  amount: _totalAmount,
+                                  fee: _fee,
+                                  transactionType: _transactionType,
+                                  documentID: document.id,
+                                ),
+                              ),
+                              (route) => false);
+
+                          _isProcessing = false;
+                        }),
+                    SizedBox(
+                      height: 20,
                     ),
+
+                    //Transaction Cancellation button
+                    new RaisedButton(
+                        elevation: 5,
+                        color: Colors.grey.shade100,
+                        textColor: kTextPrimaryColor,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 13, horizontal: 80),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          side: BorderSide(
+                            color: kDefaultPrimaryColor,
+                            width: 3,
+                          ),
+                        ),
+                        child: new Text(
+                          MyGlobalVariables.cancelTranscation,
+                          style: TextStyle(
+                            fontSize: kSubmitButtonFontSize,
+                            //fontWeight: FontWeight.bold,
+                            //fontFamily: 'BaiJamJuree',
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isProcessing = true;
+                          });
+                          onPressedCancel();
+                        }),
+                  ],
+                )
+              : Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Processing transaction...',
+                        style: TextStyle(
+                          color: Colors.amber.shade700,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      CircularProgressIndicator(),
+                    ],
                   ),
-                  onPressed: onPressedCancel),
-            ],
-          ),
+                ),
         ],
       ),
     );

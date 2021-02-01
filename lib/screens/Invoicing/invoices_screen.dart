@@ -983,7 +983,8 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                 ),
               ),
               onPressed: () async {
-                InvoicingModel.deactivateInvoice(document.id);
+                InvoicingModel.deactivateInvoice(
+                    document.id, _source, _destination);
                 Navigator.pop(context);
               },
             ),
@@ -999,6 +1000,8 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
           Expanded(
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
+                  .collection("Users")
+                  .doc(getKeyValues.getCurrentUserLoginID())
                   .collection("Invoices")
                   .orderBy('InvoiceDate', descending: true)
                   .where("PayableUserID",
@@ -1112,7 +1115,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                                     style: TextStyle(
                                       fontSize: 23,
                                       color: Colors.grey.shade700,
-                                      fontFamily: 'Metrophobic',
+                                      //fontFamily: 'Metrophobic',
                                     ),
                                   ),
                                   Text(
@@ -1120,7 +1123,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey.shade700,
-                                      fontFamily: 'Metrophobic',
+                                      //fontFamily: 'Metrophobic',
                                     ),
                                   ),
                                 ],
@@ -1179,43 +1182,76 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                                           //fontFamily: 'BaiJamJuree',
                                         ),
                                       ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text('|'),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        _invoiceTime,
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.grey.shade700,
-                                          //fontFamily: 'BaiJamJuree',
-                                        ),
-                                      ),
+                                      // SizedBox(
+                                      //   width: 5,
+                                      // ),
+                                      // Text('|'),
+                                      // SizedBox(
+                                      //   width: 5,
+                                      // ),
+                                      // Text(
+                                      //   _invoiceTime,
+                                      //   style: TextStyle(
+                                      //     fontSize: 10,
+                                      //     color: Colors.grey.shade700,
+                                      //     //fontFamily: 'BaiJamJuree',
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ],
                               ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
+                              trailing: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    MyGlobalVariables.zmcurrencySymbol +
-                                        _currencyAmount,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'BaiJamJuree',
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Icon(
-                                    Icons.info_outline_rounded,
-                                    size: 15,
+                                  // SizedBox(
+                                  //   height: 10,
+                                  // ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    //mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            MyGlobalVariables.zmcurrencySymbol +
+                                                _currencyAmount,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'BaiJamJuree',
+                                              //color: Colors.grey.shade600,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            _invoiceTime,
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.grey.shade700,
+                                              //fontFamily: 'Metrophobic',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Icon(
+                                        Icons.info_outline_rounded,
+                                        //color: kDarkPrimaryColor,
+                                        size: 20,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -1242,6 +1278,8 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
           Expanded(
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
+                  .collection("Users")
+                  .doc(getKeyValues.getCurrentUserLoginID())
                   .collection("Invoices")
                   //.orderBy('Status')
                   .orderBy('InvoiceDate', descending: true)
@@ -1360,7 +1398,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                                     style: TextStyle(
                                       fontSize: 23,
                                       color: Colors.grey.shade700,
-                                      fontFamily: 'Metrophobic',
+                                      //fontFamily: 'Metrophobic',
                                     ),
                                   ),
                                   Text(
@@ -1368,7 +1406,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey.shade700,
-                                      fontFamily: 'Metrophobic',
+                                      //fontFamily: 'Metrophobic',
                                     ),
                                   ),
                                 ],
@@ -1376,29 +1414,6 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  (statusIsActive)
-                                      ? Text(
-                                          document['Status'],
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.green,
-                                            //fontFamily: 'BaiJamJuree',
-                                          ),
-                                        )
-                                      : Text(
-                                          document['Status'],
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.red,
-                                            //fontFamily: 'BaiJamJuree',
-                                          ),
-                                        ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
                                   Row(
                                     children: [
                                       Text(
@@ -1454,14 +1469,23 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                                       SizedBox(
                                         width: 5,
                                       ),
-                                      Text(
-                                        _invoiceTime,
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.grey.shade700,
-                                          //fontFamily: 'BaiJamJuree',
-                                        ),
-                                      ),
+                                      (statusIsActive)
+                                          ? Text(
+                                              document['Status'],
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.green,
+                                                //fontFamily: 'BaiJamJuree',
+                                              ),
+                                            )
+                                          : Text(
+                                              document['Status'],
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.red,
+                                                //fontFamily: 'BaiJamJuree',
+                                              ),
+                                            ),
                                       SizedBox(
                                         width: 5,
                                       ),
@@ -1469,29 +1493,82 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                                   ),
                                 ],
                               ),
-                              trailing: GestureDetector(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(
-                                      height: 47,
-                                    ),
-                                    Text(
-                                      MyGlobalVariables.zmcurrencySymbol +
-                                          _currencyAmount,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'BaiJamJuree',
+                              trailing: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  // SizedBox(
+                                  //   height: 10,
+                                  // ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    //mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            MyGlobalVariables.zmcurrencySymbol +
+                                                _currencyAmount,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'BaiJamJuree',
+                                              //color: Colors.grey.shade600,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            _invoiceTime,
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.grey.shade700,
+                                              //fontFamily: 'Metrophobic',
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    Icon(
-                                      Icons.info_outline_rounded,
-                                      size: 15,
-                                    ),
-                                  ],
-                                ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Icon(
+                                        Icons.info_outline_rounded,
+                                        //color: kDarkPrimaryColor,
+                                        size: 20,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
+
+                              // Row(
+                              //   mainAxisSize: MainAxisSize.min,
+                              //   children: [
+                              //     SizedBox(
+                              //       height: 47,
+                              //     ),
+                              //     Text(
+                              //       MyGlobalVariables.zmcurrencySymbol +
+                              //           _currencyAmount,
+                              //       style: TextStyle(
+                              //         fontSize: 15,
+                              //         fontWeight: FontWeight.bold,
+                              //         fontFamily: 'BaiJamJuree',
+                              //       ),
+                              //     ),
+                              //     Icon(
+                              //       Icons.info_outline_rounded,
+                              //       size: 15,
+                              //     ),
+                              //   ],
+                              // ),
                               //dense: true,
                               onTap: () {
                                 _confirmDeletionDialog(document);

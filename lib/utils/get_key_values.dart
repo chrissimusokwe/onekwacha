@@ -461,4 +461,52 @@ class GetKeyValues {
     }
     return part;
   }
+
+  String formatGrouping(String _grouping) {
+    String formattedDate;
+
+    List parts = _grouping.split(' ');
+
+    int index = int.parse(parts[1]);
+
+    switch (index) {
+      case 01:
+        formattedDate = parts[2] + ' January ' + parts[0];
+        break;
+      case 02:
+        formattedDate = parts[2] + ' February ' + parts[0];
+        break;
+      case 03:
+        formattedDate = parts[2] + ' March ' + parts[0];
+        break;
+      case 04:
+        formattedDate = parts[2] + ' April ' + parts[0];
+        break;
+      case 05:
+        formattedDate = parts[2] + ' May ' + parts[0];
+        break;
+      case 06:
+        formattedDate = parts[2] + ' June ' + parts[0];
+        break;
+      case 07:
+        formattedDate = parts[2] + ' July ' + parts[0];
+        break;
+      case 08:
+        formattedDate = parts[2] + ' August ' + parts[0];
+        break;
+      case 09:
+        formattedDate = parts[2] + ' September ' + parts[0];
+        break;
+      case 10:
+        formattedDate = parts[2] + ' October ' + parts[0];
+        break;
+      case 11:
+        formattedDate = parts[2] + ' November ' + parts[0];
+        break;
+      case 12:
+        formattedDate = parts[2] + ' December ' + parts[0];
+        break;
+    }
+    return formattedDate;
+  }
 }

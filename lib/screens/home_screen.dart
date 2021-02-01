@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: <Widget>[
               Text(
-                'OneKwacha',
+                MyGlobalVariables.appName,
                 style: TextStyle(
                   fontSize: 23.0,
                 ),
