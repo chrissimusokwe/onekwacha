@@ -136,7 +136,7 @@ class MarketplaceScreen extends StatelessWidget {
                     height: 20,
                   ),
                   Text(
-                    'We are still busy working towards integrating them and they will soon be available for your enjoyment. Please check back later.',
+                    'We are yet to go live with this product. Please check back later.',
                     textAlign: TextAlign.justify,
                     style: TextStyle(
                       fontSize: MyGlobalVariables.dialogFontSize,

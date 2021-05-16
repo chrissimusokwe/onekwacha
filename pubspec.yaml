@@ -37,6 +37,7 @@ dependencies:
   json_serializable: ^3.5.1
   image_picker: ^0.6.7+21
   flutter_launcher_icons: ^0.8.1
+  sms_autofill: ^1.2.6
 
   #formatters
   date_format: ^1.0.9

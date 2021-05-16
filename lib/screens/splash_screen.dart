@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:onekwacha/screens/home_screen.dart';
+import 'package:onekwacha/screens/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -25,7 +26,7 @@ class SplashScreenState extends State<SplashScreen>
   void navigationPage() {
     Navigator.pushAndRemoveUntil(
         context,
-        PageTransition(child: HomeScreen(), type: PageTransitionType.fade),
+        PageTransition(child: LoginScreen(), type: PageTransitionType.fade),
         (route) => false);
   }
 

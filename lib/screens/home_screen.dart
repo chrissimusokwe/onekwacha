@@ -16,12 +16,15 @@ import 'package:onekwacha/utils/global_strings.dart';
 import 'package:onekwacha/models/userModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:onekwacha/utils/get_key_values.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
   final double walletBalance;
+  final User user;
   HomeScreen({
     Key key,
     this.walletBalance,
+    this.user,
   }) : super(key: key);
 
   @override
@@ -42,10 +45,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
     listenToBalanceUpdates();
+    //(widget.user);
   }
 
   listenToBalanceUpdates() {
+    //(User user) {
     _currentUserLoginID = getKeyValues.getCurrentUserLoginID();
+    //user.phoneNumber.toString(); //getKeyValues.getCurrentUserLoginID();
 
     FirebaseFirestore.instance
         .collection('Users')

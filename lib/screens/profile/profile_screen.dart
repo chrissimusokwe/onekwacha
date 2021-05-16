@@ -213,7 +213,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ? ListView(
                   children: getFormWidget(),
                 )
-              : Center(child: CircularProgressIndicator()),
+              : Center(
+                  child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Fetching your profile details...',
+                      textAlign: TextAlign.center,
+                      // style: TextStyle(
+                      //   color: Colors.amber.shade700,
+                      // ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    CircularProgressIndicator(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'If this lasts more than 10 seconds, please let is know.',
+                      textAlign: TextAlign.center,
+                      // style: TextStyle(
+                      //   color: Colors.amber.shade700,
+                      // ),
+                    ),
+                  ],
+                )),
         ),
 
         // Container(

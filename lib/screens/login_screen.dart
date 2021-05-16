@@ -1,161 +1,159 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:onekwacha/screens/home_screen.dart';
+import 'package:sms_autofill/sms_autofill.dart';
+import 'package:onekwacha/utils/global_strings.dart';
 
 class LoginScreen extends StatelessWidget {
-  final _phoneController = TextEditingController();
-  final _passController = TextEditingController();
-  final _codeController = TextEditingController();
+  // final _phoneController = TextEditingController();
+  // final _passController = TextEditingController();
+  // final _codeController = TextEditingController();
 
-  //Place A
-  Future<bool> loginUser(String phone, BuildContext context) async {
-    FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _smsController = TextEditingController();
+  String _verificationId;
+  final SmsAutoFill _autoFill = SmsAutoFill();
 
-    _auth.verifyPhoneNumber(
-      phoneNumber: phone,
-      timeout: Duration(seconds: 60),
-      verificationCompleted: (AuthCredential credential) async {
-        Navigator.of(context).pop();
+  void showSnackbar(String message) {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
+  }
 
-        UserCredential result = await _auth.signInWithCredential(credential);
+  void verifyPhoneNumber() async {
+    //Callback for when the user has already previously signed in with this phone number on this device
+    PhoneVerificationCompleted verificationCompleted =
+        (PhoneAuthCredential phoneAuthCredential) async {
+      await _auth.signInWithCredential(phoneAuthCredential);
+      showSnackbar(
+          "Phone number automatically verified and user signed in: ${_auth.currentUser.uid}");
+    };
 
-        User user = result.user;
+    //Listens for errors with verification, such as too many attempts
+    PhoneVerificationFailed verificationFailed =
+        (FirebaseAuthException authException) {
+      showSnackbar(
+          'Phone number verification failed. Code: ${authException.code}. Message: ${authException.message}');
+    };
 
-        if (user != null) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => HomeScreen(
-                        user: user,
-                      )));
-        } else {
-          print("Error");
-        }
+    //Callback for when the code is sent
+    PhoneCodeSent codeSent =
+        (String verificationId, [int forceResendingToken]) async {
+      showSnackbar('Please check your phone for the verification code.');
+      _verificationId = verificationId;
+    };
 
-        //This callback would gets called when verification is done automaticlly
-      },
-      verificationFailed: (FirebaseAuthException exception) {
-        print('verification has failed');
-      },
-      codeSent: (String verificationId, int resendToken) {
-        showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) {
-              return AlertDialog(
-                title: Text("Give the code?"),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    TextField(
-                      controller: _codeController,
-                    ),
-                  ],
-                ),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text("Confirm"),
-                    textColor: Colors.white,
-                    color: Colors.blue,
-                    onPressed: () async {
-                      final code = _codeController.text.trim();
-                      AuthCredential credential = PhoneAuthProvider.credential(
-                          verificationId: verificationId, smsCode: code);
+    PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
+        (String verificationId) {
+      showSnackbar("verification code: " + verificationId);
+      _verificationId = verificationId;
+    };
 
-                      UserCredential result =
-                          await _auth.signInWithCredential(credential);
+    try {
+      await _auth.verifyPhoneNumber(
+          phoneNumber: _phoneNumberController.text,
+          timeout: const Duration(seconds: 5),
+          verificationCompleted: verificationCompleted,
+          verificationFailed: verificationFailed,
+          codeSent: codeSent,
+          codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
+    } catch (e) {
+      showSnackbar("Failed to Verify Phone Number: ${e}");
+    }
+  }
 
-                      User user = result.user;
+  void signInWithPhoneNumber() async {
+    try {
+      final AuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId,
+        smsCode: _smsController.text,
+      );
 
-                      if (user != null) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => HomeScreen(
-                                      user: user,
-                                    )));
-                      } else {
-                        print("Error");
-                      }
-                    },
-                  )
-                ],
-              );
-            });
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {},
-    );
-    return true;
+      final User user = (await _auth.signInWithCredential(credential)).user;
+
+      showSnackbar("Successfully signed in UID: ${user.uid}");
+    } catch (e) {
+      showSnackbar("Failed to sign in: " + e.toString());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-      padding: EdgeInsets.all(32),
-      child: Form(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              "Login",
-              style: TextStyle(
-                  color: Colors.lightBlue,
-                  fontSize: 36,
-                  fontWeight: FontWeight.w500),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                      borderSide: BorderSide(color: Colors.grey[200])),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                      borderSide: BorderSide(color: Colors.grey[300])),
-                  filled: true,
-                  fillColor: Colors.grey[100],
-                  hintText: "Phone Number"),
-              controller: _phoneController,
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                      borderSide: BorderSide(color: Colors.grey[200])),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                      borderSide: BorderSide(color: Colors.grey[300])),
-                  filled: true,
-                  fillColor: Colors.grey[100],
-                  hintText: "Password"),
-              controller: _passController,
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            Container(
-              width: double.infinity,
-              child: FlatButton(
-                child: Text("Login"),
-                textColor: Colors.white,
-                padding: EdgeInsets.all(16),
-                onPressed: () {
-                  //code for sign in
-                  loginUser(_phoneController.text, context);
-                },
-                color: Colors.blue,
+      key: _scaffoldKey,
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.grey.shade300,
+      appBar: AppBar(
+        title: Center(
+          child: Column(
+            children: <Widget>[
+              Text(
+                MyGlobalVariables.appName,
+                style: TextStyle(
+                  fontSize: 23.0,
+                ),
               ),
-            )
-          ],
+            ],
+          ),
         ),
       ),
-    ));
+      body: Container(
+        padding: EdgeInsets.all(32),
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextFormField(
+                controller: _phoneNumberController,
+                decoration: const InputDecoration(
+                    labelText: 'Phone number (+xx xxx-xxx-xxxx)'),
+                style: TextStyle(
+                  fontSize: 25,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                alignment: Alignment.center,
+                child: RaisedButton(
+                    child: Text("Auto fill my number"),
+                    onPressed: () async =>
+                        {_phoneNumberController.text = await _autoFill.hint},
+                    color: Colors.greenAccent[700]),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                alignment: Alignment.center,
+                child: RaisedButton(
+                  color: Colors.greenAccent[400],
+                  child: Text("Verify Number"),
+                  onPressed: () async {
+                    verifyPhoneNumber();
+                  },
+                ),
+              ),
+              TextFormField(
+                controller: _smsController,
+                decoration:
+                    const InputDecoration(labelText: 'Verification code'),
+                style: TextStyle(
+                  fontSize: 25,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 16.0),
+                alignment: Alignment.center,
+                child: RaisedButton(
+                    color: Colors.greenAccent[200],
+                    onPressed: () async {
+                      signInWithPhoneNumber();
+                    },
+                    child: Text("Sign in")),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
