@@ -83,17 +83,17 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
           bottom: TabBar(
             tabs: [
               Tab(
-                text: 'Payable',
+                text: 'My Lenders',
               ),
               Tab(
-                text: 'Receivable',
+                text: 'My Borrowers',
               ),
             ],
           ),
           title: Column(
             children: <Widget>[
               Text(
-                'Invoicing',
+                'Lend / Borrow',
                 style: TextStyle(
                   fontSize: 23.0,
                 ),
@@ -1585,7 +1585,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
               elevation: 5,
               color: Colors.grey.shade100,
               textColor: kTextPrimaryColor,
-              padding: EdgeInsets.symmetric(vertical: 13, horizontal: 80),
+              padding: EdgeInsets.symmetric(vertical: 13, horizontal: 30),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25.0),
                 side: BorderSide(
@@ -1594,7 +1594,7 @@ class _InvoicingScreenState extends State<InvoicingScreen> {
                 ),
               ),
               child: new Text(
-                'Create Invoice',
+                'Request Repayment',
                 style: TextStyle(
                   fontSize: kSubmitButtonFontSize,
                   fontWeight: FontWeight.bold,

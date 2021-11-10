@@ -320,7 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: 10.0,
                             ),
                             Text(
-                              'Invoicing',
+                              'Lend / Borrow',
                               style: TextStyle(
                                 fontSize: 14.0,
                               ),

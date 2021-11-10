@@ -4,7 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:onekwacha/screens/register_screen.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:onekwacha/screens/home_screen.dart';
+import 'package:onekwacha/utils/global_strings.dart';
+import 'package:onekwacha/utils/custom_colors_fonts.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -30,6 +34,12 @@ class _LoginScreenState extends State<LoginScreen> {
   var isOTPScreen = false;
   var verificationCode = '';
 
+  String initialCountry = 'ZM';
+  PhoneNumber number = PhoneNumber(isoCode: 'ZM');
+  List<String> country = ['ZM', 'AU'];
+  bool _phoneNumberVisibility = true;
+  String fullPhoneNumber = '';
+
   //Form controllers
   @override
   void initState() {
@@ -48,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void dispose() {
     // Clean up the controller when the Widget is disposed
-    //numberController.dispose();
+    numberController.dispose();
     super.dispose();
   }
 
@@ -60,8 +70,19 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget returnLoginScreen() {
     return Scaffold(
         key: _scaffoldKey,
-        appBar: new AppBar(
-          title: Text('Login Screen'),
+        appBar: AppBar(
+          title: Center(
+            child: Column(
+              children: <Widget>[
+                Text(
+                  MyGlobalVariables.appName,
+                  style: TextStyle(
+                    fontSize: 23.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
         body: ListView(children: [
           new Column(
@@ -71,29 +92,77 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     children: [
                       Container(
-                          child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 10.0),
-                        child: TextFormField(
-                          enabled: !isLoading,
-                          controller: numberController,
-                          keyboardType: TextInputType.phone,
-                          decoration:
-                              InputDecoration(labelText: 'Phone Number'),
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Please enter phone number';
-                            }
-                          },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 40.0),
+                          child: new InternationalPhoneNumberInput(
+                            onInputChanged: (PhoneNumber number) {
+                              //print(number.phoneNumber);
+                              fullPhoneNumber = number.phoneNumber;
+                            },
+                            onInputValidated: (bool value) {
+                              //print(value);
+                            },
+                            selectorConfig: SelectorConfig(
+                              selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                              showFlags: true,
+                            ),
+                            ignoreBlank: false,
+                            autoValidateMode: AutovalidateMode.disabled,
+                            initialValue: number,
+                            textFieldController: numberController,
+                            maxLength: 10,
+                            countrySelectorScrollControlled: false,
+                            countries: country,
+                          ),
                         ),
-                      )),
+                        //     Padding(
+                        //   padding: const EdgeInsets.symmetric(
+                        //       vertical: 10.0, horizontal: 10.0),
+                        //   child: TextFormField(
+                        //     enabled: !isLoading,
+                        //     controller: numberController,
+                        //     //textAlign: TextAlign.center,
+
+                        //     keyboardType: TextInputType.phone,
+                        //     decoration:
+                        //         InputDecoration(labelText: 'Phone Number'),
+                        //     validator: (value) {
+                        //       if (value.isEmpty) {
+                        //         return 'Please enter phone number';
+                        //       }
+                        //     },
+                        //   ),
+                        // )
+                      ),
                       Container(
                           margin: EdgeInsets.only(top: 40, bottom: 5),
                           child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10.0),
                               child: !isLoading
-                                  ? new ElevatedButton(
+                                  ? RaisedButton(
+                                      elevation: 5,
+                                      color: Colors.grey.shade100,
+                                      textColor: kTextPrimaryColor,
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 13, horizontal: 80),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(25.0),
+                                        side: BorderSide(
+                                          color: kDefaultPrimaryColor,
+                                          width: 3,
+                                        ),
+                                      ),
+                                      child: new Text(
+                                        'Sign In',
+                                        style: TextStyle(
+                                          fontSize: kSubmitButtonFontSize,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'BaiJamJuree',
+                                        ),
+                                      ),
                                       onPressed: () async {
                                         if (!isLoading) {
                                           if (_formKey.currentState
@@ -102,24 +171,34 @@ class _LoginScreenState extends State<LoginScreen> {
                                             await login();
                                           }
                                         }
-                                      },
-                                      child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 15.0,
-                                            horizontal: 15.0,
-                                          ),
-                                          child: new Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              Expanded(
-                                                  child: Text(
-                                                "Sign In",
-                                                textAlign: TextAlign.center,
-                                              )),
-                                            ],
-                                          )),
-                                    )
+                                      })
+                                  // new ElevatedButton(
+                                  //     onPressed: () async {
+                                  //       if (!isLoading) {
+                                  //         if (_formKey.currentState
+                                  //             .validate()) {
+                                  //           displaySnackBar('Please wait...');
+                                  //           await login();
+                                  //         }
+                                  //       }
+                                  //     },
+                                  //     child: Container(
+                                  //         padding: const EdgeInsets.symmetric(
+                                  //           vertical: 15.0,
+                                  //           horizontal: 15.0,
+                                  //         ),
+                                  //         child: new Row(
+                                  //           mainAxisAlignment:
+                                  //               MainAxisAlignment.center,
+                                  //           children: <Widget>[
+                                  //             Expanded(
+                                  //                 child: Text(
+                                  //               "Sign In",
+                                  //               textAlign: TextAlign.center,
+                                  //             )),
+                                  //           ],
+                                  //         )),
+                                  //   )
                                   : CircularProgressIndicator(
                                       backgroundColor:
                                           Theme.of(context).primaryColor,
@@ -138,18 +217,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 10.0),
                                       child: Text(
-                                        "No Account ?",
+                                        "No Account?",
                                       )),
                                   InkWell(
                                     child: Text(
-                                      'Sign up',
+                                      'Register',
                                     ),
                                     onTap: () => {
                                       Navigator.push(
                                           context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  RegisterScreen()))
+                                          PageTransition(
+                                              type: PageTransitionType
+                                                  .rightToLeft,
+                                              child: RegisterScreen()))
                                     },
                                   ),
                                 ],
