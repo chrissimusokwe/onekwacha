@@ -497,7 +497,7 @@ class _CardScreenState extends State<CardScreen> {
         ),
       );
     } else {
-      return new RaisedButton(
+      return new ElevatedButton(
         onPressed: () {
           setState(() {
             _isProcessing = true;

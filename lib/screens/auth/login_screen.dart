@@ -10,42 +10,42 @@ class LoginScreen extends StatelessWidget {
   // final _codeController = TextEditingController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _smsController = TextEditingController();
   String _verificationId;
   final SmsAutoFill _autoFill = SmsAutoFill();
 
-  void showSnackbar(String message) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
+  void showSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  void verifyPhoneNumber() async {
+  void verifyPhoneNumber(BuildContext context) async {
     //Callback for when the user has already previously signed in with this phone number on this device
     PhoneVerificationCompleted verificationCompleted =
         (PhoneAuthCredential phoneAuthCredential) async {
       await _auth.signInWithCredential(phoneAuthCredential);
-      showSnackbar(
+      showSnackbar(context,
           "Phone number automatically verified and user signed in: ${_auth.currentUser.uid}");
     };
 
     //Listens for errors with verification, such as too many attempts
     PhoneVerificationFailed verificationFailed =
         (FirebaseAuthException authException) {
-      showSnackbar(
+      showSnackbar(context,
           'Phone number verification failed. Code: ${authException.code}. Message: ${authException.message}');
     };
 
     //Callback for when the code is sent
     PhoneCodeSent codeSent =
         (String verificationId, [int forceResendingToken]) async {
-      showSnackbar('Please check your phone for the verification code.');
+      showSnackbar(context,'Please check your phone for the verification code.');
       _verificationId = verificationId;
     };
 
     PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
         (String verificationId) {
-      showSnackbar("verification code: " + verificationId);
+      showSnackbar(context,"verification code: " + verificationId);
       _verificationId = verificationId;
     };
 
@@ -58,11 +58,11 @@ class LoginScreen extends StatelessWidget {
           codeSent: codeSent,
           codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
     } catch (e) {
-      showSnackbar("Failed to Verify Phone Number: ${e}");
+      showSnackbar(context,"Failed to Verify Phone Number: ${e}");
     }
   }
 
-  void signInWithPhoneNumber() async {
+  void signInWithPhoneNumber(BuildContext context) async {
     try {
       final AuthCredential credential = PhoneAuthProvider.credential(
         verificationId: _verificationId,
@@ -71,9 +71,9 @@ class LoginScreen extends StatelessWidget {
 
       final User user = (await _auth.signInWithCredential(credential)).user;
 
-      showSnackbar("Successfully signed in UID: ${user.uid}");
+      showSnackbar(context,"Successfully signed in UID: ${user.uid}");
     } catch (e) {
-      showSnackbar("Failed to sign in: " + e.toString());
+      showSnackbar(context,"Failed to sign in: " + e.toString());
     }
   }
 
@@ -128,7 +128,7 @@ class LoginScreen extends StatelessWidget {
                   color: Colors.greenAccent[400],
                   child: Text("Verify Number"),
                   onPressed: () async {
-                    verifyPhoneNumber();
+                    verifyPhoneNumber(context);
                   },
                 ),
               ),
@@ -143,10 +143,12 @@ class LoginScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.only(top: 16.0),
                 alignment: Alignment.center,
-                child: RaisedButton(
-                    color: Colors.greenAccent[200],
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.greenAccent[200],
+                  ),
                     onPressed: () async {
-                      signInWithPhoneNumber();
+                      signInWithPhoneNumber(context);
                     },
                     child: Text("Sign in")),
               ),
