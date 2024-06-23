@@ -55,8 +55,9 @@ class CardNumberInputFormatter extends TextInputFormatter {
 }
 
 class DecimalTextInputFormatter extends TextInputFormatter {
-  DecimalTextInputFormatter({this.decimalRange})
-      : assert(decimalRange == null || decimalRange > 0);
+  DecimalTextInputFormatter({
+    required this.decimalRange,
+  }) : assert(decimalRange > 0);
 
   final int decimalRange;
 

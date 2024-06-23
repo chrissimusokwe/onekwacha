@@ -7,8 +7,12 @@ class BankDetails {
   int accountNumber;
   String bankName;
 
-  BankDetails(
-      {this.accountName, this.branchCode, this.accountNumber, this.bankName});
+  BankDetails({
+    required this.accountName,
+    required this.branchCode,
+    required this.accountNumber,
+    required this.bankName,
+  });
 
   @override
   String toString() {
@@ -48,7 +52,11 @@ class BankUtils {
         width: 25.0,
       );
     } else {
-      widget = icon;
+      widget = Icon(
+        Icons.warning,
+        size: 25.0,
+        color: Colors.red,
+      );
     }
     return widget;
   }

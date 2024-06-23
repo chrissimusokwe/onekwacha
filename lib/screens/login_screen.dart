@@ -14,7 +14,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({Key key}) : super(key: key);
+  LoginScreen({Key? key}) : super(key: key);
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: new InternationalPhoneNumberInput(
                             onInputChanged: (PhoneNumber number) {
                               //print(number.phoneNumber);
-                              fullPhoneNumber = number.phoneNumber;
+                              fullPhoneNumber = number.phoneNumber!;
                             },
                             onInputValidated: (bool value) {
                               //print(value);
@@ -141,20 +141,38 @@ class _LoginScreenState extends State<LoginScreen> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10.0),
                               child: !isLoading
-                                  ? RaisedButton(
-                                      elevation: 5,
-                                      color: Colors.grey.shade100,
-                                      textColor: kTextPrimaryColor,
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 13, horizontal: 80),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                        side: BorderSide(
+                                  ? ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: kDefaultPrimaryColor,
+                                        // fixedSize: const Size(3, 40),
+                                        elevation: 5,
+                                        side: const BorderSide(
                                           color: kDefaultPrimaryColor,
-                                          width: 3,
+                                        ),
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(25)),
+                                        ),
+                                        textStyle: const TextStyle(
+                                          //color: Colors.black,
+                                          //fontFamily: 'Roboto-Regular',
+                                          fontSize: 20,
                                         ),
                                       ),
+
+                                      // elevation: 5,
+                                      // color: Colors.grey.shade100,
+                                      // textColor: kTextPrimaryColor,
+                                      // padding: EdgeInsets.symmetric(
+                                      //     vertical: 13, horizontal: 80),
+                                      // shape: RoundedRectangleBorder(
+                                      //   borderRadius:
+                                      //       BorderRadius.circular(25.0),
+                                      //   side: BorderSide(
+                                      //     color: kDefaultPrimaryColor,
+                                      //     width: 3,
+                                      //   ),
+                                      // ),
                                       child: new Text(
                                         'Sign In',
                                         style: TextStyle(
@@ -165,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                       onPressed: () async {
                                         if (!isLoading) {
-                                          if (_formKey.currentState
+                                          if (_formKey.currentState!
                                               .validate()) {
                                             displaySnackBar('Please wait...');
                                             await login();
@@ -280,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               labelText: 'OTP',
                               labelStyle: TextStyle(color: Colors.black)),
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'Please enter OTP';
                             }
                           },
@@ -295,7 +313,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 const EdgeInsets.symmetric(horizontal: 10.0),
                             child: new ElevatedButton(
                               onPressed: () async {
-                                if (_formKeyOTP.currentState.validate()) {
+                                if (_formKeyOTP.currentState!.validate()) {
                                   // If the form is valid, we want to show a loading Snackbar
                                   // If the form is valid, we want to do firebase signup...
                                   setState(() {
@@ -419,7 +437,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   displaySnackBar(text) {
     final snackBar = SnackBar(content: Text(text));
-    _scaffoldKey.currentState.showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   Future login() async {

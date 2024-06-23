@@ -19,12 +19,12 @@ import 'package:onekwacha/utils/get_key_values.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
-  final double walletBalance;
-  final User user;
+  // final double walletBalance;
+  // final User user;
   HomeScreen({
-    Key key,
-    this.walletBalance,
-    this.user,
+    Key? key,
+    // this.walletBalance,
+    // this.user,
   }) : super(key: key);
 
   @override
@@ -37,8 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
   UserModel userModel = new UserModel();
   GetKeyValues getKeyValues = new GetKeyValues();
-  double _currentBalance;
-  String _currentUserLoginID;
+  late double _currentBalance;
+  late String _currentUserLoginID;
 
   @override
   void initState() {
@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Container(
                     margin: EdgeInsets.all(20.0),
-                    child: RaisedButton(
+                    child: ElevatedButton(
                       onPressed: () {
                         //print('Top up page');
                         Navigator.push(
@@ -159,11 +159,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                   currentBalance: _currentBalance,
                                 )));
                       },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: kDefaultPrimaryColor,
+                        // fixedSize: const Size(3, 40),
+                        elevation: 5,
+                        side: const BorderSide(
+                          color: kDefaultPrimaryColor,
+                        ),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        textStyle: const TextStyle(
+                          //color: Colors.black,
+                          //fontFamily: 'Roboto-Regular',
+                          fontSize: 20,
+                        ),
                       ),
-                      elevation: 5.0,
-                      color: Colors.white,
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(10.0),
+                      // ),
+                      // elevation: 5.0,
+                      // color: Colors.white,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -193,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Container(
                     margin: EdgeInsets.all(10.0),
-                    child: RaisedButton(
+                    child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -201,11 +217,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                 type: PageTransitionType.rightToLeft,
                                 child: QRViewScreen()));
                       },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        // fixedSize: const Size(3, 40),
+                        elevation: 5,
+                        side: const BorderSide(
+                          color: Colors.white,
+                        ),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        textStyle: const TextStyle(
+                            //color: Colors.black,
+                            //fontFamily: 'Roboto-Regular',
+                            // fontSize: 20,
+                            ),
                       ),
-                      elevation: 5.0,
-                      color: Colors.white,
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(10.0),
+                      // ),
+                      // elevation: 5.0,
+                      // color: Colors.white,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -235,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Container(
                     margin: EdgeInsets.all(20.0),
-                    child: RaisedButton(
+                    child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -248,11 +280,27 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        // fixedSize: const Size(3, 40),
+                        elevation: 5,
+                        side: const BorderSide(
+                          color: Colors.white,
+                        ),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        textStyle: const TextStyle(
+                            //color: Colors.black,
+                            //fontFamily: 'Roboto-Regular',
+                            // fontSize: 20,
+                            ),
                       ),
-                      elevation: 5.0,
-                      color: Colors.white,
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(10.0),
+                      // ),
+                      // elevation: 5.0,
+                      // color: Colors.white,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -289,7 +337,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Container(
                     margin: EdgeInsets.all(10.0),
-                    child: RaisedButton(
+                    child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -302,11 +350,27 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       },
-                      color: Colors.white,
-                      elevation: 5.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        // fixedSize: const Size(3, 40),
+                        elevation: 5,
+                        side: const BorderSide(
+                          color: Colors.white,
+                        ),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        textStyle: const TextStyle(
+                            //color: Colors.black,
+                            //fontFamily: 'Roboto-Regular',
+                            // fontSize: 20,
+                            ),
                       ),
+                      // color: Colors.white,
+                      // elevation: 5.0,
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(10.0),
+                      // ),
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -334,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Container(
                     margin: EdgeInsets.all(10.0),
-                    child: RaisedButton(
+                    child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -346,11 +410,27 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       },
-                      elevation: 5.0,
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        // fixedSize: const Size(3, 40),
+                        elevation: 5,
+                        side: const BorderSide(
+                          color: Colors.white,
+                        ),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        textStyle: const TextStyle(
+                            //color: Colors.black,
+                            //fontFamily: 'Roboto-Regular',
+                            // fontSize: 20,
+                            ),
                       ),
+                      // elevation: 5.0,
+                      // color: Colors.white,
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(10.0),
+                      // ),
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

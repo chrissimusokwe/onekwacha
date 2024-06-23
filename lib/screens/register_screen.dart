@@ -8,7 +8,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class RegisterScreen extends StatefulWidget {
-  RegisterScreen({Key key}) : super(key: key);
+  RegisterScreen({Key? key}) : super(key: key);
 
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -77,7 +77,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   FloatingLabelBehavior.never,
                               labelText: 'Name'),
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'Please enter a name';
                             }
                           },
@@ -99,7 +99,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   FloatingLabelBehavior.never,
                               labelText: 'Cell Number'),
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'Please enter a cell number';
                             }
                           },
@@ -113,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               child: new ElevatedButton(
                                 onPressed: () {
                                   if (!isLoading) {
-                                    if (_formKey.currentState.validate()) {
+                                    if (_formKey.currentState!.validate()) {
                                       // If the form is valid, we want to show a loading Snackbar
                                       setState(() {
                                         signUp();
@@ -187,7 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               labelText: 'OTP',
                               labelStyle: TextStyle(color: Colors.black)),
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'Please enter OTP';
                             }
                           },
@@ -202,7 +202,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 const EdgeInsets.symmetric(horizontal: 10.0),
                             child: new ElevatedButton(
                               onPressed: () async {
-                                if (_formKeyOTP.currentState.validate()) {
+                                if (_formKeyOTP.currentState!.validate()) {
                                   // If the form is valid, we want to show a loading Snackbar
                                   // If the form is valid, we want to do firebase signup...
                                   setState(() {
@@ -224,8 +224,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                   //store registration details in firestore database
                                                   await _firestore
                                                       .collection('users')
-                                                      .doc(
-                                                          _auth.currentUser.uid)
+                                                      .doc(_auth
+                                                          .currentUser!.uid)
                                                       .set(
                                                           {
                                                         'name': nameController
@@ -355,13 +355,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       isLoading = true;
     });
-    debugPrint('Gideon test 1');
-    var phoneNumber = '+27 ' + cellnumberController.text.toString();
-    debugPrint('Gideon test 2');
+    var phoneNumber = cellnumberController.text.toString();
     var verifyPhoneNumber = _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (phoneAuthCredential) {
-        debugPrint('Gideon test 3');
         //auto code complete (not manually)
         _auth.signInWithCredential(phoneAuthCredential).then((user) async => {
               if (user != null)
@@ -369,7 +366,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   //store registration details in firestore database
                   await _firestore
                       .collection('users')
-                      .doc(_auth.currentUser.uid)
+                      .doc(_auth.currentUser!.uid)
                       .set({
                         'name': nameController.text.trim(),
                         'cellnumber': cellnumberController.text.trim()
@@ -398,23 +395,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           })
                 }
             });
-        debugPrint('Gideon test 4');
       },
       verificationFailed: (FirebaseAuthException error) {
-        debugPrint('Gideon test 5' + error.message);
         setState(() {
           isLoading = false;
         });
       },
       codeSent: (verificationId, [forceResendingToken]) {
-        debugPrint('Gideon test 6');
         setState(() {
           isLoading = false;
           verificationCode = verificationId;
         });
       },
       codeAutoRetrievalTimeout: (String verificationId) {
-        debugPrint('Gideon test 7');
         setState(() {
           isLoading = false;
           verificationCode = verificationId;
@@ -422,8 +415,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       },
       timeout: Duration(seconds: 60),
     );
-    debugPrint('Gideon test 7');
     await verifyPhoneNumber;
-    debugPrint('Gideon test 8');
   }
 }

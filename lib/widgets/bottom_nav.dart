@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:onekwacha/utils/custom_colors_fonts.dart';
 
 class BottomNavigation extends StatelessWidget {
-  final int incomingData;
+  final int? incomingData;
   BottomNavigation({
-    Key key,
+    Key? key,
     this.incomingData,
   }) : super(key: key);
 
@@ -16,12 +16,12 @@ class BottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      currentIndex: incomingData,
+      currentIndex: incomingData!,
       selectedItemColor: kDarkPrimaryColor,
       onTap: (value) {
         Navigator.of(context).pushNamedAndRemoveUntil(
             _selectedOption[value], (route) => false,
-            arguments: incomingData);
+            arguments: incomingData!);
       },
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
