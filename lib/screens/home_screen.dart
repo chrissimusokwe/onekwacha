@@ -1,37 +1,82 @@
-import 'package:onekwacha/utils/custom_icons_icons.dart';
+import 'package:onekwacha/screens/Invoicing/invoices_screen.dart';
+import 'package:onekwacha/screens/marketplace/marketplace_screen.dart';
+import 'package:onekwacha/screens/scanpay/qrview_screen.dart';
+import 'package:onekwacha/screens/transfer/transfer_screen.dart';
+import 'package:onekwacha/screens/topUp/top_up_screen.dart';
+import 'package:onekwacha/utils/custom_icons.dart';
 import 'package:onekwacha/widgets/image_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:onekwacha/utils/custom_colors.dart';
-import 'package:onekwacha/widgets/bottom_global_nav.dart';
+import 'package:onekwacha/utils/custom_colors_fonts.dart';
+import 'package:onekwacha/widgets/bottom_nav.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
+import 'package:onekwacha/utils/global_strings.dart';
+import 'package:onekwacha/models/userModel.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:onekwacha/utils/get_key_values.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class HomePage extends StatefulWidget {
-  HomePage({Key key, this.title}) : super(key: key);
-  final String title;
+class HomeScreen extends StatefulWidget {
+  final double walletBalance;
+  final User user;
+  HomeScreen({
+    Key key,
+    this.walletBalance,
+    this.user,
+  }) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
-  int _counter = 0;
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+  //String _userID; // = MyGlobalVariables.onekwachaWalletNumber;
+  final currencyConvertor = new NumberFormat("#,##0.00", "en_US");
+  UserModel userModel = new UserModel();
+  GetKeyValues getKeyValues = new GetKeyValues();
+  double _currentBalance;
+  String _currentUserLoginID;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
+  @override
+  void initState() {
+    super.initState();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+    listenToBalanceUpdates();
+    //(widget.user);
+  }
+
+  listenToBalanceUpdates() {
+    //(User user) {
+    _currentUserLoginID = getKeyValues.getCurrentUserLoginID();
+    //user.phoneNumber.toString(); //getKeyValues.getCurrentUserLoginID();
+
+    FirebaseFirestore.instance
+        .collection('Users')
+        .doc(_currentUserLoginID)
+        .snapshots()
+        .listen((DocumentSnapshot userSnapshot) {
+      if (this.mounted) {
+        setState(() {
+          _currentBalance = double.parse(userSnapshot['CurrentBalance']);
+        });
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
         title: Center(
           child: Column(
             children: <Widget>[
               Text(
-                'OneKwacha',
+                MyGlobalVariables.appName,
                 style: TextStyle(
                   fontSize: 23.0,
                 ),
@@ -43,6 +88,7 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          //Top header section
           Expanded(
             flex: 2,
             child: Container(
@@ -51,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'Wallet Balance',
+                    'Your Wallet Balance',
                     style: TextStyle(
                       fontSize: 18.0,
                     ),
@@ -63,53 +109,117 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        'ZMW',
+                        MyGlobalVariables.zmcurrencySymbol,
                         style: TextStyle(
-                          fontSize: 15.0,
+                          fontSize: 20.0,
                         ),
                       ),
-                      Text(
-                        '1,962.45',
-                        style: TextStyle(
-                          fontSize: 40.0,
-                        ),
+                      SizedBox(
+                        width: 2,
                       ),
+                      (_currentBalance != null)
+                          ? Text(
+                              currencyConvertor.format(_currentBalance),
+                              style: TextStyle(
+                                fontSize: 40.0,
+                              ),
+                            )
+                          : Text(
+                              'Loading...',
+                              style: TextStyle(
+                                fontSize: 40.0,
+                              ),
+                            )
                     ],
                   ),
                 ],
               ),
             ),
           ),
+
+          //First section buttons
           Expanded(
             flex: 2,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
+                //Top up button
                 Expanded(
                   child: Container(
-                    margin: EdgeInsets.all(10.0),
+                    margin: EdgeInsets.all(20.0),
                     child: RaisedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        //print('Top up page');
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: TopUpScreen(
+                                  incomingData: _selectedIndex,
+                                  currentBalance: _currentBalance,
+                                )));
+                      },
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                      elevation: 10.0,
+                      elevation: 5.0,
                       color: Colors.white,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            //Image.asset('icons8-check-100.png'),
                             Icon(
                               CustomIcons.plus,
                               color: kDefaultPrimaryColor,
+                              size: 35.0,
+                            ),
+                            SizedBox(
+                              height: 5.0,
+                            ),
+                            Text(
+                              'Top up',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                //Scan & Pay button
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.all(10.0),
+                    child: RaisedButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: QRViewScreen()));
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      elevation: 5.0,
+                      color: Colors.white,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              CustomIcons.qr_code,
+                              color: kDefaultPrimaryColor,
                               size: 45.0,
                             ),
                             SizedBox(
                               height: 5.0,
                             ),
                             Text(
-                              'Cash In',
+                              'Scan & Pay',
                               style: TextStyle(
                                 fontSize: 14.0,
                               ),
@@ -120,68 +230,45 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
+
+                //Send button
                 Expanded(
                   child: Container(
-                    margin: EdgeInsets.all(10.0),
+                    margin: EdgeInsets.all(20.0),
                     child: RaisedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: TransferScreen(
+                              incomingData: _selectedIndex,
+                              currentBalance: _currentBalance,
+                            ),
+                          ),
+                        );
+                      },
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                      elevation: 10.0,
+                      elevation: 5.0,
                       color: Colors.white,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            //Image.asset('icons8-check-100.png'),
                             Icon(
                               CustomIcons.initiate_money_transfer,
                               color: kDefaultPrimaryColor,
-                              size: 45.0,
+                              size: 35.0,
                             ),
                             SizedBox(
                               height: 5.0,
                             ),
                             Text(
-                              'Send',
+                              'Transfer',
                               style: TextStyle(
-                                fontSize: 14.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(10.0),
-                    child: RaisedButton(
-                      onPressed: () {},
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      elevation: 10.0,
-                      color: Colors.white,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            //Image.asset('icons8-check-100.png'),
-                            Icon(
-                              CustomIcons.money,
-                              color: kDefaultPrimaryColor,
-                              size: 45.0,
-                            ),
-                            SizedBox(
-                              height: 5.0,
-                            ),
-                            Text(
-                              'Cash Out',
-                              style: TextStyle(
-                                fontSize: 14.0,
+                                fontSize: 12.0,
                               ),
                             ),
                           ],
@@ -193,6 +280,8 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
+          //Second section buttons
+          //HomeSecondSection(selectedIndex: _selectedIndex),
           Expanded(
             flex: 3,
             child: Row(
@@ -201,9 +290,20 @@ class _HomePageState extends State<HomePage> {
                   child: Container(
                     margin: EdgeInsets.all(10.0),
                     child: RaisedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: InvoicingScreen(
+                              incomingData: _selectedIndex,
+                              currentBalance: _currentBalance,
+                            ),
+                          ),
+                        );
+                      },
                       color: Colors.white,
-                      elevation: 10.0,
+                      elevation: 5.0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
@@ -220,7 +320,7 @@ class _HomePageState extends State<HomePage> {
                               height: 10.0,
                             ),
                             Text(
-                              'Request Payment',
+                              'Lend / Borrow',
                               style: TextStyle(
                                 fontSize: 14.0,
                               ),
@@ -235,8 +335,18 @@ class _HomePageState extends State<HomePage> {
                   child: Container(
                     margin: EdgeInsets.all(10.0),
                     child: RaisedButton(
-                      onPressed: () {},
-                      elevation: 10.0,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: MarketplaceScreen(
+                              incomingData: _selectedIndex,
+                            ),
+                          ),
+                        );
+                      },
+                      elevation: 5.0,
                       color: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -268,13 +378,17 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
+
+          //Banner of adverts
           Expanded(
             flex: 4,
             child: CarouselWithIndicatorDemo(),
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigation(),
+      bottomNavigationBar: BottomNavigation(
+        incomingData: _selectedIndex,
+      ),
     );
   }
 }
