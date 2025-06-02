@@ -5,3 +5,12 @@ gradle-wrapper.jar
 /gradlew.bat
 /local.properties
 GeneratedPluginRegistrant.java
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+/pubspec.lock
+/ios/Podfile.lock
+/app/google-services.json
+/android/key.properties
