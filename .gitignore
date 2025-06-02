@@ -42,5 +42,6 @@ lib/generated_plugin_registrant.dart
 /android/app/release
 pubspec.lock
 ios/Podfile.lock
-android/app/google-services.json
-android/key.properties
+/android/app/google-services.json
+/android/key.properties
+/onekwacha-dev-default-rtdb-export.json
