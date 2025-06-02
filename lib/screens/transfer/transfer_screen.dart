@@ -14,9 +14,9 @@ class TransferScreen extends StatefulWidget {
   final int incomingData;
   final double currentBalance;
   TransferScreen({
-    Key key,
-    this.currentBalance,
-    @required this.incomingData,
+    Key? key,
+    required this.currentBalance,
+    required this.incomingData,
   }) : super(key: key);
 
   @override
@@ -37,7 +37,7 @@ class _TransferScreenState extends State<TransferScreen> {
   PhoneNumber number = PhoneNumber(isoCode: 'ZM');
   List<String> country = ['ZM', 'AU'];
   bool _phoneNumberVisibility = true;
-  String _decimalValueNoCommas;
+  late String _decimalValueNoCommas;
   double _validDouble = 0.0;
   double transferAmount = 0;
   GetKeyValues getKeyValues = new GetKeyValues();
@@ -71,7 +71,7 @@ class _TransferScreenState extends State<TransferScreen> {
   }
 
   List<Widget> getFormWidget() {
-    List<Widget> formWidget = new List();
+    List<Widget> formWidget = <Widget>[];
 
     formWidget.add(new Text(
       'To:',
@@ -88,7 +88,7 @@ class _TransferScreenState extends State<TransferScreen> {
       value: _selectedFundDestination,
       onChanged: (value) {
         setState(() {
-          _selectedFundDestination = value;
+          _selectedFundDestination = value as int;
           if (_selectedFundDestination == 0 || _selectedFundDestination == 1) {
             _phoneNumberVisibility = true;
             //_bankDestinationSelected = false;
@@ -113,7 +113,7 @@ class _TransferScreenState extends State<TransferScreen> {
             new InternationalPhoneNumberInput(
               onInputChanged: (PhoneNumber number) {
                 //print(number.phoneNumber);
-                fullPhoneNumber = number.phoneNumber;
+                fullPhoneNumber = number.phoneNumber!;
               },
               onInputValidated: (bool value) {
                 //print(value);
@@ -156,7 +156,7 @@ class _TransferScreenState extends State<TransferScreen> {
       items: getKeyValues.purposeList,
       onChanged: (value) {
         setState(() {
-          _selectedPurpose = value;
+          _selectedPurpose = value as int;
         });
       },
       isExpanded: true,
@@ -214,12 +214,12 @@ class _TransferScreenState extends State<TransferScreen> {
           },
           inputFormatters: [
             CurrencyTextInputFormatter(
-              //locale: 'zm',
-              decimalDigits: 2,
-              //symbol: 'K',
-            )
+                //locale: 'zm',
+                // decimalDigits: 2,
+                //symbol: 'K',
+                ),
           ],
-          onSaved: (String value) {},
+          onSaved: (String? value) {},
           textAlign: TextAlign.right,
           keyboardType: TextInputType.number,
           style: TextStyle(
@@ -231,8 +231,8 @@ class _TransferScreenState extends State<TransferScreen> {
       ),
     );
     void onPressedSubmit() {
-      if (_formKey.currentState.validate()) {
-        _formKey.currentState.save();
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.save();
         double _amount = double.parse(_decimalValueNoCommas);
         double _balance = widget.currentBalance - _amount;
 
