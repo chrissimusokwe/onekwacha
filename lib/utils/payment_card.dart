@@ -10,8 +10,14 @@ class PaymentCard {
   int year;
   int cvv;
 
-  PaymentCard(
-      {this.type, this.number, this.name, this.month, this.year, this.cvv});
+  PaymentCard({
+    required this.type,
+    required this.number,
+    required this.name,
+    required this.month,
+    required this.year,
+    required this.cvv,
+  });
 
   @override
   String toString() {
@@ -32,7 +38,7 @@ enum CardType {
 }
 
 class CardUtils {
-  static String validateCVV(String value) {
+  static String? validateCVV(String value) {
     if (value.isEmpty) {
       return MyGlobalVariables.fieldReq;
     }
@@ -43,7 +49,7 @@ class CardUtils {
     return null;
   }
 
-  static String validateDate(String value) {
+  static String? validateDate(String value) {
     if (value.isEmpty) {
       return MyGlobalVariables.fieldReq;
     }
@@ -177,14 +183,18 @@ class CardUtils {
         width: 25.0,
       );
     } else {
-      widget = icon;
+      widget = Icon(
+        Icons.warning,
+        size: 25.0,
+        color: Colors.red,
+      );
     }
     return widget;
   }
 
   /// With the card number with Luhn Algorithm
   /// https://en.wikipedia.org/wiki/Luhn_algorithm
-  static String validateCardNum(String input) {
+  static String? validateCardNum(String input) {
     if (input.isEmpty) {
       return MyGlobalVariables.fieldReq;
     }

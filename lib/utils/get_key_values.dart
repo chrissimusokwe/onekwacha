@@ -98,7 +98,7 @@ class GetKeyValues {
     transactionTotal,
     currentBalance,
   ) {
-    double value;
+    double value = 0;
     switch (transactionType) {
       case 0:
         //top up
@@ -139,57 +139,57 @@ class GetKeyValues {
   }
 
   double getFeeRate(String transactionType) {
-    double value = _transactionTypeRate[transactionType];
+    double value = _transactionTypeRate[transactionType]!;
     return value;
   }
 
   IconData getTransactionTypeIcons(String transactionType) {
-    IconData value = _transactionTypeIcons[transactionType];
+    IconData value = _transactionTypeIcons[transactionType]!;
     return value;
   }
 
   String getBankListValue(int index) {
-    String value = _bank[index];
+    String value = _bank[index]!;
     return value;
   }
 
   String getPurposeValue(int index) {
-    String value = _purpose[index];
+    String value = _purpose[index]!;
     return value;
   }
 
   IconData getPurposeIcons(String purpose) {
-    IconData value = _purposeIcons[purpose];
+    IconData value = _purposeIcons[purpose]!;
     return value;
   }
 
   String getGenderString(int _selectedGenderValue) {
-    String value = _gender[_selectedGenderValue];
+    String value = _gender[_selectedGenderValue]!;
     return value;
   }
 
   int getGenderValue(String value) {
-    int index = _genderNumber[value];
+    int index = _genderNumber[value]!;
     return index;
   }
 
   String getTransferFundSourceValue(int index) {
-    String value = _transferFundSource[index];
+    String value = _transferFundSource[index]!;
     return value;
   }
 
   String getTopUpFundSourceValue(int index) {
-    String value = _topUpfundSource[index];
+    String value = _topUpfundSource[index]!;
     return value;
   }
 
   String getFundDestinationValue(int index) {
-    String value = _fundDestination[index];
+    String value = _fundDestination[index]!;
     return value;
   }
 
   String getTransactionType(int index) {
-    String value = _transactionType[index];
+    String value = _transactionType[index]!;
     return value;
   }
 
@@ -445,7 +445,7 @@ class GetKeyValues {
   }
 
   String formatBankDetails(String _details, int index) {
-    String part;
+    String part = '';
     List parts = _details.split(' - ');
 
     switch (index) {
@@ -463,7 +463,7 @@ class GetKeyValues {
   }
 
   String formatGrouping(String _grouping) {
-    String formattedDate;
+    String formattedDate = '';
 
     List parts = _grouping.split(' ');
 
