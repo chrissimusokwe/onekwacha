@@ -91,20 +91,26 @@ OneKwacha is a comprehensive mobile payments application built with Flutter, des
 
 ## Screenshots
 
-![Home Screen](assets/screens/home.JPG)
 *Main dashboard with balance overview and quick actions*
 
-![Transaction History](assets/screens/transactionhistory.JPG)
+![Home Screen](assets/screens/home.JPG)
+
 *Detailed transaction history with categorization*
 
-![Invoice Management](assets/screens/invoicingpayable.JPG)
+![Transaction History](assets/screens/transactionhistory.JPG)
+
 *Invoice creation and management interface*
 
-![QR Scan & Pay](assets/screens/scappayqr.JPG)
+![Invoice Management](assets/screens/invoicingpayable.JPG)
+
 *QR code payment processing*
 
-![Bank Details](assets/screens/bankdetails.JPG)
+![QR Scan & Pay](assets/screens/scappayqr.JPG)
+
 *Bank transfer configuration screen*
+
+![Bank Details](assets/screens/bankdetails.JPG)
+
 
 ## Getting Started
 
