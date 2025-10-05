@@ -93,7 +93,7 @@ OneKwacha is a comprehensive mobile payments application built with Flutter, des
 
 *Main dashboard with balance overview and quick actions*
 
-![Home Screen](assets/screens/home.JPG)
+![Home Screen](assets/screens/home.JPG =250x)
 
 *Detailed transaction history with categorization*
 
